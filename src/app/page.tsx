@@ -1,4 +1,7 @@
 import Image from 'next/image';
+import { ModeToggle } from '@/components/ui/modetoggle';
+/* src\components\ui\modetoggle.tsx
+// src\app\page.tsx */
 
 export default function Home() {
   return (
@@ -21,7 +24,7 @@ export default function Home() {
             .
           </li>
           <li className="tracking-[-.01em]">
-            Welcome to the nextJS 15.5 Starter kit
+            Welcome to the NextJS 15.5 Starter kit
           </li>
         </ol>
 
@@ -49,6 +52,9 @@ export default function Home() {
           >
             Read our docs
           </a>
+        </div>
+        <div className="text-center text-sm text-black/60 dark:text-white/70">
+          Here's a Dark/Lode Mode Toggle <ModeToggle />
         </div>
       </main>
       <footer className="row-start-3 flex flex-wrap items-center justify-center gap-[24px]">
