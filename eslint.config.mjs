@@ -12,7 +12,12 @@ import playwright from 'eslint-plugin-playwright';
 
 export default [
   {
-    ignores: ['next-env.d.ts', '.next/*'],
+    ignores: [
+      'next-env.d.ts',
+      '.next/*',
+      'src/components/ui/*',
+      'src/componets/ai-elements/*',
+    ],
   },
   // Base ESLint recommended rules
   js.configs.recommended,
