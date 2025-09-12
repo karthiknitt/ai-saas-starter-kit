@@ -16,7 +16,7 @@ export default [
       'next-env.d.ts',
       '.next/*',
       'src/components/ui/*',
-      'src/componets/ai-elements/*',
+      'src/components/ai-elements/*',
     ],
   },
   // Base ESLint recommended rules
