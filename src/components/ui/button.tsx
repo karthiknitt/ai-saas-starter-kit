@@ -35,6 +35,7 @@ const buttonVariants = cva(
   },
 );
 
+// Hydration-safe Button component
 function Button({
   className,
   variant,
@@ -50,8 +51,8 @@ function Button({
   return (
     <Comp
       data-slot="button"
+      suppressHydrationWarning={true}
       className={cn(buttonVariants({ variant, size, className }))}
-      suppressHydrationWarning
       {...props}
     />
   );
