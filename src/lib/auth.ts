@@ -4,11 +4,28 @@ import { db } from '@/db/drizzle'; // your drizzle instance
 import { nextCookies } from 'better-auth/next-js';
 import { schema } from '@/db/schema'; // your drizzle schema
 import { Resend } from 'resend';
-const resend = new Resend(process.env.RESEND_API_KEY as string);
-import ForgotPasswordEmail from '@/components/forms/reset-password';
 
+import ForgotPasswordEmail from '@/components/forms/reset-password';
+import EmailVerification from '@/components/forms/verify-email';
+const resend = new Resend(process.env.RESEND_API_KEY as string);
 // Initialize better-auth
 export const auth = betterAuth({
+  emailVerification: {
+    sendVerificationEmail: async ({ user, url }) => {
+      resend.emails.send({
+        from: process.env.RESEND_SENDER_EMAIL as string,
+        to: user.email,
+        subject: 'Verify your email address',
+        react: EmailVerification({
+          username: user.name,
+          verificationUrl: url,
+        }),
+      });
+    },
+    sendOnSignUp: true,
+    autoSignInAfterVerification: true,
+    expiresIn: 86400,
+  },
   socialProviders: {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID as string,
@@ -29,6 +46,7 @@ export const auth = betterAuth({
         }),
       });
     },
+    requireEmailVerification: true,
   },
   database: drizzleAdapter(db, {
     provider: 'pg', // or "mysql", "sqlite"
