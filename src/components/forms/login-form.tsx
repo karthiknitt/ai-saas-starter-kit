@@ -165,6 +165,12 @@ export function LoginForm({
                     Sign up
                   </a>
                 </div>
+                <div className="text-center text-sm">
+                  Go to{' '}
+                  <a href="/" className="underline underline-offset-4">
+                    Home page{' '}
+                  </a>
+                </div>
               </div>
             </form>
           </Form>
