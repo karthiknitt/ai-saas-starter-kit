@@ -38,7 +38,7 @@ export function SignoutButton({
         disabled={isLoading}
         onClick={Logout}
       >
-        {isLoading ? <Loader2 className="size-4 animate-spin" /> : 'Logout'}
+        {isLoading ? <Loader2 className="size-4 animate-spin" /> : 'Logout ]->'}
       </Button>
     </div>
   );
