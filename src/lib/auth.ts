@@ -1,5 +1,5 @@
 import { betterAuth } from 'better-auth';
-import { polar, webhooks } from '@polar-sh/better-auth';
+import { polar, checkout, usage, portal } from '@polar-sh/better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { db } from '@/db/drizzle';
 import { nextCookies } from 'better-auth/next-js';
@@ -16,7 +16,7 @@ const resend = new Resend(process.env.RESEND_API_KEY as string);
 const polarClient = new Polar({
   accessToken: process.env.POLAR_ACCESS_TOKEN!,
   // Use 'sandbox' if you're using the Polar Sandbox environment
-  // server: 'sandbox'
+  server: 'sandbox',
 });
 
 // Polar configuration
@@ -71,17 +71,64 @@ export const auth = betterAuth({
     nextCookies(),
     polar({
       client: polarClient,
-      createCustomerOnSignUp: false,
+      createCustomerOnSignUp: true,
+      use: [
+        checkout({
+          products: [
+            {
+              slug: 'free',
+              productId: process.env.POLAR_PRODUCT_FREE as string,
+            },
+            {
+              slug: 'pro',
+              productId: process.env.POLAR_PRODUCT_PRO as string,
+            },
+            {
+              slug: 'startup',
+              productId: process.env.POLAR_PRODUCT_STARTUP as string,
+            },
+          ],
+          successUrl: '/billing/success?checkout_id={CHECKOUT_ID}',
+          authenticatedUsersOnly: true,
+        }),
+        portal(),
+        usage(),
+      ],
+    }),
+
+    /*polar({
+      client: polarClient,
+      createCustomerOnSignUp: true,
+      enableCustomerPortal: true, //api/auth/portal
+      successUrl: process.env.POLAR_SUCCESS_URL!,
+      checkout: {
+        enabled: true,
+        products: [
+          {
+            slug: 'Free',
+            productId: process.env.POLAR_PRODUCT_FREE as string,
+          },
+          {
+            slug: 'Pro',
+            productId: process.env.POLAR_PRODUCT_PRO as string,
+          },
+          {
+            slug: 'Startup',
+            productId: process.env.POLAR_PRODUCT_STARTUP as string,
+          },
+        ],
+      },
       use: [
         webhooks({
           secret: process.env.POLAR_WEBHOOK_SECRET!,
         }),
       ],
-    }),
+    }),*/
   ],
 });
 
 // Polar client configuration
-export const polarClientConfig = {
+/* export const polarClientConfig = {
   accessToken: process.env.POLAR_ACCESS_TOKEN!,
 };
+ */

@@ -12,6 +12,7 @@ import Pricing from '@/components/pricing';
 // src\app\page.tsx */
 
 export default function LandingPage() {
+  console.log('[DEBUG] Home page component rendering');
   return (
     <>
       <HeroHeader />

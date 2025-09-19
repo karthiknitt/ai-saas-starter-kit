@@ -9,6 +9,9 @@
     "lint": "eslint . --config eslint.config.mjs  src --ext ts,tsx,js,jsx,mjs --report-unused-disable-directives --max-warnings=-1 --no-warn-ignored",
     "lint:fix": "eslint src --ext ts,tsx,js,jsx,mjs --fix ",
     "type-check": "tsc --noEmit",
+    "db:studio": "drizzle-kit studio",
+    "db:push": "drizzle-kit push",
+    "db:migrate":"drizzle-kit migrate",
     "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,json,css,scss,sql,md,html,mjs}'",
     "prepare": "husky"
   },

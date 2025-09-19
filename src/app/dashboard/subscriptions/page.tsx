@@ -1,33 +1,61 @@
 'use client';
 
-import { polarClient, PLAN_PRODUCT_IDS } from '@/lib/auth-client';
+import { useEffect, useState } from 'react';
+import { authClient } from '@/lib/auth-client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-export default function SubscriptionsPage() {
-  const handlePlanSelection = async (planName: string) => {
-    try {
-      // Get product ID from constants
-      const productIds = {
-        free: PLAN_PRODUCT_IDS.FREE,
-        pro: PLAN_PRODUCT_IDS.PRO,
-        startup: PLAN_PRODUCT_IDS.STARTUP,
-      };
+interface Plan {
+  name: string;
+  price: string;
+  features: string[];
+}
 
-      const productId =
-        productIds[planName.toLowerCase() as keyof typeof productIds];
-      if (!productId) {
+export default function SubscriptionsPage() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const session = await authClient.getSession();
+        setIsAuthenticated(!!session.data?.user);
+      } catch (error) {
+        console.error('Auth check failed:', error);
+        setIsAuthenticated(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+    checkAuth();
+  }, []);
+
+  const handlePlanSelection = async (planName: string) => {
+    if (!isAuthenticated) {
+      alert('Please sign in to purchase a plan');
+      return;
+    }
+
+    try {
+      console.log('Starting checkout for plan:', planName);
+      // Use the slug directly as configured in server
+      const slug = planName.toLowerCase();
+      if (!['free', 'pro', 'startup'].includes(slug)) {
         console.error('Invalid plan name:', planName);
         return;
       }
 
-      await polarClient.createCheckout(productId);
+      const result = await authClient.checkout({ slug });
+      console.log('Checkout result:', result);
     } catch (error) {
-      console.error('Error creating checkout:', error);
+      console.error('Checkout failed:', error);
+      // Show user-friendly error message
+      alert(
+        `Checkout failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
     }
   };
-
-  const plans = [
+  const plans: Plan[] = [
     {
       name: 'Free',
       price: '$0/mo',
@@ -61,6 +89,10 @@ export default function SubscriptionsPage() {
       ],
     },
   ];
+
+  if (loading) {
+    return <div className="p-10 text-center">Loading...</div>;
+  }
 
   return (
     <div className="container mx-auto space-y-8 px-6 py-8">
@@ -103,9 +135,13 @@ export default function SubscriptionsPage() {
               <Button
                 className="mt-4 w-full"
                 onClick={() => handlePlanSelection(plan.name)}
-                disabled={plan.name === 'Free'}
+                disabled={plan.name === 'Free' || !isAuthenticated}
               >
-                {plan.name === 'Free' ? 'Current Plan' : 'Upgrade'}
+                {plan.name === 'Free'
+                  ? 'Current Plan'
+                  : isAuthenticated
+                    ? 'Upgrade'
+                    : 'Sign in to purchase'}
               </Button>
             </CardContent>
           </Card>
