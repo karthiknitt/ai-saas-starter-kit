@@ -14,14 +14,31 @@ export default function SuccessPage() {
   const checkoutId = searchParams.get('checkout_id');
 
   useEffect(() => {
-    if (checkoutId) {
-      // Here you could verify the checkout with Polar if needed
-      setStatus('success');
-      setMessage('Your subscription has been activated successfully!');
-    } else {
-      setStatus('error');
-      setMessage('Missing checkout information');
-    }
+    const verifyCheckout = async () => {
+      if (checkoutId) {
+        try {
+          const response = await fetch(`/api/verify-checkout/${checkoutId}`);
+          if (response.ok) {
+            setStatus('success');
+            setMessage('Your subscription has been activated successfully!');
+          } else {
+            setStatus('error');
+            setMessage(
+              'Unable to verify your payment. Please contact support.',
+            );
+          }
+        } catch {
+          setStatus('error');
+          setMessage(
+            'Verification failed. Please try again or contact support.',
+          );
+        }
+      } else {
+        setStatus('error');
+        setMessage('Missing checkout information');
+      }
+    };
+    verifyCheckout();
   }, [checkoutId]);
 
   if (status === 'loading') {

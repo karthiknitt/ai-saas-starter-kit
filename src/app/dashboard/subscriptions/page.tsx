@@ -135,7 +135,7 @@ export default function SubscriptionsPage() {
               <Button
                 className="mt-4 w-full"
                 onClick={() => handlePlanSelection(plan.name)}
-                disabled={plan.name === 'Free' || !isAuthenticated}
+                disabled={plan.name !== 'Free' && !isAuthenticated}
               >
                 {plan.name === 'Free'
                   ? 'Current Plan'

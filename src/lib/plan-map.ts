@@ -1,8 +1,38 @@
-export const PRODUCT_MAP: Record<string, string> = {
-  [process.env.POLAR_PRODUCT_FREE!]: 'Free',
-  [process.env.POLAR_PRODUCT_PRO!]: 'Pro',
-  [process.env.POLAR_PRODUCT_STARTUP!]: 'Startup',
-};
+// Validate required environment variables at startup
+function validateEnvVar(name: string): string {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${name}`);
+  }
+  return value;
+}
+
+// Define plan types for better type safety
+type PlanType = 'Free' | 'Pro' | 'Startup';
+
+// Construct the product map with validated environment variables
+export const PRODUCT_MAP: Record<string, PlanType> = (() => {
+  try {
+    const free = validateEnvVar('POLAR_PRODUCT_FREE');
+    const pro = validateEnvVar('POLAR_PRODUCT_PRO');
+    const startup = validateEnvVar('POLAR_PRODUCT_STARTUP');
+
+    return {
+      [free]: 'Free',
+      [pro]: 'Pro',
+      [startup]: 'Startup',
+    };
+  } catch (error: unknown) {
+    if (process.env.NODE_ENV === 'production') {
+      throw error; // Fail fast in production
+    }
+    console.error(
+      `Error constructing PRODUCT_MAP: ${error instanceof Error ? error.message : String(error)}`,
+    );
+    // Return a minimal map for development to allow partial functionality
+    return {};
+  }
+})();
 
 // Helper function to get plan name with better error handling
 export function getPlanName(productId: string | undefined | null): string {

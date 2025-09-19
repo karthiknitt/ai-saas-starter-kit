@@ -32,14 +32,20 @@ function verifyWebhookSignature(
   secret: string,
 ): boolean {
   try {
-    const hmac = crypto.createHmac('sha256', secret);
-    const computedSignature = hmac.update(body, 'utf8').digest('hex');
-    const receivedSignature = signature.replace('sha256=', '');
+    // Strip the "v1," prefix and get the base64 signature
+    const signatureWithoutPrefix = signature.replace('v1,', '');
 
-    return crypto.timingSafeEqual(
-      Buffer.from(computedSignature),
-      Buffer.from(receivedSignature),
-    );
+    // Decode the base64 signature into a Buffer
+    const receivedSignature = Buffer.from(signatureWithoutPrefix, 'base64');
+
+    // Create HMAC using the secret
+    const hmac = crypto.createHmac('sha256', secret);
+
+    // Calculate signature over the raw body as bytes
+    const computedSignature = hmac.update(body, 'utf8').digest();
+
+    // Compare the signatures using timing-safe comparison
+    return crypto.timingSafeEqual(computedSignature, receivedSignature);
   } catch (error) {
     console.error('Error verifying webhook signature:', error);
     return false;
