@@ -33,7 +33,7 @@ export default function Pricing() {
 
               <CardDescription className="text-sm">Per editor</CardDescription>
               <Button asChild variant="outline" className="mt-4 w-full">
-                <Link href="">Get Started</Link>
+                <Link href="/dashboard/subscriptions">Get Started</Link>
               </Button>
             </CardHeader>
 
@@ -70,7 +70,7 @@ export default function Pricing() {
               <CardDescription className="text-sm">Per editor</CardDescription>
 
               <Button asChild className="mt-4 w-full">
-                <Link href="">Get Started</Link>
+                <Link href="/dashboard/subscriptions">Upgrade</Link>
               </Button>
             </CardHeader>
 
@@ -110,7 +110,7 @@ export default function Pricing() {
               <CardDescription className="text-sm">Per editor</CardDescription>
 
               <Button asChild variant="outline" className="mt-4 w-full">
-                <Link href="">Get Started</Link>
+                <Link href="/dashboard/subscriptions">Get Started</Link>
               </Button>
             </CardHeader>
 

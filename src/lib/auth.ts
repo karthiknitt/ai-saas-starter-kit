@@ -1,14 +1,30 @@
 import { betterAuth } from 'better-auth';
+import { polar, webhooks } from '@polar-sh/better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
-import { db } from '@/db/drizzle'; // your drizzle instance
+import { db } from '@/db/drizzle';
 import { nextCookies } from 'better-auth/next-js';
-import { schema } from '@/db/schema'; // your drizzle schema
+import { schema } from '@/db/schema';
 import { Resend } from 'resend';
+import { Polar } from '@polar-sh/sdk';
 
 import ForgotPasswordEmail from '@/components/forms/reset-password';
 import EmailVerification from '@/components/forms/verify-email';
+
 const resend = new Resend(process.env.RESEND_API_KEY as string);
-// Initialize better-auth
+
+// Polar client
+const polarClient = new Polar({
+  accessToken: process.env.POLAR_ACCESS_TOKEN!,
+  // Use 'sandbox' if you're using the Polar Sandbox environment
+  // server: 'sandbox'
+});
+
+// Polar configuration
+export const polarConfig = {
+  accessToken: process.env.POLAR_ACCESS_TOKEN!,
+  successUrl: process.env.POLAR_SUCCESS_URL!,
+};
+
 export const auth = betterAuth({
   emailVerification: {
     sendVerificationEmail: async ({ user, url }) => {
@@ -24,7 +40,6 @@ export const auth = betterAuth({
     },
     sendOnSignUp: true,
     autoSignInAfterVerification: true,
-    expiresIn: 86400,
   },
   socialProviders: {
     google: {
@@ -49,8 +64,24 @@ export const auth = betterAuth({
     requireEmailVerification: true,
   },
   database: drizzleAdapter(db, {
-    provider: 'pg', // or "mysql", "sqlite"
+    provider: 'pg',
     schema,
   }),
-  plugins: [nextCookies()],
+  plugins: [
+    nextCookies(),
+    polar({
+      client: polarClient,
+      createCustomerOnSignUp: false,
+      use: [
+        webhooks({
+          secret: process.env.POLAR_WEBHOOK_SECRET!,
+        }),
+      ],
+    }),
+  ],
 });
+
+// Polar client configuration
+export const polarClientConfig = {
+  accessToken: process.env.POLAR_ACCESS_TOKEN!,
+};
