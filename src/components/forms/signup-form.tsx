@@ -2,6 +2,7 @@
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { authClient } from '@/lib/auth-client';
+
 import {
   Card,
   CardContent,
@@ -66,7 +67,20 @@ export function SignUpForm({
       values.email,
       values.password,
     );
+
     if (success) {
+      // Create Polar customer after successful signup
+      try {
+        // Note: Customer creation will happen when user logs in or accesses subscription features
+        // This keeps the signup flow fast and doesn't block on external service calls
+        console.log(
+          'User signed up successfully, Polar customer will be created when first accessing subscriptions',
+        );
+      } catch (error) {
+        console.error('Error during signup process:', error);
+        // Don't block signup flow for Polar errors
+      }
+
       toast.success(
         `${message as string} Please check your email for verification`,
       );

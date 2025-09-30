@@ -60,4 +60,23 @@ export const verification = pgTable('verification', {
     .notNull(),
 });
 
-export const schema = { user, session, account, verification };
+export const subscription = pgTable('subscription', {
+  id: text('id').primaryKey(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => user.id, { onDelete: 'cascade' }),
+  polarSubscriptionId: text('polar_subscription_id').notNull().unique(),
+  polarCustomerId: text('polar_customer_id').notNull(),
+  status: text('status').notNull(), // active, canceled, past_due, etc.
+  plan: text('plan').notNull(), // Free, Pro, Startup
+  currentPeriodStart: timestamp('current_period_start'),
+  currentPeriodEnd: timestamp('current_period_end'),
+  cancelAtPeriodEnd: boolean('cancel_at_period_end').default(false),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at')
+    .defaultNow()
+    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .notNull(),
+});
+
+export const schema = { user, session, account, verification, subscription };

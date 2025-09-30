@@ -33,12 +33,20 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
 
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  image?: string | null | undefined;
+}
+
+const defaultUser = {
+  name: 'Guest',
+  email: 'guest@example.com',
+  avatar: '/avatars/guest.jpg',
+};
+
 const data = {
-  user: {
-    name: 'shadcn',
-    email: 'm@example.com',
-    avatar: '/avatars/shadcn.jpg',
-  },
   navMain: [
     {
       title: 'Dashboard',
@@ -150,7 +158,21 @@ const data = {
   ],
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
+  user?: User | null;
+}
+
+export function AppSidebar({ user, ...props }: AppSidebarProps) {
+  const currentUser = user
+    ? {
+        name: user.name,
+        email: user.email,
+        avatar: user.image || '/avatars/default.jpg',
+      }
+    : defaultUser;
+
+  console.log('[DEBUG] AppSidebar user:', currentUser);
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -174,7 +196,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={currentUser} />
       </SidebarFooter>
     </Sidebar>
   );
