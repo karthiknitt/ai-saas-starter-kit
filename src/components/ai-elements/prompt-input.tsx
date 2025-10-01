@@ -27,6 +27,7 @@ import {
   XIcon,
 } from 'lucide-react';
 import { nanoid } from 'nanoid';
+import type { ReactNode } from 'react';
 import {
   type ChangeEventHandler,
   Children,
@@ -119,7 +120,7 @@ export type PromptInputAttachmentsProps = Omit<
   HTMLAttributes<HTMLDivElement>,
   'children'
 > & {
-  children: (attachment: FileUIPart & { id: string }) => React.ReactNode;
+  children: (attachment: FileUIPart & { id: string }) => ReactNode;
 };
 
 export function PromptInputAttachments({
