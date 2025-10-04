@@ -9,6 +9,7 @@ import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 // import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import playwright from 'eslint-plugin-playwright';
+import nextPlugin from '@next/eslint-plugin-next';
 
 export default [
   {
@@ -48,6 +49,19 @@ export default [
       'react/react-in-jsx-scope': 'off',
     },
   },
+
+  // Next.js plugin
+  {
+    plugins: {
+      '@next/next': nextPlugin,
+    },
+    rules: {
+      '@next/next/no-html-link-for-pages': 'warn',
+      '@next/next/no-img-element': 'warn',
+      '@next/next/no-sync-scripts': 'warn',
+    },
+  },
+
   /*
   // Unicorn plugin settings
   {

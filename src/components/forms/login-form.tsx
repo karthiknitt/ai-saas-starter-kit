@@ -27,6 +27,7 @@ import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
+import Link from 'next/link';
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -167,9 +168,9 @@ export function LoginForm({
                 </div>
                 <div className="text-center text-sm">
                   Go to{' '}
-                  <a href="/" className="underline underline-offset-4">
+                  <Link href="/" className="underline underline-offset-4">
                     Home page{' '}
-                  </a>
+                  </Link>
                 </div>
               </div>
             </form>
