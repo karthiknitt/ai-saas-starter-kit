@@ -46,8 +46,19 @@ export async function POST(request: Request) {
     }
 
     const { messages } = await request.json();
-    if (!messages) {
+    if (!messages || !Array.isArray(messages) || messages.length === 0) {
       return NextResponse.json({ error: 'Messages required' }, { status: 400 });
+    }
+
+    // Basic validation of message structure
+    const isValid = messages.every(
+      msg => msg && typeof msg === 'object' && 'role' in msg && 'content' in msg
+    );
+    if (!isValid) {
+      return NextResponse.json(
+        { error: 'Invalid message format. Each message must have role and content.' },
+        { status: 400 }
+      );
     }
 
     // Get model from cookie
