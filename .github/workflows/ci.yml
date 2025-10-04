@@ -30,13 +30,58 @@ jobs:
         run: npm ci
 
       - name: Run type check
+        env:
+          DATABASE_URL: postgresql://dummy:dummy@localhost:5432/dummy
+          BETTER_AUTH_SECRET: dummy-secret-for-ci
+          BETTER_AUTH_URL: http://localhost:3000
+          GOOGLE_CLIENT_ID: dummy-client-id
+          GOOGLE_CLIENT_SECRET: dummy-client-secret
+          POLAR_ACCESS_TOKEN: dummy-token
+          POLAR_SUCCESS_URL: http://localhost:3000/success
+          POLAR_PRODUCT_FREE: dummy-free-id
+          POLAR_PRODUCT_PRO: dummy-pro-id
+          POLAR_PRODUCT_STARTUP: dummy-startup-id
+          RESEND_API_KEY: dummy-resend-key
+          RESEND_SENDER_EMAIL: test@example.com
+          OPENAI_API_KEY: dummy-openai-key
+          ENCRYPTION_KEY: dummy-32-char-encryption-key!!!
         run: npm run type-check
 
       - name: Run linter
         run: npm run lint
 
       - name: Run tests
+        env:
+          DATABASE_URL: postgresql://dummy:dummy@localhost:5432/dummy
+          BETTER_AUTH_SECRET: dummy-secret-for-ci
+          BETTER_AUTH_URL: http://localhost:3000
+          GOOGLE_CLIENT_ID: dummy-client-id
+          GOOGLE_CLIENT_SECRET: dummy-client-secret
+          POLAR_ACCESS_TOKEN: dummy-token
+          POLAR_SUCCESS_URL: http://localhost:3000/success
+          POLAR_PRODUCT_FREE: dummy-free-id
+          POLAR_PRODUCT_PRO: dummy-pro-id
+          POLAR_PRODUCT_STARTUP: dummy-startup-id
+          RESEND_API_KEY: dummy-resend-key
+          RESEND_SENDER_EMAIL: test@example.com
+          OPENAI_API_KEY: dummy-openai-key
+          ENCRYPTION_KEY: dummy-32-char-encryption-key!!!
         run: npm run test:run
 
       - name: Build project
+        env:
+          DATABASE_URL: postgresql://dummy:dummy@localhost:5432/dummy
+          BETTER_AUTH_SECRET: dummy-secret-for-ci
+          BETTER_AUTH_URL: http://localhost:3000
+          GOOGLE_CLIENT_ID: dummy-client-id
+          GOOGLE_CLIENT_SECRET: dummy-client-secret
+          POLAR_ACCESS_TOKEN: dummy-token
+          POLAR_SUCCESS_URL: http://localhost:3000/success
+          POLAR_PRODUCT_FREE: dummy-free-id
+          POLAR_PRODUCT_PRO: dummy-pro-id
+          POLAR_PRODUCT_STARTUP: dummy-startup-id
+          RESEND_API_KEY: dummy-resend-key
+          RESEND_SENDER_EMAIL: test@example.com
+          OPENAI_API_KEY: dummy-openai-key
+          ENCRYPTION_KEY: dummy-32-char-encryption-key!!!
         run: npm run build
