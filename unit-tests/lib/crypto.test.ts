@@ -92,9 +92,17 @@ describe('crypto', () => {
     it('should throw an error for tampered encrypted data', () => {
       const originalText = 'hello world'
       const encrypted = encrypt(originalText)
-      const tampered = encrypted.replace('a', 'b')
-
-      expect(() => decrypt(tampered)).toThrow()
+      // Tamper with the encrypted data part (after the second colon)
+      const parts = encrypted.split(':')
+      if (parts.length === 3 && parts[2].length > 0) {
+        // Change the first character of the encrypted data
+        parts[2] = '0' + parts[2].slice(1)
+        const tampered = parts.join(':')
+        expect(() => decrypt(tampered)).toThrow()
+      } else {
+        // Fallback: just test with obviously invalid data
+        expect(() => decrypt('invalid')).toThrow()
+      }
     })
   })
 
