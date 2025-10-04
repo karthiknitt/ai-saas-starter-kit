@@ -63,6 +63,22 @@ export async function POST(request: Request) {
       );
     }
 
+    // Validate provider
+    if (!['openai', 'openrouter'].includes(provider)) {
+      return NextResponse.json(
+        { error: 'Invalid provider. Must be "openai" or "openrouter"' },
+        { status: 400 },
+      );
+    }
+
+    // Validate API key format (basic length check)
+    if (typeof apiKey !== 'string' || apiKey.length < 20) {
+      return NextResponse.json(
+        { error: 'Invalid API key format' },
+        { status: 400 },
+      );
+    }
+
     const encryptedApiKey = encrypt(apiKey);
 
     await db
