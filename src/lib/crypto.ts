@@ -1,10 +1,10 @@
 import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 
 const algorithm = 'aes-256-gcm';
-const key = Buffer.from(
-  process.env.ENCRYPTION_KEY || 'default-key-32-chars-long-for-aes256!!!',
-  'utf8',
-).subarray(0, 32);
+if (!process.env.ENCRYPTION_KEY) {
+  throw new Error('ENCRYPTION_KEY environment variable must be set');
+}
+const key = Buffer.from(process.env.ENCRYPTION_KEY, 'utf8').subarray(0, 32);
 
 export function encrypt(text: string): string {
   const iv = randomBytes(16);
