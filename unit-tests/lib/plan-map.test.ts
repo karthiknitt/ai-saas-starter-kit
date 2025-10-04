@@ -32,6 +32,8 @@ describe('plan-map', () => {
 
     it('should handle partial matches', () => {
       // Test partial matching logic using actual product IDs
+      expect(process.env.POLAR_PRODUCT_FREE).toBeDefined()
+      expect(process.env.POLAR_PRODUCT_PRO).toBeDefined()
       const freeId = process.env.POLAR_PRODUCT_FREE!
       const proId = process.env.POLAR_PRODUCT_PRO!
       expect(getPlanName(freeId.substring(0, 10))).toBe('Free') // partial match
