@@ -1,11 +1,9 @@
 
 
-# Generate commit message automatically using aicommits
-COMMIT_MSG=$(npx aicommits --dry-run 2>/dev/null)
+# Generate commit message automatically using custom script
+COMMIT_MSG=$(node generate-commit-msg.js || echo "")
 if [ -n "$COMMIT_MSG" ]; then
-  # Check if the generated message is commitlint compliant
-  echo "$COMMIT_MSG" | npx commitlint --edit /dev/stdin >/dev/null 2>&1
-  if [ $? -eq 0 ]; then
-    echo "$COMMIT_MSG" > "$1"
-  fi
+  echo "$COMMIT_MSG" > "$1"
 fi
+
+exit 0
