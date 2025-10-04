@@ -5,6 +5,19 @@ import * as SliderPrimitive from '@radix-ui/react-slider';
 
 import { cn } from '@/lib/utils';
 
+/**
+ * Renders a configurable slider component supporting single or multiple thumbs.
+ *
+ * The component composes Radix Slider primitives (Root, Track, Range, Thumb)
+ * and normalizes provided values to determine how many thumbs to render.
+ *
+ * @param className - Optional additional CSS class names applied to the root element
+ * @param defaultValue - Initial slider value or array of values for uncontrolled usage
+ * @param value - Controlled slider value or array of values
+ * @param min - Minimum slider value (defaults to 0)
+ * @param max - Maximum slider value (defaults to 100)
+ * @returns A slider element containing a track, range fill, and one thumb per provided value
+ */
 function Slider({
   className,
   defaultValue,

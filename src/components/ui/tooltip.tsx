@@ -34,6 +34,14 @@ function TooltipTrigger({
   return <TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props} />;
 }
 
+/**
+ * Renders the styled tooltip content and arrow inside a portal.
+ *
+ * @param className - Optional additional CSS classes applied to the content container
+ * @param sideOffset - Offset in pixels between the trigger and the tooltip; defaults to 0
+ * @param children - Content displayed inside the tooltip
+ * @returns The tooltip content element (including its arrow) mounted in a portal
+ */
 function TooltipContent({
   className,
   sideOffset = 0,
