@@ -1,4 +1,11 @@
-#!/usr/bin/env sh
-. "$(dirname "$0")/_/husky.sh"
 
-exec < /dev/tty && npx cz --hook || true
+
+# Generate commit message automatically using aicommits
+COMMIT_MSG=$(npx aicommits --dry-run 2>/dev/null)
+if [ -n "$COMMIT_MSG" ]; then
+  # Check if the generated message is commitlint compliant
+  echo "$COMMIT_MSG" | npx commitlint --edit /dev/stdin >/dev/null 2>&1
+  if [ $? -eq 0 ]; then
+    echo "$COMMIT_MSG" > "$1"
+  fi
+fi

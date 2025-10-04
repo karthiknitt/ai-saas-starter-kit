@@ -50,8 +50,13 @@ const data = {
   navMain: [
     {
       title: 'Dashboard',
-      url: '#',
+      url: '/dashboard',
       icon: IconDashboard,
+    },
+    {
+      title: 'AI Chat',
+      url: '/aichat',
+      icon: IconFileAi,
     },
     {
       title: 'Lifecycle',

@@ -8,6 +8,27 @@
       "when": 1757676586880,
       "tag": "0000_salty_mentor",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1759568534026,
+      "tag": "0001_foamy_starbolt",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1759568663311,
+      "tag": "0002_fuzzy_sister_grimm",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1759570808799,
+      "tag": "0003_breezy_monster_badoon",
+      "breakpoints": true
     }
   ]
 }
