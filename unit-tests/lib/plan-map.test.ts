@@ -41,6 +41,7 @@ describe('plan-map', () => {
     })
 
     it('should handle case sensitivity', () => {
+      expect(process.env.POLAR_PRODUCT_FREE).toBeDefined()
       const freeId = process.env.POLAR_PRODUCT_FREE!
       expect(getPlanName(freeId.toUpperCase())).toBe('Unknown Plan') // case sensitive
       expect(getPlanName(freeId)).toBe('Free') // exact match
