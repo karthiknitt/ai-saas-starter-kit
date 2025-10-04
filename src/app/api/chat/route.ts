@@ -37,7 +37,8 @@ export async function POST(request: Request) {
     let apiKey: string;
     try {
       apiKey = decrypt(u.apiKeys);
-    } catch {
+    } catch (error) {
+      console.error('Failed to decrypt API key:', error);
       return NextResponse.json(
         { error: 'Failed to decrypt API key' },
         { status: 500 },
