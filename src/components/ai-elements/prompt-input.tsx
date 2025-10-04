@@ -123,6 +123,16 @@ export type PromptInputAttachmentsProps = Omit<
   children: (attachment: FileUIPart & { id: string }) => React.ReactNode;
 };
 
+/**
+ * Render a height-animated, accessible container that lists current attachments from context.
+ *
+ * The container measures its content with a ResizeObserver and animates its height when attachments change.
+ *
+ * @param className - Optional additional class names applied to the outer container.
+ * @param children - Render function that receives each attachment (a `FileUIPart` augmented with `id`) and returns a React node to display for that attachment.
+ * @param props - Additional HTML attributes forwarded to the outer container element.
+ * @returns The rendered attachments container element with each attachment rendered via `children`.
+ */
 export function PromptInputAttachments({
   className,
   children,

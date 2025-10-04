@@ -5,6 +5,11 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 
+/**
+ * Renders a vertical list wrapper for grouping item rows.
+ *
+ * @returns A `div` element with `role="list"`, `data-slot="item-group"`, applied group layout classes, and any forwarded props.
+ */
 function ItemGroup({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -16,6 +21,12 @@ function ItemGroup({ className, ...props }: React.ComponentProps<'div'>) {
   );
 }
 
+/**
+ * Render a horizontal item separator with standardized slot and spacing.
+ *
+ * @param className - Additional CSS class names appended to the default spacing.
+ * @returns The Separator element with `data-slot="item-separator"`, horizontal orientation, and merged classes.
+ */
 function ItemSeparator({
   className,
   ...props
@@ -51,6 +62,17 @@ const itemVariants = cva(
   },
 );
 
+/**
+ * Renders an item container with configurable visual `variant` and `size`.
+ *
+ * The component applies styling and data attributes for composition and forwards any other props to the rendered element.
+ *
+ * @param className - Additional CSS classes to apply to the root element
+ * @param variant - Visual variant to apply (`default`, `outline`, or `muted`)
+ * @param size - Size variant to apply (`default` or `sm`)
+ * @param asChild - When `true`, render the provided child element instead of a `div`
+ * @returns The rendered item element (a `div` or the provided child) with variant/size styling and composition attributes
+ */
 function Item({
   className,
   variant = 'default',
@@ -88,6 +110,12 @@ const itemMediaVariants = cva(
   },
 );
 
+/**
+ * Renders a media container for an item with selectable visual variants.
+ *
+ * @param variant - Visual style of the media. `"default"` applies no special styling, `"icon"` styles the container for icon-sized SVGs, and `"image"` styles the container for image content (sizing and cover behavior).
+ * @returns A div element with `data-slot="item-media"` and `data-variant` set to `variant`, styled according to the selected variant and merged `className`.
+ */
 function ItemMedia({
   className,
   variant = 'default',
@@ -103,6 +131,11 @@ function ItemMedia({
   );
 }
 
+/**
+ * Renders a content container for an item with layout-related classes and a `data-slot="item-content"` marker.
+ *
+ * @returns A `div` element that serves as the item's main content area, applying flex layout, gap spacing, and any supplied `className` or other div props.
+ */
 function ItemContent({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -116,6 +149,11 @@ function ItemContent({ className, ...props }: React.ComponentProps<'div'>) {
   );
 }
 
+/**
+ * Renders the item's title slot with typography and layout classes.
+ *
+ * @returns A `div` element for the item title slot with the applied className and forwarded props.
+ */
 function ItemTitle({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -129,6 +167,14 @@ function ItemTitle({ className, ...props }: React.ComponentProps<'div'>) {
   );
 }
 
+/**
+ * Renders a paragraph used for an item's description with clamped lines and link styling.
+ *
+ * The element includes default typography, a two-line clamp, balanced text flow, and anchor styles; any provided `className` is merged with these defaults and all other props are forwarded to the underlying `p` element.
+ *
+ * @param className - Additional class names to merge with the component's default styles
+ * @returns A `p` element with item description styling and forwarded props
+ */
 function ItemDescription({ className, ...props }: React.ComponentProps<'p'>) {
   return (
     <p
@@ -143,6 +189,13 @@ function ItemDescription({ className, ...props }: React.ComponentProps<'p'>) {
   );
 }
 
+/**
+ * Renders a right-aligned horizontal container for action controls within an item.
+ *
+ * @param className - Additional class names appended to the default "flex items-center gap-2" classes.
+ * @param props - Remaining props are forwarded to the underlying `div` element.
+ * @returns A `div` element that groups item action controls with consistent spacing and alignment.
+ */
 function ItemActions({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -153,6 +206,11 @@ function ItemActions({ className, ...props }: React.ComponentProps<'div'>) {
   );
 }
 
+/**
+ * Renders a header container for an item row with horizontal layout and spacing.
+ *
+ * @returns A `div` element marked with `data-slot="item-header"` that applies header layout classes and forwards any additional props.
+ */
 function ItemHeader({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -166,6 +224,13 @@ function ItemHeader({ className, ...props }: React.ComponentProps<'div'>) {
   );
 }
 
+/**
+ * Renders the footer region for an item row.
+ *
+ * The element is a container styled for horizontal layout, spacing, and alignment and forwards any native div props.
+ *
+ * @returns A `div` element with `data-slot="item-footer"` and classes for flex layout, full basis, centered alignment, space-between justification, and gap.
+ */
 function ItemFooter({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div

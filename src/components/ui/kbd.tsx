@@ -1,5 +1,10 @@
 import { cn } from '@/lib/utils';
 
+/**
+ * Renders a styled keyboard key element for inline display of keyboard input.
+ *
+ * @returns A `<kbd>` element with keyboard styling and any provided props forwarded to the underlying element.
+ */
 function Kbd({ className, ...props }: React.ComponentProps<'kbd'>) {
   return (
     <kbd
@@ -15,6 +20,11 @@ function Kbd({ className, ...props }: React.ComponentProps<'kbd'>) {
   );
 }
 
+/**
+ * Renders a styled container for grouping keyboard key elements.
+ *
+ * @returns A `<kbd>` element styled as an inline-flex container for grouped keys
+ */
 function KbdGroup({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <kbd

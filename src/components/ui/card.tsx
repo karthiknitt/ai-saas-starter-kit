@@ -15,6 +15,11 @@ function Card({ className, ...props }: React.ComponentProps<'div'>) {
   );
 }
 
+/**
+ * Renders the header section of a Card component.
+ *
+ * @returns A `div` element with `data-slot="card-header"` and the component's header classes merged with any provided `className`.
+ */
 function CardHeader({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div

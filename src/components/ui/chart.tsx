@@ -104,6 +104,21 @@ ${colorConfig
 
 const ChartTooltip = RechartsPrimitive.Tooltip;
 
+/**
+ * Render chart tooltip content using the chart configuration and incoming payload.
+ *
+ * Renders an optional label and a list of payload items (excluding items with `type === 'none'`), applying per-item configuration (labels, icons, colors) and optional formatting.
+ *
+ * @param indicator - Visual indicator style for each item: `'line'`, `'dot'`, or `'dashed'`.
+ * @param hideLabel - When true, the tooltip's top label is not displayed.
+ * @param hideIndicator - When true, item indicators (color swatches / lines / dots) are not rendered.
+ * @param labelFormatter - Optional function to format the tooltip label; receives the resolved label value and the full payload.
+ * @param formatter - Optional item formatter function used to render a payload item; receives the item's value, name, item object, index, and payload.
+ * @param nameKey - Optional override key to use when resolving an item's config/name from the payload.
+ * @param labelKey - Optional override key to use when resolving the tooltip label from the payload.
+ * @param color - Fallback color used for item indicators when the payload does not provide one.
+ * @returns The tooltip content element or `null` when inactive or when there is no payload.
+ */
 function ChartTooltipContent({
   active,
   payload,
@@ -252,6 +267,18 @@ function ChartTooltipContent({
 
 const ChartLegend = RechartsPrimitive.Legend;
 
+/**
+ * Render a chart legend with configured labels and optional icons for each payload item.
+ *
+ * Renders a horizontal list of legend entries derived from Recharts `payload`, skipping items with `type === 'none'`. Each entry shows either the configured icon (unless `hideIcon` is true) or a colored swatch and the configured label.
+ *
+ * @param className - Additional class names applied to the legend container
+ * @param hideIcon - When true, icons from the series config are not rendered; a color swatch is shown instead
+ * @param payload - Recharts legend payload array describing legend items
+ * @param verticalAlign - Vertical alignment of the legend within its container, affects spacing
+ * @param nameKey - Optional override key to resolve legend item configuration from payload entries
+ * @returns The legend element or `null` when `payload` is empty
+ */
 function ChartLegendContent({
   className,
   hideIcon = false,

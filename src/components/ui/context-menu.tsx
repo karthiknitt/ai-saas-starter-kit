@@ -53,6 +53,12 @@ function ContextMenuRadioGroup({
   );
 }
 
+/**
+ * Renders a context menu sub-trigger with standardized styling, optional inset, and a trailing chevron.
+ *
+ * @param inset - When true, applies inset spacing (adds left padding).
+ * @returns A ContextMenuPrimitive.SubTrigger element with data-slot="context-menu-sub-trigger", the composed className, rendered children, and a trailing chevron icon.
+ */
 function ContextMenuSubTrigger({
   className,
   inset,

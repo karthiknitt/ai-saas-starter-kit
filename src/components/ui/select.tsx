@@ -24,6 +24,15 @@ function SelectValue({
   return <SelectPrimitive.Value data-slot="select-value" {...props} />;
 }
 
+/**
+ * Renders a styled select trigger with an embedded chevron icon and a selectable size variant.
+ *
+ * @param className - Additional CSS classes to apply to the trigger container.
+ * @param size - Visual size variant that adjusts height and spacing; `'default'` (default) or `'sm'`.
+ * @param children - Content to display inside the trigger (typically the selected value).
+ * @param props - Additional props forwarded to the underlying Radix Select Trigger.
+ * @returns A configured Select Trigger element with data-slot="select-trigger" and a chevron icon.
+ */
 function SelectTrigger({
   className,
   size = 'default',
@@ -50,6 +59,17 @@ function SelectTrigger({
   );
 }
 
+/**
+ * Renders the select dropdown content inside a portal with configurable position and alignment.
+ *
+ * The component mounts Radix Select content in a Portal, wraps children in a scrollable viewport,
+ * and includes scroll-up/scroll-down controls and styling suitable for a dropdown.
+ *
+ * @param className - Additional CSS class names to apply to the content container.
+ * @param position - Placement strategy for the content; defaults to `'popper'`.
+ * @param align - Alignment of the content relative to the trigger; defaults to `'center'`.
+ * @returns A React element containing the select's content area, including scroll buttons and a viewport for children.
+ */
 function SelectContent({
   className,
   children,
