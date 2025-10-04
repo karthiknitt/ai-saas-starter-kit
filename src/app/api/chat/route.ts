@@ -52,12 +52,16 @@ export async function POST(request: Request) {
 
     // Basic validation of message structure
     const isValid = messages.every(
-      msg => msg && typeof msg === 'object' && 'role' in msg && 'content' in msg
+      msg =>
+        msg && typeof msg === 'object' && 'role' in msg && 'content' in msg,
     );
     if (!isValid) {
       return NextResponse.json(
-        { error: 'Invalid message format. Each message must have role and content.' },
-        { status: 400 }
+        {
+          error:
+            'Invalid message format. Each message must have role and content.',
+        },
+        { status: 400 },
       );
     }
 

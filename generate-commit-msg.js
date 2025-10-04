@@ -5,15 +5,6 @@ import { openai } from '@ai-sdk/openai';
 import { generateText } from 'ai';
 import 'dotenv/config';
 
-async function generateCommitMessage() {
-  try {
-/* eslint-disable no-undef */
-
-import { execSync } from 'child_process';
-import { openai } from '@ai-sdk/openai';
-import { generateText } from 'ai';
-import 'dotenv/config';
-
 if (!process.env.OPENAI_API_KEY) {
   console.error('Error: OPENAI_API_KEY environment variable is required');
   process.exit(1);

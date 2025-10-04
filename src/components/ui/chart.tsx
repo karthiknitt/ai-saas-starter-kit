@@ -119,6 +119,22 @@ const ChartTooltip = RechartsPrimitive.Tooltip;
  * @param color - Fallback color used for item indicators when the payload does not provide one.
  * @returns The tooltip content element or `null` when inactive or when there is no payload.
  */
+type TooltipPayloadItem = {
+  dataKey?: string;
+  name?: string;
+  value?: any;
+  payload?: any;
+  type?: string;
+  color?: string;
+};
+
+type LegendPayloadItem = {
+  value?: string;
+  type?: string;
+  color?: string;
+  dataKey?: string;
+};
+
 function ChartTooltipContent({
   active,
   payload,
@@ -133,13 +149,28 @@ function ChartTooltipContent({
   color,
   nameKey,
   labelKey,
-}: React.ComponentProps<typeof RechartsPrimitive.Tooltip> &
-  React.ComponentProps<'div'> & {
+}: {
+  active?: boolean;
+  payload?: TooltipPayloadItem[];
+  label?: any;
+  labelClassName?: string;
+} & React.ComponentProps<'div'> & {
     hideLabel?: boolean;
     hideIndicator?: boolean;
     indicator?: 'line' | 'dot' | 'dashed';
     nameKey?: string;
     labelKey?: string;
+    labelFormatter?: (
+      value: any,
+      payload: TooltipPayloadItem[],
+    ) => React.ReactNode;
+    formatter?: (
+      value: any,
+      name: any,
+      item: TooltipPayloadItem,
+      index: number,
+      payload: TooltipPayloadItem[],
+    ) => React.ReactNode;
   }) {
   const { config } = useChart();
 
@@ -285,11 +316,12 @@ function ChartLegendContent({
   payload,
   verticalAlign = 'bottom',
   nameKey,
-}: React.ComponentProps<'div'> &
-  Pick<RechartsPrimitive.LegendProps, 'payload' | 'verticalAlign'> & {
-    hideIcon?: boolean;
-    nameKey?: string;
-  }) {
+}: React.ComponentProps<'div'> & {
+  payload?: LegendPayloadItem[];
+  verticalAlign?: 'top' | 'bottom' | 'middle';
+  hideIcon?: boolean;
+  nameKey?: string;
+}) {
   const { config } = useChart();
 
   if (!payload?.length) {

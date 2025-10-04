@@ -15,6 +15,7 @@ export default [
     ignores: [
       'next-env.d.ts',
       '.next/*',
+      'node_modules',
       'src/components/ui/*',
       'src/components/ai-elements/*',
     ],
