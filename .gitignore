@@ -20,6 +20,11 @@
 # production
 /build
 
+# migrations files - sql
+
+/migrations
+
+
 # misc
 .DS_Store
 *.pem
