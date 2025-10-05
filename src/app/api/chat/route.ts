@@ -3,10 +3,11 @@ import { db } from '@/db/drizzle';
 import { user } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { decrypt } from '@/lib/crypto';
-import { streamText, convertToModelMessages } from 'ai';
+import { streamText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 
 export async function POST(request: Request) {
   try {
@@ -27,7 +28,14 @@ export async function POST(request: Request) {
     }
 
     const u = userData[0];
+    console.log(
+      'Chat API: User data - apiKeys:',
+      !!u.apiKeys,
+      'provider:',
+      u.provider,
+    );
     if (!u.apiKeys || !u.provider) {
+      console.log('Chat API: API key not configured');
       return NextResponse.json(
         { error: 'API key not configured' },
         { status: 400 },
@@ -45,45 +53,54 @@ export async function POST(request: Request) {
       );
     }
 
-    const { messages } = await request.json();
+    const requestBody = await request.json();
+    console.log(
+      'Chat API: Received request with',
+      requestBody.messages?.length || 0,
+      'messages',
+    );
+    const { messages, model: requestedModel } = requestBody;
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
+      console.log('Chat API: Messages validation failed');
       return NextResponse.json({ error: 'Messages required' }, { status: 400 });
     }
 
     // Basic validation of message structure
     const isValid = messages.every(
       msg =>
-        msg && typeof msg === 'object' && 'role' in msg && 'content' in msg,
+        msg &&
+        typeof msg === 'object' &&
+        'role' in msg &&
+        ('content' in msg || 'text' in msg),
     );
     if (!isValid) {
       return NextResponse.json(
         {
           error:
-            'Invalid message format. Each message must have role and content.',
+            'Invalid message format. Each message must have role and content or text.',
         },
         { status: 400 },
       );
     }
 
-    // Get model from cookie
-    const cookies = request.headers.get('cookie') || '';
-    const modelCookie = cookies
-      .split(';')
-      .find(c => c.trim().startsWith('selectedModel='));
-    const selectedModel = modelCookie ? modelCookie.split('=')[1] : null;
+    // Use model from request body, fallback to cookie, then default
+    let modelToUse = requestedModel;
+    if (!modelToUse) {
+      const cookieStore = await cookies();
+      modelToUse = cookieStore.get('selectedModel')?.value || null;
+    }
+    if (!modelToUse) {
+      modelToUse =
+        u.provider === 'openai' ? 'gpt-4o' : 'anthropic/claude-3.5-sonnet';
+    }
 
-    // Use selected model if provided, otherwise use default based on provider
-    const modelToUse =
-      selectedModel ||
-      (u.provider === 'openai' ? 'gpt-4o' : 'anthropic/claude-3.5-sonnet');
-
-    let model;
+    let aiModel;
     if (u.provider === 'openai') {
       const openaiClient = createOpenAI({ apiKey });
-      model = openaiClient(modelToUse);
+      aiModel = openaiClient(modelToUse);
     } else if (u.provider === 'openrouter') {
       const openrouterClient = createOpenRouter({ apiKey });
-      model = openrouterClient(modelToUse);
+      aiModel = openrouterClient(modelToUse);
     } else {
       return NextResponse.json(
         { error: 'Unsupported provider' },
@@ -91,9 +108,13 @@ export async function POST(request: Request) {
       );
     }
 
+    const messagesForModel = messages.map(({ role, content, text }) => ({
+      role,
+      content: content || text,
+    }));
     const result = streamText({
-      model,
-      messages: convertToModelMessages(messages),
+      model: aiModel,
+      messages: messagesForModel,
     });
 
     return result.toUIMessageStreamResponse();

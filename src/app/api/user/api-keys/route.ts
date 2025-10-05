@@ -56,6 +56,21 @@ export async function POST(request: Request) {
     }
 
     const { provider, apiKey } = await request.json();
+
+    // Allow clearing keys by sending empty values
+    if (!provider && !apiKey) {
+      // Clear API keys
+      await db
+        .update(user)
+        .set({
+          provider: null,
+          apiKeys: null,
+        })
+        .where(eq(user.id, session.user.id));
+
+      return NextResponse.json({ success: true });
+    }
+
     if (!provider || !apiKey) {
       return NextResponse.json(
         { error: 'Missing required fields' },
