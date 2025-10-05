@@ -69,8 +69,6 @@ import {
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 const setupFormSchema = z
   .object({
@@ -513,21 +511,14 @@ export default function AichatPage() {
                           />
                         ) : (
                           messages.map(message => {
-                          {messages.map(message => {
--                            const content = message.parts
--                              .map(part =>
--                                part.type === 'text' ? part.text : '',
--                              )
-                            const content =
-                              message.parts?.length
-                                ? message.parts
-                                    .map(part =>
+                            const content = message.parts?.length
+                              ? message.parts
+                                  .map(
+                                    (part: { type: string; text?: string }) =>
                                       part.type === 'text' ? part.text : '',
-                                    )
-                                    .join('')
-                                : typeof message.content === 'string'
-                                  ? message.content
-                                  : '';
+                                  )
+                                  .join('')
+                              : '';
 
                             return (
                               <Message key={message.id} from={message.role}>
@@ -549,9 +540,11 @@ export default function AichatPage() {
                                       <div className="prose prose-sm dark:prose-invert max-w-none">
                                         <ReactMarkdown
                                           remarkPlugins={[remarkGfm]}
-                                          components={{
-                                            /* … */
-                                          }}
+                                          components={
+                                            {
+                                              /* … */
+                                            }
+                                          }
                                         >
                                           {content}
                                         </ReactMarkdown>
@@ -588,7 +581,9 @@ export default function AichatPage() {
                         <PromptInputBody>
                           <PromptInputTextarea
                             value={input}
-                            onChange={e => setInput(e.target.value)}
+                            onChange={(e: { target: { value: string } }) =>
+                              setInput(e.target.value)
+                            }
                             placeholder="Type your message..."
                             disabled={status === 'streaming' || !selectedModel}
                           />
