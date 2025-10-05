@@ -44,14 +44,12 @@ export function NavDocuments({
         {items.map(item => (
           <SidebarMenuItem key={item.name}>
             {item.url !== '#' ? (
-              <Link href={item.url}>
-                <SidebarMenuButton asChild>
-                  <a>
-                    <item.icon />
-                    <span>{item.name}</span>
-                  </a>
-                </SidebarMenuButton>
-              </Link>
+              <SidebarMenuButton asChild>
+                <Link href={item.url}>
+                  <item.icon />
+                  <span>{item.name}</span>
+                </Link>
+              </SidebarMenuButton>
             ) : (
               <SidebarMenuButton asChild>
                 <a href={item.url}>
