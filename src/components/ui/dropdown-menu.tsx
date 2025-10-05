@@ -198,16 +198,6 @@ function DropdownMenuSub({
   return <DropdownMenuPrimitive.Sub data-slot="dropdown-menu-sub" {...props} />;
 }
 
-/**
- * Renders a styled submenu trigger for a dropdown with a trailing right chevron.
- *
- * Accepts standard SubTrigger props and merges provided `className` with the component's default styles.
- *
- * @param className - Additional CSS classes to merge with the component's default styling.
- * @param inset - When `true`, applies left inset padding to align the trigger with nested menu items.
- * @param children - Content displayed inside the trigger.
- * @returns The rendered SubTrigger element with applied styling and a trailing chevron icon.
- */
 function DropdownMenuSubTrigger({
   className,
   inset,

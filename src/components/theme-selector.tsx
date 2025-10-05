@@ -30,6 +30,30 @@ const DEFAULT_THEMES = [
     name: 'Amber',
     value: 'amber',
   },
+  {
+    name: 'Red',
+    value: 'red',
+  },
+  {
+    name: 'Purple',
+    value: 'purple',
+  },
+  {
+    name: 'Pink',
+    value: 'pink',
+  },
+  {
+    name: 'Violet',
+    value: 'violet',
+  },
+  {
+    name: 'Indigo',
+    value: 'indigo',
+  },
+  {
+    name: 'Emerald',
+    value: 'emerald',
+  },
 ];
 
 const SCALED_THEMES = [

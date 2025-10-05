@@ -14,10 +14,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import type { ChatStatus, FileUIPart } from 'ai';
 import {
+  CheckIcon,
+  ChevronDownIcon,
   ImageIcon,
   Loader2Icon,
   PaperclipIcon,
@@ -123,16 +138,6 @@ export type PromptInputAttachmentsProps = Omit<
   children: (attachment: FileUIPart & { id: string }) => React.ReactNode;
 };
 
-/**
- * Render a height-animated, accessible container that lists current attachments from context.
- *
- * The container measures its content with a ResizeObserver and animates its height when attachments change.
- *
- * @param className - Optional additional class names applied to the outer container.
- * @param children - Render function that receives each attachment (a `FileUIPart` augmented with `id`) and returns a React node to display for that attachment.
- * @param props - Additional HTML attributes forwarded to the outer container element.
- * @returns The rendered attachments container element with each attachment rendered via `children`.
- */
 export function PromptInputAttachments({
   className,
   children,
@@ -701,57 +706,132 @@ export const PromptInputSubmit = ({
   );
 };
 
-export type PromptInputModelSelectProps = ComponentProps<typeof Select>;
+export type ModelOption = {
+  id: string;
+  name: string;
+  description?: string;
+};
 
-export const PromptInputModelSelect = (props: PromptInputModelSelectProps) => (
-  <Select {...props} />
-);
+export type PromptInputModelSelectProps = {
+  value?: string;
+  onValueChange?: (value: string) => void;
+  models?: ModelOption[];
+  placeholder?: string;
+};
 
-export type PromptInputModelSelectTriggerProps = ComponentProps<
-  typeof SelectTrigger
->;
+export const PromptInputModelSelect = ({
+  value,
+  onValueChange,
+  models = [],
+  placeholder = 'Select model',
+}: PromptInputModelSelectProps) => {
+  const [open, setOpen] = useState(false);
+
+  const selectedModel = models.find(model => model.id === value);
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="ghost"
+          role="combobox"
+          aria-expanded={open}
+          className="text-muted-foreground hover:bg-accent hover:text-foreground data-[state=open]:bg-accent data-[state=open]:text-foreground justify-between border-none bg-transparent font-medium shadow-none transition-colors"
+        >
+          <span className="truncate">
+            {selectedModel ? selectedModel.name : placeholder}
+          </span>
+          <ChevronDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[300px] p-0" align="start">
+        <Command>
+          <CommandInput placeholder="Search models..." />
+          <CommandList>
+            <CommandEmpty>No models found.</CommandEmpty>
+            <CommandGroup>
+              {models.map(model => (
+                <CommandItem
+                  key={model.id}
+                  value={model.id}
+                  onSelect={selectedValue => {
+                    onValueChange?.(selectedValue);
+                    setOpen(false);
+                  }}
+                >
+                  <CheckIcon
+                    className={cn(
+                      'mr-2 h-4 w-4',
+                      value === model.id ? 'opacity-100' : 'opacity-0',
+                    )}
+                  />
+                  <div className="flex flex-col">
+                    <span>{model.name}</span>
+                    {model.description && (
+                      <span className="text-muted-foreground max-w-[250px] truncate text-xs">
+                        {model.description}
+                      </span>
+                    )}
+                  </div>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+};
+
+export type PromptInputModelSelectTriggerProps = ComponentProps<typeof Button>;
 
 export const PromptInputModelSelectTrigger = ({
   className,
+  children,
   ...props
 }: PromptInputModelSelectTriggerProps) => (
-  <SelectTrigger
+  <Button
+    variant="ghost"
+    role="combobox"
     className={cn(
-      'text-muted-foreground border-none bg-transparent font-medium shadow-none transition-colors',
-      'hover:bg-accent hover:text-foreground [&[aria-expanded="true"]]:bg-accent [&[aria-expanded="true"]]:text-foreground',
+      'text-muted-foreground justify-between border-none bg-transparent font-medium shadow-none transition-colors',
+      'hover:bg-accent hover:text-foreground data-[state=open]:bg-accent data-[state=open]:text-foreground',
       className,
     )}
     {...props}
-  />
+  >
+    {children}
+    <ChevronDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+  </Button>
 );
 
-export type PromptInputModelSelectContentProps = ComponentProps<
-  typeof SelectContent
->;
+export type PromptInputModelSelectContentProps = {
+  children?: React.ReactNode;
+};
 
 export const PromptInputModelSelectContent = ({
-  className,
-  ...props
-}: PromptInputModelSelectContentProps) => (
-  <SelectContent className={cn(className)} {...props} />
-);
+  children,
+}: PromptInputModelSelectContentProps) => <>{children}</>;
 
-export type PromptInputModelSelectItemProps = ComponentProps<typeof SelectItem>;
+export type PromptInputModelSelectItemProps = {
+  value: string;
+  children: React.ReactNode;
+};
 
 export const PromptInputModelSelectItem = ({
-  className,
-  ...props
-}: PromptInputModelSelectItemProps) => (
-  <SelectItem className={cn(className)} {...props} />
-);
+  children,
+}: PromptInputModelSelectItemProps) => <>{children}</>;
 
-export type PromptInputModelSelectValueProps = ComponentProps<
-  typeof SelectValue
->;
+export type PromptInputModelSelectValueProps = {
+  placeholder?: string;
+  children?: React.ReactNode;
+};
 
 export const PromptInputModelSelectValue = ({
-  className,
-  ...props
+  placeholder,
+  children,
 }: PromptInputModelSelectValueProps) => (
-  <SelectValue className={cn(className)} {...props} />
+  <span className="truncate">
+    {children || <span className="text-muted-foreground">{placeholder}</span>}
+  </span>
 );

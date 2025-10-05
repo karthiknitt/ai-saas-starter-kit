@@ -69,7 +69,10 @@ export default function Pricing() {
 
               <CardDescription className="text-sm">Per editor</CardDescription>
 
-              <Button asChild className="mt-4 w-full">
+              <Button
+                asChild
+                className="mt-4 w-full hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:text-white"
+              >
                 <Link href="/dashboard/subscriptions">Upgrade</Link>
               </Button>
             </CardHeader>
