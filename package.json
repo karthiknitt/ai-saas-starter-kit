@@ -144,5 +144,9 @@
     "commitizen": {
       "path": "@commitlint/cz-commitlint"
     }
+  },
+  "optionalDependencies": {
+    "@tailwindcss/oxide-linux-x64-gnu": "^4.0.14",
+    "lightningcss-linux-x64-gnu": "^1.29"
   }
 }
