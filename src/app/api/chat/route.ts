@@ -54,7 +54,11 @@ export async function POST(request: Request) {
     }
 
     const requestBody = await request.json();
-    console.log('Chat API request body:', requestBody);
+    console.log(
+      'Chat API: Received request with',
+      requestBody.messages?.length || 0,
+      'messages',
+    );
     const { messages, model: requestedModel } = requestBody;
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
       console.log('Chat API: Messages validation failed');

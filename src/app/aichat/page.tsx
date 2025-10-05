@@ -141,17 +141,19 @@ export default function AichatPage() {
       api: '/api/chat',
       prepareSendMessagesRequest: ({ messages }) => {
         // Convert messages to the format expected by the API
+        const payload = {
+          messages: messages.map(msg => ({
+            role: msg.role,
+            content:
+              msg.parts?.map(p => (p.type === 'text' ? p.text : '')).join('') ||
+              '',
+          })),
+          model: selectedModel,
+        };
+
         return {
-          body: {
-            messages: messages.map(msg => ({
-              role: msg.role,
-              content:
-                msg.parts
-                  ?.map(p => (p.type === 'text' ? p.text : ''))
-                  .join('') || '',
-            })),
-            model: selectedModel,
-          },
+          body: payload,
+          headers: { 'Content-Type': 'application/json' },
         };
       },
     }),
