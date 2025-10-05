@@ -27,7 +27,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Run type check
         env:
