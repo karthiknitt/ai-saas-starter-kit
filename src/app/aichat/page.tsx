@@ -511,11 +511,21 @@ export default function AichatPage() {
                           />
                         ) : (
                           messages.map(message => {
-                            const content = message.parts
-                              .map(part =>
-                                part.type === 'text' ? part.text : '',
-                              )
-                              .join('');
+                          {messages.map(message => {
+-                            const content = message.parts
+-                              .map(part =>
+-                                part.type === 'text' ? part.text : '',
+-                              )
+                            const content =
+                              message.parts?.length
+                                ? message.parts
+                                    .map(part =>
+                                      part.type === 'text' ? part.text : '',
+                                    )
+                                    .join('')
+                                : typeof message.content === 'string'
+                                  ? message.content
+                                  : '';
 
                             return (
                               <Message key={message.id} from={message.role}>
@@ -538,38 +548,7 @@ export default function AichatPage() {
                                         <ReactMarkdown
                                           remarkPlugins={[remarkGfm]}
                                           components={{
-                                            code({
-                                              className,
-                                              children,
-                                              ...props
-                                            }: React.ComponentProps<'code'>) {
-                                              const match =
-                                                /language-(\w+)/.exec(
-                                                  className || '',
-                                                );
-                                              const isCodeBlock =
-                                                match &&
-                                                String(children).includes('\n');
-                                              return isCodeBlock ? (
-                                                <SyntaxHighlighter
-                                                  style={vscDarkPlus}
-                                                  language={match[1]}
-                                                  PreTag="div"
-                                                >
-                                                  {String(children).replace(
-                                                    /\n$/,
-                                                    '',
-                                                  )}
-                                                </SyntaxHighlighter>
-                                              ) : (
-                                                <code
-                                                  className={className}
-                                                  {...props}
-                                                >
-                                                  {children}
-                                                </code>
-                                              );
-                                            },
+                                            /* … */
                                           }}
                                         >
                                           {content}
