@@ -1,3 +1,5 @@
+'use client';
+
 import {
   Cpu,
   Fingerprint,
@@ -6,6 +8,7 @@ import {
   Sparkles,
   Zap,
 } from 'lucide-react';
+import { motion } from 'motion/react';
 
 export default function Features() {
   return (
@@ -23,64 +26,108 @@ export default function Features() {
         </div>
 
         <div className="relative mx-auto grid max-w-4xl divide-x divide-y border *:p-12 sm:grid-cols-2 lg:grid-cols-3">
-          <div className="space-y-3">
+          <motion.div
+            className="space-y-3"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            whileHover={{ scale: 1.02 }}
+          >
             <div className="flex items-center gap-2">
-              <Zap className="size-4" />
+              <motion.div whileHover={{ rotate: 10 }}>
+                <Zap className="size-4" />
+              </motion.div>
               <h3 className="text-sm font-medium">Faaast</h3>
             </div>
             <p className="text-sm">
               It supports an entire helping developers and innovate.
             </p>
-          </div>
-          <div className="space-y-2">
+          </motion.div>
+          <motion.div
+            className="space-y-2"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            whileHover={{ scale: 1.02 }}
+          >
             <div className="flex items-center gap-2">
-              <Cpu className="size-4" />
+              <motion.div whileHover={{ rotate: 10 }}>
+                <Cpu className="size-4" />
+              </motion.div>
               <h3 className="text-sm font-medium">Powerful</h3>
             </div>
             <p className="text-sm">
               It supports an entire helping developers and businesses.
             </p>
-          </div>
-          <div className="space-y-2">
+          </motion.div>
+          <motion.div
+            className="space-y-2"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            whileHover={{ scale: 1.02 }}
+          >
             <div className="flex items-center gap-2">
-              <Fingerprint className="size-4" />
-
+              <motion.div whileHover={{ rotate: 10 }}>
+                <Fingerprint className="size-4" />
+              </motion.div>
               <h3 className="text-sm font-medium">Security</h3>
             </div>
             <p className="text-sm">
               It supports an helping developers businesses.
             </p>
-          </div>
-          <div className="space-y-2">
+          </motion.div>
+          <motion.div
+            className="space-y-2"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            whileHover={{ scale: 1.02 }}
+          >
             <div className="flex items-center gap-2">
-              <Pencil className="size-4" />
-
+              <motion.div whileHover={{ rotate: 10 }}>
+                <Pencil className="size-4" />
+              </motion.div>
               <h3 className="text-sm font-medium">Customization</h3>
             </div>
             <p className="text-sm">
               It supports helping developers and businesses innovate.
             </p>
-          </div>
-          <div className="space-y-2">
+          </motion.div>
+          <motion.div
+            className="space-y-2"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            whileHover={{ scale: 1.02 }}
+          >
             <div className="flex items-center gap-2">
-              <Settings2 className="size-4" />
-
+              <motion.div whileHover={{ rotate: 10 }}>
+                <Settings2 className="size-4" />
+              </motion.div>
               <h3 className="text-sm font-medium">Control</h3>
             </div>
             <p className="text-sm">
               It supports helping developers and businesses innovate.
             </p>
-          </div>
-          <div className="space-y-2">
+          </motion.div>
+          <motion.div
+            className="space-y-2"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+            whileHover={{ scale: 1.02 }}
+          >
             <div className="flex items-center gap-2">
-              <Sparkles className="size-4" />
-
+              <motion.div whileHover={{ rotate: 10 }}>
+                <Sparkles className="size-4" />
+              </motion.div>
               <h3 className="text-sm font-medium">Built for AI</h3>
             </div>
             <p className="text-sm">
               It supports helping developers and businesses innovate.
             </p>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

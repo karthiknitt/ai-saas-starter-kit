@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -6,6 +8,7 @@ import { HeroHeader } from './header';
 import { InfiniteSlider } from '@/components/ui/infinite-slider';
 import { ProgressiveBlur } from '@/components/ui/progressive-blur';
 import { ChevronRight } from 'lucide-react';
+import { motion } from 'motion/react';
 
 export default function HeroSection() {
   return (
@@ -25,27 +28,52 @@ export default function HeroSection() {
                 </p>
 
                 <div className="mt-12 flex flex-col items-center justify-center gap-2 sm:flex-row lg:justify-start">
-                  <Button
-                    asChild
-                    size="lg"
-                    className="h-12 rounded-full pr-3 pl-5 text-base"
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                   >
-                    <Link href="#link">
-                      <span className="text-nowrap">Start Building</span>
-                      <ChevronRight className="ml-1" />
-                    </Link>
-                  </Button>
-                  <Button
-                    key={2}
-                    asChild
-                    size="lg"
-                    variant="ghost"
-                    className="h-12 rounded-full px-5 text-base hover:bg-zinc-950/5 dark:hover:bg-white/5"
+                    <Button
+                      asChild
+                      size="lg"
+                      className="h-12 rounded-full pr-3 pl-5 text-base"
+                    >
+                      <Link href="#link">
+                        <span className="text-nowrap">Start Building</span>
+                        <motion.div
+                          whileHover={{ x: 2 }}
+                          transition={{
+                            type: 'spring',
+                            stiffness: 400,
+                            damping: 10,
+                          }}
+                        >
+                          <ChevronRight className="ml-1" />
+                        </motion.div>
+                      </Link>
+                    </Button>
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.1 }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                   >
-                    <Link href="#link">
-                      <span className="text-nowrap">Request a demo</span>
-                    </Link>
-                  </Button>
+                    <Button
+                      key={2}
+                      asChild
+                      size="lg"
+                      variant="ghost"
+                      className="h-12 rounded-full px-5 text-base hover:bg-zinc-950/5 dark:hover:bg-white/5"
+                    >
+                      <Link href="#link">
+                        <span className="text-nowrap">Request a demo</span>
+                      </Link>
+                    </Button>
+                  </motion.div>
                 </div>
               </div>
             </div>

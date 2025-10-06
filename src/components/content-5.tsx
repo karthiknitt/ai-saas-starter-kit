@@ -1,5 +1,8 @@
+'use client';
+
 import { Cpu, Lock, Sparkles, Zap } from 'lucide-react';
 import Image from 'next/image';
+import { motion } from 'motion/react';
 
 export default function ContentSection() {
   return (
@@ -26,43 +29,74 @@ export default function ContentSection() {
         />
 
         <div className="relative mx-auto grid grid-cols-2 gap-x-3 gap-y-6 sm:gap-8 lg:grid-cols-4">
-          <div className="space-y-3">
+          <motion.div
+            className="space-y-3"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            whileHover={{ scale: 1.05 }}
+          >
             <div className="flex items-center gap-2">
-              <Zap className="size-4" />
+              <motion.div whileHover={{ rotate: 10 }}>
+                <Zap className="size-4" />
+              </motion.div>
               <h3 className="text-sm font-medium">Faaast</h3>
             </div>
             <p className="text-muted-foreground text-sm">
               It supports an entire helping developers and innovate.
             </p>
-          </div>
-          <div className="space-y-2">
+          </motion.div>
+          <motion.div
+            className="space-y-2"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            whileHover={{ scale: 1.05 }}
+          >
             <div className="flex items-center gap-2">
-              <Cpu className="size-4" />
+              <motion.div whileHover={{ rotate: 10 }}>
+                <Cpu className="size-4" />
+              </motion.div>
               <h3 className="text-sm font-medium">Powerful</h3>
             </div>
             <p className="text-muted-foreground text-sm">
               It supports an entire helping developers and businesses.
             </p>
-          </div>
-          <div className="space-y-2">
+          </motion.div>
+          <motion.div
+            className="space-y-2"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            whileHover={{ scale: 1.05 }}
+          >
             <div className="flex items-center gap-2">
-              <Lock className="size-4" />
+              <motion.div whileHover={{ rotate: 10 }}>
+                <Lock className="size-4" />
+              </motion.div>
               <h3 className="text-sm font-medium">Security</h3>
             </div>
             <p className="text-muted-foreground text-sm">
               It supports an helping developers businesses innovate.
             </p>
-          </div>
-          <div className="space-y-2">
+          </motion.div>
+          <motion.div
+            className="space-y-2"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            whileHover={{ scale: 1.05 }}
+          >
             <div className="flex items-center gap-2">
-              <Sparkles className="size-4" />
-
+              <motion.div whileHover={{ rotate: 10 }}>
+                <Sparkles className="size-4" />
+              </motion.div>
               <h3 className="text-sm font-medium">AI Powered</h3>
             </div>
             <p className="text-muted-foreground text-sm">
               It supports an helping developers businesses innovate.
             </p>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>
