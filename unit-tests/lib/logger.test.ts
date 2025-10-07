@@ -310,6 +310,7 @@ describe('logger', () => {
           { id: '1', password: 'secret1' },
           { id: '2', token: 'secret2' },
         ],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any)
 
       expect(consoleInfoSpy).toHaveBeenCalled()
@@ -322,6 +323,7 @@ describe('logger', () => {
     it('should limit array size', () => {
       const largeArray = Array(20).fill({ value: 'item' })
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       logger.info('Large array', { items: largeArray } as any)
 
       expect(consoleInfoSpy).toHaveBeenCalled()
@@ -498,6 +500,7 @@ describe('logger', () => {
       circular.self = circular
 
       expect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         logger.info('Circular reference', circular as any)
       }).not.toThrow()
     })
@@ -537,6 +540,7 @@ describe('logger', () => {
       const date = new Date('2024-01-01T00:00:00.000Z')
 
       expect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         logger.info('Date context', { timestamp: date } as any)
       }).not.toThrow()
     })
@@ -566,6 +570,7 @@ describe('logger', () => {
       }
 
       const startTime = Date.now()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       logger.info('Large context', largeContext as any)
       const duration = Date.now() - startTime
 
