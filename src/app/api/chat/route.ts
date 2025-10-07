@@ -10,6 +10,7 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { z } from 'zod';
 import { logApiRequest, logError } from '@/lib/logger';
+import { aj } from '@/lib/arcjet';
 
 // Zod schema for validating chat requests
 const chatRequestSchema = z.object({
@@ -27,21 +28,24 @@ const chatRequestSchema = z.object({
 });
 
 export async function POST(request: Request) {
-  // Get client IP for logging
+  // Get client IP for logging and Arcjet
   const clientIP =
     request.headers.get('x-forwarded-for')?.split(',')[0] ||
     request.headers.get('x-real-ip') ||
     'unknown';
 
   try {
+    // Apply Arcjet protection to chat API requests
+    const decision = await aj.protect(request);
+    if (decision.isDenied()) {
+      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+    }
+
     // Log API access
     logApiRequest('POST', '/api/chat', {
       ip: clientIP,
       userAgent: request.headers.get('user-agent') || 'unknown',
     });
-
-    // For now, skip rate limiting in API routes and handle in middleware
-    // TODO: Implement proper API route rate limiting
 
     const session = await auth.api.getSession({
       headers: request.headers,

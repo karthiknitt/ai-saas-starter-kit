@@ -5,6 +5,7 @@ import { eq } from 'drizzle-orm';
 import { encrypt, decrypt } from '@/lib/crypto';
 import { NextResponse } from 'next/server';
 import { logApiRequest, logError } from '@/lib/logger';
+import { aj } from '@/lib/arcjet';
 
 export async function GET(request: Request) {
   const clientIP =
@@ -13,6 +14,12 @@ export async function GET(request: Request) {
     'unknown';
 
   try {
+    // Apply Arcjet protection to API key requests
+    const decision = await aj.protect(request);
+    if (decision.isDenied()) {
+      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+    }
+
     // Log API access
     logApiRequest('GET', '/api/user/api-keys', {
       ip: clientIP,
@@ -79,6 +86,12 @@ export async function POST(request: Request) {
     'unknown';
 
   try {
+    // Apply Arcjet protection to API key requests
+    const decision = await aj.protect(request);
+    if (decision.isDenied()) {
+      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+    }
+
     // Log API access
     logApiRequest('POST', '/api/user/api-keys', {
       ip: clientIP,

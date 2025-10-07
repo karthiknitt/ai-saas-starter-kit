@@ -1,30 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionCookie } from 'better-auth/cookies';
-import { aj } from '@/lib/arcjet';
 
 export async function middleware(request: NextRequest) {
-  // Apply Arcjet protection to all requests
-  const decision = await aj.protect(request);
+  const { pathname } = request.nextUrl;
 
-  if (decision.isDenied()) {
-    return NextResponse.json(
-      { error: 'Access denied' },
-      { status: 403 }
-    );
+  // Only apply protection to sensitive routes to reduce bundle size
+  const isProtectedRoute = pathname.startsWith('/dashboard');
+  const isApiRoute = pathname.startsWith('/api/');
+
+  // For API routes, use minimal protection
+  if (isApiRoute && !isProtectedRoute) {
+    // Add basic security headers without heavy Arcjet protection
+    const response = NextResponse.next();
+    response.headers.set('X-Content-Type-Options', 'nosniff');
+    response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+    return response;
   }
 
-  // Handle authentication for protected routes
-  const sessionCookie = getSessionCookie(request);
-  const isProtectedRoute = request.nextUrl.pathname.startsWith('/dashboard');
+  // For protected routes, we need authentication but can optimize
+  if (isProtectedRoute) {
+    const sessionCookie = getSessionCookie(request);
 
-  if (isProtectedRoute && !sessionCookie) {
-    return NextResponse.redirect(new URL('/', request.url));
+    if (!sessionCookie) {
+      return NextResponse.redirect(new URL('/', request.url));
+    }
   }
 
-  // Add security headers
+  // Add security headers for all responses
   const response = NextResponse.next();
-
-  // Security headers
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
