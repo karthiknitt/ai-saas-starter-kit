@@ -199,12 +199,12 @@ describe('use-performance', () => {
     })
 
     it('should wait for load event if document not ready', async () => {
-      let loadHandler: (() => void) | null = null
+      let loadHandler: EventListenerOrEventListenerObject | null = null
 
       vi.spyOn(window, 'addEventListener')
         .mockImplementation((event: string, handler: EventListenerOrEventListenerObject) => {
           if (event === 'load') {
-            loadHandler = handler as () => void
+            loadHandler = handler
           }
         })
 
@@ -234,8 +234,8 @@ describe('use-performance', () => {
       expect(result.current.isLoading).toBe(true)
 
       // Trigger the load event
-      if (loadHandler) {
-        loadHandler()
+      if (loadHandler && typeof loadHandler === 'function') {
+        (loadHandler as () => void)()
       }
 
       await waitFor(() => {

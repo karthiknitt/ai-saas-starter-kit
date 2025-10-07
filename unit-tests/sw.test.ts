@@ -47,7 +47,7 @@ describe('service worker (sw.js)', () => {
 
   describe('install event', () => {
     it('should use event.waitUntil in install handler', () => {
-      expect(swCode).toMatch(/install.*event\.waitUntil/s)
+      expect(swCode).toMatch(/install.*event\.waitUntil/)
     })
 
     it('should open cache in install handler', () => {
@@ -65,7 +65,7 @@ describe('service worker (sw.js)', () => {
 
   describe('activate event', () => {
     it('should use event.waitUntil in activate handler', () => {
-      expect(swCode).toMatch(/activate.*event\.waitUntil/s)
+      expect(swCode).toMatch(/activate.*event\.waitUntil/)
     })
 
     it('should get all cache keys', () => {
@@ -87,7 +87,7 @@ describe('service worker (sw.js)', () => {
     })
 
     it('should use event.respondWith for fetch handling', () => {
-      expect(swCode).toMatch(/fetch.*event\.respondWith/s)
+      expect(swCode).toMatch(/fetch.*event\.respondWith/)
     })
   })
 
@@ -175,7 +175,7 @@ describe('service worker (sw.js)', () => {
     })
 
     it('should clean up resources in activate', () => {
-      expect(swCode).toMatch(/activate.*delete/s)
+      expect(swCode).toMatch(/activate.*delete/)
     })
   })
 

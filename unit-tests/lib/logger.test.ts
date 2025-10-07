@@ -17,13 +17,21 @@ describe('logger', () => {
   let consoleErrorSpy: ReturnType<typeof vi.spyOn>
   let originalNodeEnv: string | undefined
 
+  const setNodeEnv = (value: string) => {
+    Object.defineProperty(process.env, 'NODE_ENV', {
+      value,
+      writable: true,
+      configurable: true,
+    })
+  }
+
   beforeEach(() => {
     // Spy on console methods
     consoleDebugSpy = vi.spyOn(console, 'debug').mockImplementation(() => {})
     consoleInfoSpy = vi.spyOn(console, 'info').mockImplementation(() => {})
     consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
     consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-    
+
     // Save original NODE_ENV
     originalNodeEnv = process.env.NODE_ENV
   })
@@ -31,14 +39,18 @@ describe('logger', () => {
   afterEach(() => {
     // Restore original NODE_ENV
     if (originalNodeEnv !== undefined) {
-      process.env.NODE_ENV = originalNodeEnv
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: originalNodeEnv,
+        writable: true,
+        configurable: true,
+      })
     }
     vi.restoreAllMocks()
   })
 
   describe('debug', () => {
     it('should log debug messages in development', () => {
-      process.env.NODE_ENV = 'development'
+      setNodeEnv('development')
       logger.debug('Test debug message')
 
       expect(consoleDebugSpy).toHaveBeenCalled()
@@ -48,14 +60,14 @@ describe('logger', () => {
     })
 
     it('should not log debug messages in production', () => {
-      process.env.NODE_ENV = 'production'
+      setNodeEnv('production')
       logger.debug('Test debug message')
 
       expect(consoleDebugSpy).not.toHaveBeenCalled()
     })
 
     it('should include context in debug logs', () => {
-      process.env.NODE_ENV = 'development'
+      setNodeEnv('development')
       logger.debug('Test debug', { userId: 'user123', requestId: 'req456' })
 
       expect(consoleDebugSpy).toHaveBeenCalled()
@@ -140,26 +152,26 @@ describe('logger', () => {
     })
 
     it('should include stack trace in development', () => {
-      process.env.NODE_ENV = 'development'
+      setNodeEnv('development')
       const error = new Error('Test error')
       error.stack = 'Test stack trace'
-      
+
       logger.error('Error with stack', {}, error)
 
       expect(consoleErrorSpy).toHaveBeenCalled()
-      const errorArg = consoleErrorSpy.mock.calls[0][1]
+      const errorArg = consoleErrorSpy.mock.calls[0][1] as { error: { stack: string } }
       expect(errorArg.error).toHaveProperty('stack')
     })
 
     it('should not include stack trace in production', () => {
-      process.env.NODE_ENV = 'production'
+      setNodeEnv('production')
       const error = new Error('Test error')
       error.stack = 'Test stack trace'
-      
+
       logger.error('Error without stack', {}, error)
 
       expect(consoleErrorSpy).toHaveBeenCalled()
-      const errorArg = consoleErrorSpy.mock.calls[0][1]
+      const errorArg = consoleErrorSpy.mock.calls[0][1] as { error: { stack: string } }
       expect(errorArg.error).not.toHaveProperty('stack')
     })
   })
@@ -298,7 +310,7 @@ describe('logger', () => {
           { id: '1', password: 'secret1' },
           { id: '2', token: 'secret2' },
         ],
-      })
+      } as any)
 
       expect(consoleInfoSpy).toHaveBeenCalled()
       const logOutput = consoleInfoSpy.mock.calls[0][0]
@@ -310,10 +322,10 @@ describe('logger', () => {
     it('should limit array size', () => {
       const largeArray = Array(20).fill({ value: 'item' })
 
-      logger.info('Large array', { items: largeArray })
+      logger.info('Large array', { items: largeArray } as any)
 
       expect(consoleInfoSpy).toHaveBeenCalled()
-      const logOutput = consoleInfoSpy.mock.calls[0][0]
+      const logOutput = consoleInfoSpy.mock.calls[0][0] as string
       // Arrays should be limited to 10 items
       const matches = (logOutput.match(/"value":"item"/g) || []).length
       expect(matches).toBeLessThanOrEqual(10)
@@ -453,7 +465,7 @@ describe('logger', () => {
     })
 
     it('logDebug convenience function should work in development', () => {
-      process.env.NODE_ENV = 'development'
+      setNodeEnv('development')
       logDebug('Debug info', { variable: 'value' })
 
       expect(consoleDebugSpy).toHaveBeenCalled()
@@ -486,7 +498,7 @@ describe('logger', () => {
       circular.self = circular
 
       expect(() => {
-        logger.info('Circular reference', circular as Record<string, unknown>)
+        logger.info('Circular reference', circular as any)
       }).not.toThrow()
     })
 
@@ -523,9 +535,9 @@ describe('logger', () => {
 
     it('should handle Date objects', () => {
       const date = new Date('2024-01-01T00:00:00.000Z')
-      
+
       expect(() => {
-        logger.info('Date context', { timestamp: date } as Record<string, unknown>)
+        logger.info('Date context', { timestamp: date } as any)
       }).not.toThrow()
     })
   })
@@ -554,7 +566,7 @@ describe('logger', () => {
       }
 
       const startTime = Date.now()
-      logger.info('Large context', largeContext)
+      logger.info('Large context', largeContext as any)
       const duration = Date.now() - startTime
 
       expect(consoleInfoSpy).toHaveBeenCalled()
