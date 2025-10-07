@@ -6,6 +6,11 @@ import { encrypt, decrypt } from '@/lib/crypto';
 import { NextResponse } from 'next/server';
 import { logApiRequest, logError } from '@/lib/logger';
 
+/**
+ * Retrieve the authenticated user's API provider and stored API key (decrypted when available).
+ *
+ * @returns On success, a JSON response containing `provider` (string or `null`) and `apiKey` (string or `null` — `null` if no key is stored or decryption failed). Returns 401 when the request is unauthenticated, 404 if the user record is not found, and 500 with an `INTERNAL_ERROR` code for unexpected errors.
+ */
 export async function GET(request: Request) {
   const clientIP =
     request.headers.get('x-forwarded-for')?.split(',')[0] ||
@@ -72,6 +77,15 @@ export async function GET(request: Request) {
   }
 }
 
+/**
+ * Handles updating, storing, or clearing a user's API provider and encrypted API key.
+ *
+ * Validates the authenticated user session, allows clearing keys by sending empty values,
+ * verifies the provider is one of "openai" or "openrouter", validates API key format,
+ * encrypts and persists the key when provided, and logs request and error context.
+ *
+ * @returns A `NextResponse` containing `{ success: true }` on successful update/clear; on error returns a JSON error object with an appropriate HTTP status code (`401` for unauthorized, `400` for validation errors, `500` for internal server errors).
+ */
 export async function POST(request: Request) {
   const clientIP =
     request.headers.get('x-forwarded-for')?.split(',')[0] ||

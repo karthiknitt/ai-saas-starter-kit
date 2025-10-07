@@ -12,6 +12,13 @@ import {
 import { Check } from 'lucide-react';
 import { motion } from 'motion/react';
 
+/**
+ * Renders the pricing section with three responsive, animated plan cards (Free, Pro, Startup).
+ *
+ * Each card displays a title, price, brief description, feature list with check icons, and an action button linking to the subscriptions page. Cards animate into view and scale slightly on hover.
+ *
+ * @returns The JSX element for the pricing section containing the three plan cards and their interactive controls.
+ */
 export default function Pricing() {
   return (
     <section className="py-16 md:py-32">

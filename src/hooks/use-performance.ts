@@ -11,6 +11,21 @@ interface PerformanceMetrics {
   loadTime?: number;
 }
 
+/**
+ * Collects browser web performance metrics after page load and exposes those metrics plus helpers to obtain qualitative ratings.
+ *
+ * @returns An object with:
+ *  - `metrics` — the gathered PerformanceMetrics (optional `lcp`, `fcp`, `ttfb`, `loadTime`).
+ *  - `isLoading` — `true` while metrics are being collected, `false` once collection completes.
+ *  - `getRating` — a function `(metric: keyof PerformanceMetrics, value?: number) => 'good' | 'needs-improvement' | 'poor' | 'unknown'` that returns a qualitative rating for the given metric/value. Ratings use these thresholds:
+ *      - `lcp`: `good` ≤ 2500 ms, `needs-improvement` ≤ 4000 ms, otherwise `poor`.
+ *      - `fcp`: `good` ≤ 1800 ms, `needs-improvement` ≤ 3000 ms, otherwise `poor`.
+ *      - `ttfb`: `good` ≤ 800 ms, `needs-improvement` ≤ 1800 ms, otherwise `poor`.
+ *    If no value is provided or the value is falsy, returns `unknown`.
+ *  - `getLCPRating` — helper that returns the LCP rating using the collected `metrics.lcp`.
+ *  - `getFCPRating` — helper that returns the FCP rating using the collected `metrics.fcp`.
+ *  - `getTTFBRating` — helper that returns the TTFB rating using the collected `metrics.ttfb`.
+ */
 export function usePerformance() {
   const [metrics, setMetrics] = useState<PerformanceMetrics>({});
   const [isLoading, setIsLoading] = useState(true);

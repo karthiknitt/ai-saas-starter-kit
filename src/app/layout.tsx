@@ -19,6 +19,15 @@ export const metadata: Metadata = {
   },
 };
 
+/**
+ * Render the application's root HTML layout, applying theme state, performance monitoring, and analytics.
+ *
+ * Reads the `active_theme` cookie to apply theme-related classes to the document body, preconnects and preloads
+ * critical assets in the head, injects a service worker registration script, and wraps content with theme and
+ * performance providers plus toaster, analytics, and speed insights components.
+ *
+ * @returns The root HTML element tree for the application
+ */
 export default async function RootLayout({
   children,
 }: React.PropsWithChildren) {

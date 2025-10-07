@@ -2,6 +2,14 @@
 
 import { motion } from 'motion/react';
 
+/**
+ * Renders a responsive statistics section with three animated statistic cards.
+ *
+ * The section includes a heading, descriptive paragraph, and three highlighted
+ * statistic tiles displayed in a responsive grid.
+ *
+ * @returns The JSX element for the statistics section.
+ */
 export default function StatsSection() {
   return (
     <section className="py-12 md:py-20">

@@ -34,6 +34,13 @@ function TabsList({
   );
 }
 
+/**
+ * Render a styled Tabs trigger that forwards props to the underlying Radix Trigger and applies standardized attributes and classes.
+ *
+ * @param className - Optional additional class names to merge with the component's default styling.
+ * @param props - Remaining props are forwarded to the underlying Radix Tabs Trigger component.
+ * @returns The rendered Tabs trigger element.
+ */
 function TabsTrigger({
   className,
   ...props

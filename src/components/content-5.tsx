@@ -4,6 +4,13 @@ import { Cpu, Lock, Sparkles, Zap } from 'lucide-react';
 import Image from 'next/image';
 import { motion } from 'motion/react';
 
+/**
+ * Render the Lyra ecosystem section with a heading, team image, and four animated feature cards.
+ *
+ * The feature cards reveal into view with staggered transitions and include hover interactions (scale and icon rotation).
+ *
+ * @returns A React element containing the section with header text, a lazily-loaded team image, and four animated feature cards describing platform capabilities.
+ */
 export default function ContentSection() {
   return (
     <section className="py-16 md:py-32">

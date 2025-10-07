@@ -2,6 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSessionCookie } from 'better-auth/cookies';
 import { aj } from '@/lib/arcjet';
 
+/**
+ * Apply Arcjet protection, enforce authentication for protected routes, and attach security headers to the response.
+ *
+ * @param request - The incoming Next.js request to evaluate
+ * @returns A `NextResponse` that is either:
+ *  - a 403 JSON response `{ error: 'Access denied' }` when Arcjet denies the request,
+ *  - a redirect to `/` for unauthenticated access to protected routes (paths starting with `/dashboard`),
+ *  - or a normal response augmented with security headers (`X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`) otherwise.
+ */
 export async function middleware(request: NextRequest) {
   // Apply Arcjet protection to all requests
   const decision = await aj.protect(request);

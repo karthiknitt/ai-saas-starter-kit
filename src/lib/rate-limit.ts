@@ -9,6 +9,19 @@ interface RateLimitConfig {
   skipSuccessfulRequests?: boolean;
 }
 
+/**
+ * Creates a per-IP rate-limiting middleware configured by `config`.
+ *
+ * The returned middleware enforces a sliding window defined by `config.windowMs`
+ * and a maximum number of requests `config.maxRequests` per window. It identifies
+ * clients by `x-forwarded-for`, `x-real-ip`, or falls back to `"anonymous"`.
+ *
+ * @param config - Rate limit settings (windowMs and maxRequests)
+ * @returns A middleware function that:
+ *  - when the client has exceeded the limit, returns a 429 response with a JSON body `{ error: 'Too many requests', retryAfter }`
+ *    and the headers `X-RateLimit-Limit`, `X-RateLimit-Remaining: 0`, `X-RateLimit-Reset`, and `Retry-After`;
+ *  - otherwise increments the client's counter and returns `NextResponse.next()` with `X-RateLimit-Limit`, `X-RateLimit-Remaining`, and `X-RateLimit-Reset` headers.
+ */
 export function createRateLimit(config: RateLimitConfig) {
   return function rateLimitMiddleware(request: NextRequest) {
     const ip =

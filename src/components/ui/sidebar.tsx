@@ -462,6 +462,13 @@ function SidebarMenu({ className, ...props }: React.ComponentProps<'ul'>) {
   );
 }
 
+/**
+ * Renders an `li` element configured as a sidebar menu item slot.
+ *
+ * @param className - Additional class names applied to the item
+ * @param props - Other props forwarded to the underlying `li` element
+ * @returns The `li` element used as a sidebar menu item
+ */
 function SidebarMenuItem({ className, ...props }: React.ComponentProps<'li'>) {
   return (
     <li
@@ -557,6 +564,19 @@ function SidebarMenuButton({
   );
 }
 
+/**
+ * Renders an inline action control for a sidebar menu item, positioned at the top-right of the item.
+ *
+ * The component renders either a native `button` or a custom child component when `asChild` is true,
+ * and applies layout and interaction styling appropriate for sidebar menu actions. When `showOnHover`
+ * is enabled, the action is visually hidden by default and becomes visible when its menu item is hovered,
+ * focused, or active.
+ *
+ * @param asChild - Render a custom child element instead of a native `button`.
+ * @param showOnHover - If true, hide the action by default and reveal it on hover/focus/active states.
+ * @param className - Additional class names to merge with the component's default classes.
+ * @returns A JSX element representing the sidebar menu action control.
+ */
 function SidebarMenuAction({
   className,
   asChild = false,

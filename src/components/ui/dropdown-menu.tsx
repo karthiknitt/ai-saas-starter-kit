@@ -59,6 +59,17 @@ function DropdownMenuGroup({
   );
 }
 
+/**
+ * Renders a styled dropdown menu item with optional inset spacing and visual variant.
+ *
+ * Renders a Radix DropdownMenu Item augmented with consistent styling, data-slot "dropdown-menu-item",
+ * and data attributes for `inset` and `variant` to drive styling and tests.
+ *
+ * @param className - Additional class names to merge with the component's default styles
+ * @param inset - When true, applies inset spacing (adds left padding for leading icons)
+ * @param variant - Visual variant; `"default"` for normal items or `"destructive"` for items styled as destructive actions
+ * @returns The rendered dropdown menu item element
+ */
 function DropdownMenuItem({
   className,
   inset,
@@ -82,6 +93,13 @@ function DropdownMenuItem({
   );
 }
 
+/**
+ * Renders a checkbox-style dropdown menu item with a leading check indicator.
+ *
+ * The component applies consistent styling and forwards all received props to the underlying CheckboxItem; when checked, a check icon is shown in the leading slot.
+ *
+ * @returns A dropdown menu checkbox item element with an inline check indicator when checked.
+ */
 function DropdownMenuCheckboxItem({
   className,
   children,
@@ -119,6 +137,13 @@ function DropdownMenuRadioGroup({
   );
 }
 
+/**
+ * Renders a radio-style menu item with a leading circular selection indicator and consistent slot and styling.
+ *
+ * @param className - Additional CSS class names to merge with the component's default classes.
+ * @param children - Content displayed inside the radio item.
+ * @returns A `DropdownMenuPrimitive.RadioItem` element with `data-slot="dropdown-menu-radio-item"` and a built-in circular selection indicator.
+ */
 function DropdownMenuRadioItem({
   className,
   children,

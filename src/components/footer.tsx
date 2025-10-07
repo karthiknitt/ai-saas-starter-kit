@@ -119,6 +119,14 @@ const links = [
   },
 ];
 
+/**
+ * Renders the site footer with brand logo, grouped navigation links, and animated social icons.
+ *
+ * The component displays responsive link columns, a copyright line showing the current year,
+ * and a row of social icon links that animate on hover and tap.
+ *
+ * @returns The footer element containing branding, grouped links, current-year copyright text, and animated social icon links.
+ */
 export default function FooterSection() {
   return (
     <footer className="border-b bg-white pt-20 dark:bg-transparent">

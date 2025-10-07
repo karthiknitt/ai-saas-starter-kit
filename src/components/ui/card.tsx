@@ -2,6 +2,14 @@ import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 
+/**
+ * Renders a container div styled as a card.
+ *
+ * The element includes a data-slot="card" attribute, applies the component's card styles,
+ * merges any provided `className`, and forwards all other props to the div.
+ *
+ * @returns A div element styled and structured as a card
+ */
 function Card({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div

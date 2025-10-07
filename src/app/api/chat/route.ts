@@ -26,6 +26,23 @@ const chatRequestSchema = z.object({
   model: z.string().optional(),
 });
 
+/**
+ * Handle POST requests to /api/chat: authenticate the user, validate the request body,
+ * select an AI model, initialize the configured provider client, and stream AI-generated chat responses.
+ *
+ * Returns a Next.js Response that streams the AI-generated message stream for successful requests.
+ * For error conditions it returns a JSON Response with an appropriate HTTP status and error payload:
+ * - 401 Unauthorized when the session is missing or invalid
+ * - 404 User not found when the authenticated user cannot be located
+ * - 400 API key not configured when the user has no API key or provider
+ * - 500 Failed to decrypt API key when stored keys cannot be decrypted
+ * - 400 Invalid JSON in request body when the request body is not valid JSON
+ * - 400 Invalid request format when request validation fails (includes `details` array)
+ * - 400 Unsupported provider when the user's provider is not supported
+ * - 500 Internal error for unexpected failures (includes `code: "INTERNAL_ERROR"`)
+ *
+ * @returns A Response streaming UI-friendly chat messages on success, or a JSON error Response on failure.
+ */
 export async function POST(request: Request) {
   // Get client IP for logging
   const clientIP =

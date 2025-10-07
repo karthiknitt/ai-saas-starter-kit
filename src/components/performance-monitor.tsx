@@ -3,6 +3,15 @@
 import { usePerformance } from '@/hooks/use-performance';
 import { useEffect } from 'react';
 
+/**
+ * Logs client-side performance metrics to the console once metrics are available.
+ *
+ * When loading completes and an LCP value exists, writes a structured object containing
+ * LCP (with rating), FCP (with rating or "Not available"), TTFB (with rating or "Not available"),
+ * and LoadTime (or "Not available") to the console.
+ *
+ * @returns Null — the component renders nothing.
+ */
 export function PerformanceMonitor() {
   const { metrics, isLoading, getLCPRating, getFCPRating, getTTFBRating } =
     usePerformance();

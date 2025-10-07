@@ -10,6 +10,16 @@ import {
 } from 'lucide-react';
 import { motion } from 'motion/react';
 
+/**
+ * Render a responsive features section with six animated feature cards.
+ *
+ * Each card includes an icon, a title, and a short description. Cards animate
+ * into view with a fade-and-slide effect and apply a subtle scale on hover;
+ * each icon also rotates slightly on hover. Cards are revealed with staggered
+ * delays to create a cascading entrance.
+ *
+ * @returns A React element representing the features section containing six animated feature tiles.
+ */
 export default function Features() {
   return (
     <section className="py-12 md:py-20">

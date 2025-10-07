@@ -26,6 +26,17 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 
+/**
+ * Renders a "Documents" sidebar group with a list of document items and per-item action menus.
+ *
+ * Each item displays its icon and name as a navigation button and includes a dropdown with Open, Share, and Delete actions.
+ *
+ * @param items - Array of document descriptors. Each descriptor must include:
+ *   - `name`: visible label for the item
+ *   - `url`: navigation target (use `'#'` for a non-navigating placeholder)
+ *   - `icon`: React component for the item's icon
+ * @returns The sidebar group JSX containing the documents menu and per-item action dropdowns
+ */
 export function NavDocuments({
   items,
 }: {

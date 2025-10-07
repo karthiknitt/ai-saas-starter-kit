@@ -12,6 +12,12 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
 
+/**
+ * Render the main sidebar navigation containing a quick-create control and a list of navigation items.
+ *
+ * @param items - Array of navigation entries. Each entry must include `title` (display text), `url` (link target; `'#'` renders a non-link button), and an optional `icon` component to render before the title.
+ * @returns A React element representing the main navigation sidebar with quick actions and mapped menu items.
+ */
 export function NavMain({
   items,
 }: {
