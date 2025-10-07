@@ -12,6 +12,12 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
 
+/**
+ * Render the main navigation section of the sidebar with a Quick Create control and a list of navigation items.
+ *
+ * @param items - Array of navigation items. Each item must include `title` (display text) and `url` (link target). If `url` is `'#'` the item is rendered as a non-link button. `icon` is optional and, when provided, is rendered before the title.
+ * @returns A JSX element representing a SidebarGroup containing the Quick Create control and the mapped navigation items.
+ */
 export function NavMain({
   items,
 }: {

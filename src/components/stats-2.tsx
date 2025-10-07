@@ -2,6 +2,13 @@
 
 import { motion } from 'motion/react';
 
+/**
+ * Renders a responsive "Tailark in numbers" stats section with three animated metric cards.
+ *
+ * Each card displays a metric label and value and animates into view with a subtle scale/fade effect and a hover scale interaction.
+ *
+ * @returns A JSX element containing the stats section with three animated stat cards.
+ */
 export default function StatsSection() {
   return (
     <section className="py-12 md:py-20">

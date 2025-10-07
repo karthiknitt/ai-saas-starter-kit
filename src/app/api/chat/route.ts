@@ -26,6 +26,11 @@ const chatRequestSchema = z.object({
   model: z.string().optional(),
 });
 
+/**
+ * Handle POST /api/chat: authenticate the requester, validate and normalize the chat payload, select the user's AI provider and model, and stream the model-generated messages back to the client.
+ *
+ * @returns An HTTP Response containing a streaming AI-generated message stream on success, or a JSON error payload with an appropriate status code on failure.
+ */
 export async function POST(request: Request) {
   // Get client IP for logging
   const clientIP =

@@ -26,6 +26,14 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 
+/**
+ * Renders a "Documents" sidebar group with a menu item for each document and a per-item overflow menu.
+ *
+ * Each item displays its icon and name; items with `url` equal to `'#'` are rendered as a plain anchor, otherwise they are wrapped with Next.js Link. Each item exposes an overflow dropdown with "Open", "Share", and a destructive "Delete" action. On mobile the dropdown is positioned below the trigger; on larger screens it appears to the right.
+ *
+ * @param items - Array of document descriptors. Each descriptor must include `name`, `url`, and `icon`.
+ * @returns The rendered sidebar group element containing the documents list and a final "More" entry.
+ */
 export function NavDocuments({
   items,
 }: {

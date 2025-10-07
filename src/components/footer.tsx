@@ -119,6 +119,11 @@ const links = [
   },
 ];
 
+/**
+ * Renders the site's footer with navigation groups, a current-year copyright notice, and animated social icons.
+ *
+ * @returns The footer JSX element containing grouped navigation links, copyright text, and interactive social icon links.
+ */
 export default function FooterSection() {
   return (
     <footer className="border-b bg-white pt-20 dark:bg-transparent">
