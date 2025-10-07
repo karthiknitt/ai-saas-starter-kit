@@ -43,8 +43,7 @@ export function usePerformance() {
       // Time to First Byte
       if (navigation) {
         newMetrics.ttfb = navigation.responseStart - navigation.requestStart;
-        newMetrics.loadTime =
-          navigation.loadEventEnd - navigation.loadEventStart;
+        newMetrics.loadTime = navigation.loadEventEnd - navigation.startTime;
       }
 
       setMetrics(newMetrics);
