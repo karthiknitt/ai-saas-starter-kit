@@ -12,6 +12,11 @@ import {
 import { Check } from 'lucide-react';
 import { motion } from 'motion/react';
 
+/**
+ * Renders a responsive pricing section with three animated pricing tiers: Free, Pro (Popular), and Startup.
+ *
+ * @returns A JSX element containing the pricing section markup with tiered cards, feature lists, action links, and entry/hover animations.
+ */
 export default function Pricing() {
   return (
     <section className="py-16 md:py-32">

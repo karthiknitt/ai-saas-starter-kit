@@ -172,6 +172,14 @@ function Calendar({
   );
 }
 
+/**
+ * Renders a calendar day button that reflects focus, selection, and range states.
+ *
+ * @param className - Additional class names to apply to the underlying button
+ * @param day - The day object for this cell (provides the date displayed)
+ * @param modifiers - Modifier flags for the day (e.g., `selected`, `range_start`, `range_end`, `range_middle`, `focused`)
+ * @returns A button element representing a single calendar day with data attributes and classes that indicate focus, selected, and range states
+ */
 function CalendarDayButton({
   className,
   day,

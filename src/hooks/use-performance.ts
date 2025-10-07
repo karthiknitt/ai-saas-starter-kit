@@ -11,6 +11,18 @@ interface PerformanceMetrics {
   loadTime?: number;
 }
 
+/**
+ * Tracks client-side web performance metrics on page load and provides rating helpers.
+ *
+ * Collects LCP, FCP, TTFB, and total load time after the page finishes loading (or immediately if already loaded),
+ * stores them in `metrics`, and exposes helpers to get qualitative ratings for LCP, FCP, and TTFB.
+ *
+ * @returns An object containing:
+ * - `metrics`: collected performance values (optional `lcp`, `fcp`, `ttfb`, `loadTime`, etc.).
+ * - `isLoading`: `true` while waiting for the page load event, `false` after metrics are collected.
+ * - `getRating(metric, value?)`: returns `'good'`, `'needs-improvement'`, `'poor'`, or `'unknown'` for the given metric or provided value.
+ * - `getLCPRating()`, `getFCPRating()`, `getTTFBRating()`: convenience getters that return the rating for the respective metric from `metrics`.
+ */
 export function usePerformance() {
   const [metrics, setMetrics] = useState<PerformanceMetrics>({});
   const [isLoading, setIsLoading] = useState(true);

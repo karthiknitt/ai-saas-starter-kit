@@ -462,6 +462,13 @@ function SidebarMenu({ className, ...props }: React.ComponentProps<'ul'>) {
   );
 }
 
+/**
+ * Render a list-item wrapper used as a sidebar menu item slot, providing styling hooks and forwardable HTML attributes.
+ *
+ * @param className - Additional CSS classes to apply to the list item
+ * @param props - Remaining HTML attributes and event handlers forwarded to the underlying `<li>`
+ * @returns The rendered `<li>` element representing a sidebar menu item
+ */
 function SidebarMenuItem({ className, ...props }: React.ComponentProps<'li'>) {
   return (
     <li
@@ -557,6 +564,13 @@ function SidebarMenuButton({
   );
 }
 
+/**
+ * Renders a sidebar menu action button positioned at the item edge, with optional slot wrapping and hover-visibility behavior.
+ *
+ * @param asChild - If `true`, renders the provided children using a `Slot` (allowing the parent element to control the element type); otherwise renders a native `button`.
+ * @param showOnHover - If `true`, hides the action by default and reveals it when the associated menu item is hovered, focused, or when the menu is open.
+ * @returns The rendered menu action element (a `button` or the `Slot`-wrapped element).
+ */
 function SidebarMenuAction({
   className,
   asChild = false,

@@ -4,6 +4,14 @@ import { Cpu, Lock, Sparkles, Zap } from 'lucide-react';
 import Image from 'next/image';
 import { motion } from 'motion/react';
 
+/**
+ * Renders the content section for the Lyra ecosystem, including a heading,
+ * descriptive paragraph, a large image, and a responsive grid of four feature cards.
+ *
+ * Each feature card contains an icon, a short title, and a brief description.
+ *
+ * @returns The section's JSX element containing the heading, image, and feature grid.
+ */
 export default function ContentSection() {
   return (
     <section className="py-16 md:py-32">
