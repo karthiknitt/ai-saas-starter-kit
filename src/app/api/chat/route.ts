@@ -16,11 +16,21 @@ import { aj } from '@/lib/arcjet';
 const chatRequestSchema = z.object({
   messages: z
     .array(
-      z.object({
-        role: z.enum(['user', 'assistant', 'system']),
-        content: z.string().min(1).max(50000), // Reasonable limits
-        text: z.string().min(1).max(50000).optional(),
-      }),
+      z
+        .object({
+          role: z.enum(['user', 'assistant', 'system']),
+          content: z.string().trim().min(1).max(50000).optional(),
+          text:    z.string().trim().min(1).max(50000).optional(),
+        })
+        .refine(
+          data =>
+            (data.content  && data.content.trim().length > 0) ||
+            (data.text     && data.text.trim().length > 0),
+          {
+            message: 'Either content or text is required',
+            path: ['content'],
+          },
+        ),
     )
     .min(1)
     .max(100), // 1-100 messages
