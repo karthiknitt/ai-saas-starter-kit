@@ -1,19 +1,47 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionCookie } from 'better-auth/cookies';
+import { aj } from '@/lib/arcjet';
 
 export async function middleware(request: NextRequest) {
-  const sessionCookie = getSessionCookie(request);
+  // Apply Arcjet protection to all requests
+  const decision = await aj.protect(request);
 
-  // THIS IS NOT SECURE!
-  // This is the recommended approach to optimistically redirect users
-  // We recommend handling auth checks in each page/route
-  if (!sessionCookie) {
+  if (decision.isDenied()) {
+    return NextResponse.json(
+      { error: 'Access denied' },
+      { status: 403 }
+    );
+  }
+
+  // Handle authentication for protected routes
+  const sessionCookie = getSessionCookie(request);
+  const isProtectedRoute = request.nextUrl.pathname.startsWith('/dashboard');
+
+  if (isProtectedRoute && !sessionCookie) {
     return NextResponse.redirect(new URL('/', request.url));
   }
 
-  return NextResponse.next();
+  // Add security headers
+  const response = NextResponse.next();
+
+  // Security headers
+  response.headers.set('X-Frame-Options', 'DENY');
+  response.headers.set('X-Content-Type-Options', 'nosniff');
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  response.headers.set('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+
+  return response;
 }
 
 export const config = {
-  matcher: ['/dashboard'], // Specify the routes the middleware applies to
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+  ],
 };

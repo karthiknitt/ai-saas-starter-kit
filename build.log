@@ -1,0 +1,50 @@
+   ▲ Next.js 15.5.4
+   - Environments: .env
+   - Experiments (use with caution):
+     ✓ optimizeCss
+     · optimizePackageImports
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 105s
+   Linting and checking validity of types ...
+   Collecting page data ...
+[dotenv@17.2.3] injecting env (0) from .env -- tip: 📡 add observability to secrets: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (0) from .env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+[dotenv@17.2.3] injecting env (0) from .env -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
+[dotenv@17.2.3] injecting env (0) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+   Generating static pages (0/18) ...
+[dotenv@17.2.3] injecting env (0) from .env -- tip: 🗂️ backup and recover secrets: https://dotenvx.com/ops
+   Generating static pages (4/18) 
+   Generating static pages (8/18) 
+[DEBUG] Home page component rendering
+   Generating static pages (13/18) 
+ ✓ Generating static pages (18/18)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ƒ /                                    64.7 kB         212 kB
+├ ƒ /_not-found                             1 kB         108 kB
+├ ƒ /aichat                               305 kB         641 kB
+├ ƒ /api/auth/[...all]                     141 B         107 kB
+├ ƒ /api/chat                              141 B         107 kB
+├ ƒ /api/models                            141 B         107 kB
+├ ƒ /api/user/api-keys                     141 B         107 kB
+├ ƒ /api/webhooks/polar                    141 B         107 kB
+├ ƒ /billing                             1.85 kB         263 kB
+├ ƒ /billing/success                     1.94 kB         121 kB
+├ ƒ /dashboard                            149 kB         473 kB
+├ ƒ /dashboard/subscriptions             2.53 kB         264 kB
+├ ƒ /forgot-password                     3.12 kB         288 kB
+├ ƒ /login                               4.05 kB         289 kB
+├ ƒ /reset-password                      3.29 kB         288 kB
+└ ƒ /signup                               4.2 kB         286 kB
++ First Load JS shared by all             107 kB
+  ├ chunks/1255-ad92d48e3e7ce61a.js      45.5 kB
+  ├ chunks/4bd1b696-100b9d70ed4e49c1.js  54.2 kB
+  └ other shared chunks (total)          6.76 kB
+
+
+ƒ  (Dynamic)  server-rendered on demand
+

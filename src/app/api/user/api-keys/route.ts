@@ -4,9 +4,21 @@ import { user } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { encrypt, decrypt } from '@/lib/crypto';
 import { NextResponse } from 'next/server';
+import { logApiRequest, logError } from '@/lib/logger';
 
 export async function GET(request: Request) {
+  const clientIP =
+    request.headers.get('x-forwarded-for')?.split(',')[0] ||
+    request.headers.get('x-real-ip') ||
+    'unknown';
+
   try {
+    // Log API access
+    logApiRequest('GET', '/api/user/api-keys', {
+      ip: clientIP,
+      userAgent: request.headers.get('user-agent') || 'unknown',
+    });
+
     const session = await auth.api.getSession({
       headers: request.headers,
     });
@@ -28,8 +40,10 @@ export async function GET(request: Request) {
     if (u.apiKeys) {
       try {
         apiKey = decrypt(u.apiKeys);
-      } catch (e) {
-        console.error('Failed to decrypt API key', e);
+      } catch {
+        console.error('Failed to decrypt API key for user');
+        // Don't expose decryption errors to the client
+        apiKey = null;
       }
     }
 
@@ -37,17 +51,40 @@ export async function GET(request: Request) {
       provider: u.provider,
       apiKey,
     });
-  } catch (error) {
-    console.error('GET /api/user/api-keys error:', error);
+  } catch (err) {
+    logError(
+      'API keys GET error',
+      err instanceof Error ? err : new Error(String(err)),
+      {
+        ip: clientIP,
+        endpoint: '/api/user/api-keys',
+        userAgent: request.headers.get('user-agent') || 'unknown',
+      },
+    );
+
     return NextResponse.json(
-      { error: 'Internal server error' },
+      {
+        error: 'An error occurred while retrieving API keys',
+        code: 'INTERNAL_ERROR',
+      },
       { status: 500 },
     );
   }
 }
 
 export async function POST(request: Request) {
+  const clientIP =
+    request.headers.get('x-forwarded-for')?.split(',')[0] ||
+    request.headers.get('x-real-ip') ||
+    'unknown';
+
   try {
+    // Log API access
+    logApiRequest('POST', '/api/user/api-keys', {
+      ip: clientIP,
+      userAgent: request.headers.get('user-agent') || 'unknown',
+    });
+
     const session = await auth.api.getSession({
       headers: request.headers,
     });
@@ -105,10 +142,22 @@ export async function POST(request: Request) {
       .where(eq(user.id, session.user.id));
 
     return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error('POST /api/user/api-keys error:', error);
+  } catch (err) {
+    logError(
+      'API keys POST error',
+      err instanceof Error ? err : new Error(String(err)),
+      {
+        ip: clientIP,
+        endpoint: '/api/user/api-keys',
+        userAgent: request.headers.get('user-agent') || 'unknown',
+      },
+    );
+
     return NextResponse.json(
-      { error: 'Internal server error' },
+      {
+        error: 'An error occurred while updating API keys',
+        code: 'INTERNAL_ERROR',
+      },
       { status: 500 },
     );
   }

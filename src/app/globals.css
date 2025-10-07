@@ -302,7 +302,9 @@
     --nav-active: oklch(from var(--color-amber-800) calc(l + 0.15) c h);
     --interactive-hover: oklch(from var(--color-amber-900) calc(l + 0.08) c h);
     --card-hover: oklch(from var(--color-amber-900) calc(l + 0.08) c h);
-    --message-assistant-bg: oklch(from var(--color-amber-900) calc(l + 0.1) c h);
+    --message-assistant-bg: oklch(
+      from var(--color-amber-900) calc(l + 0.1) c h
+    );
     --status-warning: var(--color-amber-400);
     --status-warning-fg: var(--color-amber-900);
   }
@@ -356,7 +358,9 @@
     --nav-active: oklch(from var(--color-purple-800) calc(l + 0.15) c h);
     --interactive-hover: oklch(from var(--color-purple-900) calc(l + 0.08) c h);
     --card-hover: oklch(from var(--color-purple-900) calc(l + 0.08) c h);
-    --message-assistant-bg: oklch(from var(--color-purple-900) calc(l + 0.1) c h);
+    --message-assistant-bg: oklch(
+      from var(--color-purple-900) calc(l + 0.1) c h
+    );
   }
 }
 
@@ -404,7 +408,9 @@
     --nav-active: oklch(from var(--color-violet-800) calc(l + 0.15) c h);
     --interactive-hover: oklch(from var(--color-violet-900) calc(l + 0.08) c h);
     --card-hover: oklch(from var(--color-violet-900) calc(l + 0.08) c h);
-    --message-assistant-bg: oklch(from var(--color-violet-900) calc(l + 0.1) c h);
+    --message-assistant-bg: oklch(
+      from var(--color-violet-900) calc(l + 0.1) c h
+    );
   }
 }
 
@@ -428,7 +434,9 @@
     --nav-active: oklch(from var(--color-indigo-800) calc(l + 0.15) c h);
     --interactive-hover: oklch(from var(--color-indigo-900) calc(l + 0.08) c h);
     --card-hover: oklch(from var(--color-indigo-900) calc(l + 0.08) c h);
-    --message-assistant-bg: oklch(from var(--color-indigo-900) calc(l + 0.1) c h);
+    --message-assistant-bg: oklch(
+      from var(--color-indigo-900) calc(l + 0.1) c h
+    );
   }
 }
 
@@ -442,7 +450,9 @@
   --nav-active: oklch(from var(--color-emerald-200) calc(l + 0.1) c h);
   --interactive-hover: oklch(from var(--color-emerald-50) calc(l + 0.03) c h);
   --card-hover: oklch(from var(--color-emerald-50) calc(l + 0.02) c h);
-  --message-assistant-bg: oklch(from var(--color-emerald-50) calc(l + 0.05) c h);
+  --message-assistant-bg: oklch(
+    from var(--color-emerald-50) calc(l + 0.05) c h
+  );
   --status-success: var(--color-emerald-500);
   --status-success-fg: var(--color-emerald-900);
 
@@ -452,9 +462,13 @@
 
     --nav-hover: oklch(from var(--color-emerald-900) calc(l + 0.08) c h);
     --nav-active: oklch(from var(--color-emerald-800) calc(l + 0.15) c h);
-    --interactive-hover: oklch(from var(--color-emerald-900) calc(l + 0.08) c h);
+    --interactive-hover: oklch(
+      from var(--color-emerald-900) calc(l + 0.08) c h
+    );
     --card-hover: oklch(from var(--color-emerald-900) calc(l + 0.08) c h);
-    --message-assistant-bg: oklch(from var(--color-emerald-900) calc(l + 0.1) c h);
+    --message-assistant-bg: oklch(
+      from var(--color-emerald-900) calc(l + 0.1) c h
+    );
     --status-success: var(--color-emerald-400);
     --status-success-fg: var(--color-emerald-900);
   }
@@ -471,7 +485,9 @@
   --nav-active: oklch(from var(--color-neutral-200) calc(l + 0.1) c h);
   --interactive-hover: oklch(from var(--color-neutral-50) calc(l + 0.03) c h);
   --card-hover: oklch(from var(--color-neutral-50) calc(l + 0.02) c h);
-  --message-assistant-bg: oklch(from var(--color-neutral-50) calc(l + 0.05) c h);
+  --message-assistant-bg: oklch(
+    from var(--color-neutral-50) calc(l + 0.05) c h
+  );
 
   @variant dark {
     --primary: var(--color-neutral-500);
@@ -479,9 +495,13 @@
 
     --nav-hover: oklch(from var(--color-neutral-900) calc(l + 0.08) c h);
     --nav-active: oklch(from var(--color-neutral-800) calc(l + 0.15) c h);
-    --interactive-hover: oklch(from var(--color-neutral-900) calc(l + 0.08) c h);
+    --interactive-hover: oklch(
+      from var(--color-neutral-900) calc(l + 0.08) c h
+    );
     --card-hover: oklch(from var(--color-neutral-900) calc(l + 0.08) c h);
-    --message-assistant-bg: oklch(from var(--color-neutral-900) calc(l + 0.1) c h);
+    --message-assistant-bg: oklch(
+      from var(--color-neutral-900) calc(l + 0.1) c h
+    );
   }
 
   .rounded-xs,
