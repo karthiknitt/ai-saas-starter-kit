@@ -34,6 +34,11 @@ function TabsList({
   );
 }
 
+/**
+ * Render a styled Tabs Trigger component that merges predefined UI classes with any provided `className` and forwards all other props to the underlying Radix Trigger.
+ *
+ * @returns A TabsPrimitive.Trigger element with the composed `className` and forwarded props
+ */
 function TabsTrigger({
   className,
   ...props

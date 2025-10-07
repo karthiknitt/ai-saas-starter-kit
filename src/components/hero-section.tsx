@@ -10,6 +10,11 @@ import { ProgressiveBlur } from '@/components/ui/progressive-blur';
 import { ChevronRight } from 'lucide-react';
 import { motion } from 'motion/react';
 
+/**
+ * Render the page hero area with header, headline, primary call-to-action buttons, a video showcase, and a continuous partner logo slider with decorative overlays.
+ *
+ * @returns A React element containing the hero header, the main hero content (headline, subtitle, animated CTAs, and background video), and the logos section with an infinite slider and visual decorations.
+ */
 export default function HeroSection() {
   return (
     <>

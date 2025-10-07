@@ -59,6 +59,15 @@ function DropdownMenuGroup({
   );
 }
 
+/**
+ * A styled dropdown menu item element that supports inset alignment and a destructive variant.
+ *
+ * Adds data attributes for tooling (`data-slot="dropdown-menu-item"`, `data-inset`, `data-variant`), merges user `className` with internal styles, and forwards remaining props to the underlying element.
+ *
+ * @param inset - If true, applies inset padding to align the item's content (e.g., when an indicator or icon is present).
+ * @param variant - Visual variant; use `"destructive"` to apply destructive styling, otherwise `"default"`.
+ * @returns The rendered dropdown menu item element.
+ */
 function DropdownMenuItem({
   className,
   inset,
@@ -82,6 +91,11 @@ function DropdownMenuItem({
   );
 }
 
+/**
+ * Renders a styled dropdown menu checkbox item with a left-aligned check indicator.
+ *
+ * @returns A React element for a dropdown menu checkbox item that shows a check icon when selected.
+ */
 function DropdownMenuCheckboxItem({
   className,
   children,
@@ -119,6 +133,11 @@ function DropdownMenuRadioGroup({
   );
 }
 
+/**
+ * Renders a styled radio item for a DropdownMenu with a left-aligned circular indicator.
+ *
+ * @returns A DropdownMenu radio item element containing an item indicator and the given children.
+ */
 function DropdownMenuRadioItem({
   className,
   children,

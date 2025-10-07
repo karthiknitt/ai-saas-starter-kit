@@ -5,6 +5,15 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Image from 'next/image';
 import { motion } from 'motion/react';
 
+/**
+ * Render a responsive testimonials section with animated testimonial cards.
+ *
+ * The section includes a heading, descriptive paragraph, and a responsive grid
+ * of animated testimonial cards featuring logos, quotes, avatars, author names,
+ * and roles.
+ *
+ * @returns A JSX element representing the testimonials section
+ */
 export default function Testimonials() {
   return (
     <section className="py-16 md:py-32">

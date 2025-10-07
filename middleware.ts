@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionCookie } from 'better-auth/cookies';
 
+/**
+ * Apply Arcjet protection, enforce session-based access for protected routes, and attach security headers to the response.
+ *
+ * @returns A NextResponse that is either:
+ * - a 403 JSON response with `{ error: 'Access denied' }` when Arcjet denies the request,
+ * - a redirect to `/` for unauthenticated requests to protected routes (paths starting with `/dashboard`),
+ * - or a forwarded response (`NextResponse.next()`) with security headers set (`X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`).
+ */
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 

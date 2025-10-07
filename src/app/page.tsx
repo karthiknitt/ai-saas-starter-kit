@@ -25,6 +25,11 @@ const Pricing = dynamic(() => import('@/components/pricing'), {
 
 const FooterSection = dynamic(() => import('@/components/footer'));
 
+/**
+ * Renders the landing page composed of header, hero, features, content, stats, testimonials, pricing, and footer sections.
+ *
+ * @returns The React fragment containing the assembled landing page sections.
+ */
 export default function LandingPage() {
   console.log('[DEBUG] Home page component rendering');
   return (
