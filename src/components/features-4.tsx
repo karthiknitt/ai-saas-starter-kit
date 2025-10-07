@@ -10,6 +10,14 @@ import {
 } from 'lucide-react';
 import { motion } from 'motion/react';
 
+/**
+ * Render the static features section that showcases six feature tiles.
+ *
+ * Each tile reveals with a staggered fade-and-slide animation and includes
+ * subtle hover interactions on the tile and its icon.
+ *
+ * @returns A React element containing the features section with animated tiles
+ */
 export default function Features() {
   return (
     <section className="py-12 md:py-20">

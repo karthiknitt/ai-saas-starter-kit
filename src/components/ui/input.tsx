@@ -3,12 +3,12 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 
 /**
- * Render a themed, accessible input element with composable utility-class styling and prop passthrough.
+ * Renders a themed, accessible input element with composable utility-class styling and prop passthrough.
  *
  * @param className - Additional CSS classes to append to the component's default class list
  * @param type - The input's `type` attribute (e.g., "text", "email", "password")
  * @param props - Additional native input props to forward to the underlying `<input>` (e.g., `placeholder`, `value`, `onChange`)
- * @returns A styled `<input>` element with built-in focus, invalid, disabled, and responsive styles
+ * @returns The rendered `<input>` element with built-in focus, invalid, disabled, and responsive styles
  */
 function Input({ className, type, ...props }: React.ComponentProps<'input'>) {
   return (

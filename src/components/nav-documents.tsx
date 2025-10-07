@@ -26,6 +26,15 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 
+/**
+ * Renders the "Documents" sidebar group containing a list of document entries each with a contextual action menu.
+ *
+ * @param items - Array of document descriptors. Each descriptor should include:
+ *   - `name`: display label for the document
+ *   - `url`: link target; a value of `'#'` renders a plain anchor instead of a navigation Link
+ *   - `icon`: icon component rendered alongside the name
+ * @returns A JSX element representing the Documents sidebar group and its menu
+ */
 export function NavDocuments({
   items,
 }: {

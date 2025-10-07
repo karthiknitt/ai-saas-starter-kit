@@ -9,6 +9,12 @@ interface RateLimitConfig {
   skipSuccessfulRequests?: boolean;
 }
 
+/**
+ * Creates a rate-limiting middleware configured with the provided window and quota.
+ *
+ * @param config - Rate limit settings. `windowMs` is the time window in milliseconds; `maxRequests` is the maximum requests allowed per client within that window.
+ * @returns A middleware function that enforces per-client rate limits using an in-memory store. The middleware attaches `X-RateLimit-*` headers to successful responses and, when the quota is exceeded, returns a 429 JSON response containing `error` and `retryAfter` and sets `Retry-After` and rate-limit headers.
+ */
 export function createRateLimit(config: RateLimitConfig) {
   return function rateLimitMiddleware(request: NextRequest) {
     const ip =

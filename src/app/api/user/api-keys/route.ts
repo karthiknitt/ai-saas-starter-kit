@@ -6,6 +6,11 @@ import { encrypt, decrypt } from '@/lib/crypto';
 import { NextResponse } from 'next/server';
 import { logApiRequest, logError } from '@/lib/logger';
 
+/**
+ * Retrieve the authenticated user's configured API provider and the decrypted API key when available.
+ *
+ * @returns On success, a JSON object `{ provider: string | null, apiKey: string | null }`. On failure, a JSON error object containing an `error` message (for 401 and 404) or an `error` message and `code` (for 500).
+ */
 export async function GET(request: Request) {
   const clientIP =
     request.headers.get('x-forwarded-for')?.split(',')[0] ||
@@ -72,6 +77,13 @@ export async function GET(request: Request) {
   }
 }
 
+/**
+ * Update or clear the authenticated user's API provider and API key.
+ *
+ * Validates input, accepts an explicit clear action when both `provider` and `apiKey` are absent, encrypts and stores a provided API key, and requires an authenticated user session.
+ *
+ * @returns A JSON response: `{ success: true }` on successful update/clear; on client validation failures an object containing an `error` message; on unexpected server failures an object `{ error: string, code: 'INTERNAL_ERROR' }`.
+ */
 export async function POST(request: Request) {
   const clientIP =
     request.headers.get('x-forwarded-for')?.split(',')[0] ||

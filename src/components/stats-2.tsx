@@ -2,6 +2,14 @@
 
 import { motion } from 'motion/react';
 
+/**
+ * Render a responsive stats section displaying three animated statistic cards.
+ *
+ * The section includes a title, a descriptive paragraph, and three stat tiles
+ * that animate into view with staggered delays and scale slightly on hover.
+ *
+ * @returns The JSX element containing the titled stats section with three animated cards
+ */
 export default function StatsSection() {
   return (
     <section className="py-12 md:py-20">

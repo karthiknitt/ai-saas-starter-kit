@@ -11,6 +11,19 @@ interface PerformanceMetrics {
   loadTime?: number;
 }
 
+/**
+ * React hook that captures basic web performance metrics on page load and provides helpers to rate them.
+ *
+ * Captured metrics include Largest Contentful Paint (LCP), First Contentful Paint (FCP), Time To First Byte (TTFB), and total load time; the hook also exposes a loading flag while metrics are being collected and functions to map metric values to qualitative ratings.
+ *
+ * @returns An object containing:
+ * - `metrics`: a PerformanceMetrics object with optional numeric fields (`lcp`, `fcp`, `ttfb`, `loadTime`, etc.).
+ * - `isLoading`: `true` while the hook is waiting for the page load event, `false` after metrics have been captured.
+ * - `getRating(metric, value?)`: returns `'good' | 'needs-improvement' | 'poor' | 'unknown'` for the specified metric, optionally using an explicit `value`.
+ * - `getLCPRating()`: convenience wrapper for `getRating('lcp', metrics.lcp)`.
+ * - `getFCPRating()`: convenience wrapper for `getRating('fcp', metrics.fcp)`.
+ * - `getTTFBRating()`: convenience wrapper for `getRating('ttfb', metrics.ttfb)`.
+ */
 export function usePerformance() {
   const [metrics, setMetrics] = useState<PerformanceMetrics>({});
   const [isLoading, setIsLoading] = useState(true);

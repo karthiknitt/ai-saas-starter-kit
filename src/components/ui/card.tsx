@@ -2,6 +2,14 @@ import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 
+/**
+ * Renders a styled card container element for grouping related content.
+ *
+ * Renders a div with default card styling and merges any `className` provided; remaining div props are forwarded to the element.
+ *
+ * @param className - Optional additional CSS classes appended to the card's default classes.
+ * @returns The div element used as the card container.
+ */
 function Card({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div

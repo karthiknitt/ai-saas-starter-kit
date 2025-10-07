@@ -119,6 +119,13 @@ const links = [
   },
 ];
 
+/**
+ * Render the site's footer containing the logo, grouped navigation links, copyright notice, and animated social icons.
+ *
+ * The footer is responsive, computes the current year for the copyright text, and applies hover/tap animations to social icons.
+ *
+ * @returns The footer JSX element
+ */
 export default function FooterSection() {
   return (
     <footer className="border-b bg-white pt-20 dark:bg-transparent">

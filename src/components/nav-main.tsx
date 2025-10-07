@@ -12,6 +12,15 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
 
+/**
+ * Render a vertical sidebar navigation with a Quick Create action and a list of menu items.
+ *
+ * Renders a "Quick Create" menu entry with an inline inbox button, then maps `items` to menu buttons;
+ * items with `url` equal to `"#"` render as non-navigating buttons, otherwise they render as links.
+ *
+ * @param items - Array of navigation entries. Each entry must include `title` and `url`, and may include an `icon` component to display before the title.
+ * @returns The sidebar navigation React element.
+ */
 export function NavMain({
   items,
 }: {

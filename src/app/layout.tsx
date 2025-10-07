@@ -19,6 +19,14 @@ export const metadata: Metadata = {
   },
 };
 
+/**
+ * Root application layout that wraps pages with theme providers, performance monitoring, and analytics integrations.
+ *
+ * Reads the `active_theme` cookie to apply theme-related classes, preloads fonts and a video asset, and registers a service worker in the document head.
+ *
+ * @param children - The page content to render inside the layout
+ * @returns The root HTML structure containing head and body elements with theme providers, PerformanceMonitor, Toaster, Analytics, and SpeedInsights
+ */
 export default async function RootLayout({
   children,
 }: React.PropsWithChildren) {

@@ -172,6 +172,16 @@ function Calendar({
   );
 }
 
+/**
+ * Renders a calendar day button that reflects selection, range, and focus states.
+ *
+ * Merges incoming classes with default day styles, manages focus when DayPicker marks the day as focused, and emits data attributes used for styling selected/range states.
+ *
+ * @param className - Additional CSS class names to apply to the button
+ * @param day - DayPicker `day` object for the cell (contains the date)
+ * @param modifiers - DayPicker modifiers indicating the day's state (e.g., `selected`, `range_start`, `range_middle`, `range_end`, `focused`)
+ * @returns A button element tailored for use inside the DayPicker with data attributes representing selection and range state
+ */
 function CalendarDayButton({
   className,
   day,

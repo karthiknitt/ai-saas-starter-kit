@@ -4,6 +4,11 @@ import { Cpu, Lock, Sparkles, Zap } from 'lucide-react';
 import Image from 'next/image';
 import { motion } from 'motion/react';
 
+/**
+ * Render the content section showcasing the Lyra ecosystem with a heading, illustrative image, and an animated four-item feature grid.
+ *
+ * @returns A React element containing the composed section with heading, image, and animated feature items.
+ */
 export default function ContentSection() {
   return (
     <section className="py-16 md:py-32">

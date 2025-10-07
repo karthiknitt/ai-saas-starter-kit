@@ -34,6 +34,11 @@ function TabsList({
   );
 }
 
+/**
+ * Renders a styled tab trigger for use inside Tabs.
+ *
+ * @returns The tab trigger element with the component's default classes merged with the provided `className`
+ */
 function TabsTrigger({
   className,
   ...props
