@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 
 // Mock the dependencies
 vi.mock('better-auth/cookies', () => ({
@@ -245,7 +245,7 @@ describe('middleware', () => {
       const { middleware } = await import('../middleware')
       const request = createMockRequest('/dashboard')
 
-      const response = await middleware(request)
+      await middleware(request)
 
       expect(mockAjProtect).toHaveBeenCalled()
       expect(mockGetSessionCookie).toHaveBeenCalled()

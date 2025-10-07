@@ -479,7 +479,6 @@ describe('rate-limit', () => {
       })
 
       const request = createMockRequest('10.0.5.2')
-      const startTime = Date.now()
 
       rateLimiter(request)
 
