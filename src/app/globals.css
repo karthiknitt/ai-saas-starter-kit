@@ -650,7 +650,7 @@
     --header-text: oklch(0.09 0 0);
     --header-text-muted: oklch(0.45 0 0);
   }
-  
+
   /* Enhanced card and border visibility in light mode */
   .home-page-wrapper[data-theme='light'] [class*='bg-card/'],
   .home-page-wrapper[data-theme='light'] [class*='border-border/'] {
@@ -727,7 +727,7 @@
     --border: oklch(1 0 0 / 10%);
     --input: oklch(1 0 0 / 15%);
     --ring: oklch(0.556 0 0);
-    
+
     /* Navigation & Interactive Elements */
     --nav-hover: oklch(from var(--accent) calc(l + 0.08) c h);
     --nav-active: oklch(from var(--accent) calc(l + 0.15) c h);
@@ -783,7 +783,7 @@
       --border: oklch(0.4 0 0);
       --ring: oklch(0.4 0 0);
     }
-    
+
     .home-page-wrapper[data-theme='dark'] {
       --border: oklch(0.6 0 0);
       --ring: oklch(0.6 0 0);
