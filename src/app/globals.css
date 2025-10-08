@@ -73,6 +73,44 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* Navigation & Interactive Elements */
+  --nav-hover: oklch(from var(--accent) calc(l + 0.05) c h);
+  --nav-active: oklch(from var(--accent) calc(l + 0.1) c h);
+  --interactive-hover: oklch(from var(--muted) calc(l + 0.03) c h);
+
+  /* Form Components */
+  --input-hover: oklch(from var(--input) calc(l + 0.02) c h);
+  --input-focus: var(--ring);
+  --input-error: oklch(0.577 0.245 27.325);
+  --input-success: oklch(0.546 0.168 142.496);
+
+  /* Content Components */
+  --card-hover: oklch(from var(--card) calc(l + 0.02) c h);
+  --table-row-hover: oklch(from var(--muted) calc(l + 0.02) c h);
+  --popover-border: var(--border);
+
+  /* AI Chat Components */
+  --message-user-bg: var(--primary);
+  --message-user-fg: var(--primary-foreground);
+  --message-assistant-bg: oklch(from var(--muted) calc(l + 0.05) c h);
+  --message-assistant-fg: var(--foreground);
+  --code-block-bg: oklch(from var(--muted) calc(l + 0.02) c h);
+
+  /* Status & Feedback */
+  --status-success: oklch(0.7 0.15 142);
+  --status-success-fg: oklch(0.1 0 0);
+  --status-warning: oklch(0.8 0.15 85);
+  --status-warning-fg: oklch(0.1 0 0);
+  --status-error: var(--destructive);
+  --status-error-fg: oklch(0.985 0 0);
+  --status-info: oklch(0.6 0.15 240);
+  --status-info-fg: oklch(0.1 0 0);
+
+  /* Specialized Components */
+  --calendar-day-hover: oklch(from var(--muted) calc(l + 0.03) c h);
+  --calendar-day-selected: var(--primary);
+  --calendar-day-selected-fg: var(--primary-foreground);
 }
 
 .dark {
@@ -107,6 +145,44 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  /* Navigation & Interactive Elements */
+  --nav-hover: oklch(from var(--accent) calc(l + 0.08) c h);
+  --nav-active: oklch(from var(--accent) calc(l + 0.15) c h);
+  --interactive-hover: oklch(from var(--muted) calc(l + 0.08) c h);
+
+  /* Form Components */
+  --input-hover: oklch(from var(--input) calc(l + 0.1) c h);
+  --input-focus: var(--ring);
+  --input-error: oklch(0.704 0.191 22.216);
+  --input-success: oklch(0.6 0.2 142);
+
+  /* Content Components */
+  --card-hover: oklch(from var(--card) calc(l + 0.08) c h);
+  --table-row-hover: oklch(from var(--muted) calc(l + 0.08) c h);
+  --popover-border: oklch(1 0 0 / 15%);
+
+  /* AI Chat Components */
+  --message-user-bg: var(--primary);
+  --message-user-fg: var(--primary-foreground);
+  --message-assistant-bg: oklch(from var(--muted) calc(l + 0.1) c h);
+  --message-assistant-fg: var(--foreground);
+  --code-block-bg: oklch(from var(--muted) calc(l + 0.08) c h);
+
+  /* Status & Feedback */
+  --status-success: oklch(0.65 0.18 142);
+  --status-success-fg: oklch(0.95 0 0);
+  --status-warning: oklch(0.75 0.18 85);
+  --status-warning-fg: oklch(0.95 0 0);
+  --status-error: var(--destructive);
+  --status-error-fg: oklch(0.95 0 0);
+  --status-info: oklch(0.55 0.18 240);
+  --status-info-fg: oklch(0.95 0 0);
+
+  /* Specialized Components */
+  --calendar-day-hover: oklch(from var(--muted) calc(l + 0.08) c h);
+  --calendar-day-selected: var(--primary);
+  --calendar-day-selected-fg: var(--primary-foreground);
 }
 
 @layer base {
@@ -153,9 +229,26 @@
   --primary: var(--color-blue-600);
   --primary-foreground: var(--color-blue-50);
 
+  /* Theme-specific overrides */
+  --nav-hover: oklch(from var(--color-blue-100) calc(l + 0.05) c h);
+  --nav-active: oklch(from var(--color-blue-200) calc(l + 0.1) c h);
+  --interactive-hover: oklch(from var(--color-blue-50) calc(l + 0.03) c h);
+  --card-hover: oklch(from var(--color-blue-50) calc(l + 0.02) c h);
+  --message-assistant-bg: oklch(from var(--color-blue-50) calc(l + 0.05) c h);
+  --status-info: var(--color-blue-500);
+  --status-info-fg: var(--color-blue-50);
+
   @variant dark {
     --primary: var(--color-blue-500);
     --primary-foreground: var(--color-blue-50);
+
+    --nav-hover: oklch(from var(--color-blue-900) calc(l + 0.08) c h);
+    --nav-active: oklch(from var(--color-blue-800) calc(l + 0.15) c h);
+    --interactive-hover: oklch(from var(--color-blue-900) calc(l + 0.08) c h);
+    --card-hover: oklch(from var(--color-blue-900) calc(l + 0.08) c h);
+    --message-assistant-bg: oklch(from var(--color-blue-900) calc(l + 0.1) c h);
+    --status-info: var(--color-blue-400);
+    --status-info-fg: var(--color-blue-900);
   }
 }
 
@@ -164,9 +257,26 @@
   --primary: var(--color-lime-600);
   --primary-foreground: var(--color-lime-50);
 
+  /* Theme-specific overrides */
+  --nav-hover: oklch(from var(--color-lime-100) calc(l + 0.05) c h);
+  --nav-active: oklch(from var(--color-lime-200) calc(l + 0.1) c h);
+  --interactive-hover: oklch(from var(--color-lime-50) calc(l + 0.03) c h);
+  --card-hover: oklch(from var(--color-lime-50) calc(l + 0.02) c h);
+  --message-assistant-bg: oklch(from var(--color-lime-50) calc(l + 0.05) c h);
+  --status-success: var(--color-lime-500);
+  --status-success-fg: var(--color-lime-900);
+
   @variant dark {
     --primary: var(--color-lime-600);
     --primary-foreground: var(--color-lime-50);
+
+    --nav-hover: oklch(from var(--color-lime-900) calc(l + 0.08) c h);
+    --nav-active: oklch(from var(--color-lime-800) calc(l + 0.15) c h);
+    --interactive-hover: oklch(from var(--color-lime-900) calc(l + 0.08) c h);
+    --card-hover: oklch(from var(--color-lime-900) calc(l + 0.08) c h);
+    --message-assistant-bg: oklch(from var(--color-lime-900) calc(l + 0.1) c h);
+    --status-success: var(--color-lime-400);
+    --status-success-fg: var(--color-lime-900);
   }
 }
 
@@ -175,9 +285,26 @@
   --primary: var(--color-amber-600);
   --primary-foreground: var(--color-amber-50);
 
+  /* Theme-specific overrides */
+  --nav-hover: oklch(from var(--color-amber-100) calc(l + 0.05) c h);
+  --nav-active: oklch(from var(--color-amber-200) calc(l + 0.1) c h);
+  --interactive-hover: oklch(from var(--color-amber-50) calc(l + 0.03) c h);
+  --card-hover: oklch(from var(--color-amber-50) calc(l + 0.02) c h);
+  --message-assistant-bg: oklch(from var(--color-amber-50) calc(l + 0.05) c h);
+  --status-warning: var(--color-amber-500);
+  --status-warning-fg: var(--color-amber-900);
+
   @variant dark {
     --primary: var(--color-amber-500);
     --primary-foreground: var(--color-amber-50);
+
+    --nav-hover: oklch(from var(--color-amber-900) calc(l + 0.08) c h);
+    --nav-active: oklch(from var(--color-amber-800) calc(l + 0.15) c h);
+    --interactive-hover: oklch(from var(--color-amber-900) calc(l + 0.08) c h);
+    --card-hover: oklch(from var(--color-amber-900) calc(l + 0.08) c h);
+    --message-assistant-bg: oklch(from var(--color-amber-900) calc(l + 0.1) c h);
+    --status-warning: var(--color-amber-400);
+    --status-warning-fg: var(--color-amber-900);
   }
 }
 
@@ -186,9 +313,26 @@
   --primary: var(--color-red-600);
   --primary-foreground: var(--color-red-50);
 
+  /* Theme-specific overrides */
+  --nav-hover: oklch(from var(--color-red-100) calc(l + 0.05) c h);
+  --nav-active: oklch(from var(--color-red-200) calc(l + 0.1) c h);
+  --interactive-hover: oklch(from var(--color-red-50) calc(l + 0.03) c h);
+  --card-hover: oklch(from var(--color-red-50) calc(l + 0.02) c h);
+  --message-assistant-bg: oklch(from var(--color-red-50) calc(l + 0.05) c h);
+  --status-error: var(--color-red-500);
+  --status-error-fg: var(--color-red-50);
+
   @variant dark {
     --primary: var(--color-red-500);
     --primary-foreground: var(--color-red-50);
+
+    --nav-hover: oklch(from var(--color-red-900) calc(l + 0.08) c h);
+    --nav-active: oklch(from var(--color-red-800) calc(l + 0.15) c h);
+    --interactive-hover: oklch(from var(--color-red-900) calc(l + 0.08) c h);
+    --card-hover: oklch(from var(--color-red-900) calc(l + 0.08) c h);
+    --message-assistant-bg: oklch(from var(--color-red-900) calc(l + 0.1) c h);
+    --status-error: var(--color-red-400);
+    --status-error-fg: var(--color-red-900);
   }
 }
 
@@ -197,9 +341,22 @@
   --primary: var(--color-purple-600);
   --primary-foreground: var(--color-purple-50);
 
+  /* Theme-specific overrides */
+  --nav-hover: oklch(from var(--color-purple-100) calc(l + 0.05) c h);
+  --nav-active: oklch(from var(--color-purple-200) calc(l + 0.1) c h);
+  --interactive-hover: oklch(from var(--color-purple-50) calc(l + 0.03) c h);
+  --card-hover: oklch(from var(--color-purple-50) calc(l + 0.02) c h);
+  --message-assistant-bg: oklch(from var(--color-purple-50) calc(l + 0.05) c h);
+
   @variant dark {
     --primary: var(--color-purple-500);
     --primary-foreground: var(--color-purple-50);
+
+    --nav-hover: oklch(from var(--color-purple-900) calc(l + 0.08) c h);
+    --nav-active: oklch(from var(--color-purple-800) calc(l + 0.15) c h);
+    --interactive-hover: oklch(from var(--color-purple-900) calc(l + 0.08) c h);
+    --card-hover: oklch(from var(--color-purple-900) calc(l + 0.08) c h);
+    --message-assistant-bg: oklch(from var(--color-purple-900) calc(l + 0.1) c h);
   }
 }
 
@@ -208,9 +365,22 @@
   --primary: var(--color-pink-600);
   --primary-foreground: var(--color-pink-50);
 
+  /* Theme-specific overrides */
+  --nav-hover: oklch(from var(--color-pink-100) calc(l + 0.05) c h);
+  --nav-active: oklch(from var(--color-pink-200) calc(l + 0.1) c h);
+  --interactive-hover: oklch(from var(--color-pink-50) calc(l + 0.03) c h);
+  --card-hover: oklch(from var(--color-pink-50) calc(l + 0.02) c h);
+  --message-assistant-bg: oklch(from var(--color-pink-50) calc(l + 0.05) c h);
+
   @variant dark {
     --primary: var(--color-pink-500);
     --primary-foreground: var(--color-pink-50);
+
+    --nav-hover: oklch(from var(--color-pink-900) calc(l + 0.08) c h);
+    --nav-active: oklch(from var(--color-pink-800) calc(l + 0.15) c h);
+    --interactive-hover: oklch(from var(--color-pink-900) calc(l + 0.08) c h);
+    --card-hover: oklch(from var(--color-pink-900) calc(l + 0.08) c h);
+    --message-assistant-bg: oklch(from var(--color-pink-900) calc(l + 0.1) c h);
   }
 }
 
@@ -219,9 +389,22 @@
   --primary: var(--color-violet-600);
   --primary-foreground: var(--color-violet-50);
 
+  /* Theme-specific overrides */
+  --nav-hover: oklch(from var(--color-violet-100) calc(l + 0.05) c h);
+  --nav-active: oklch(from var(--color-violet-200) calc(l + 0.1) c h);
+  --interactive-hover: oklch(from var(--color-violet-50) calc(l + 0.03) c h);
+  --card-hover: oklch(from var(--color-violet-50) calc(l + 0.02) c h);
+  --message-assistant-bg: oklch(from var(--color-violet-50) calc(l + 0.05) c h);
+
   @variant dark {
     --primary: var(--color-violet-500);
     --primary-foreground: var(--color-violet-50);
+
+    --nav-hover: oklch(from var(--color-violet-900) calc(l + 0.08) c h);
+    --nav-active: oklch(from var(--color-violet-800) calc(l + 0.15) c h);
+    --interactive-hover: oklch(from var(--color-violet-900) calc(l + 0.08) c h);
+    --card-hover: oklch(from var(--color-violet-900) calc(l + 0.08) c h);
+    --message-assistant-bg: oklch(from var(--color-violet-900) calc(l + 0.1) c h);
   }
 }
 
@@ -230,9 +413,22 @@
   --primary: var(--color-indigo-600);
   --primary-foreground: var(--color-indigo-50);
 
+  /* Theme-specific overrides */
+  --nav-hover: oklch(from var(--color-indigo-100) calc(l + 0.05) c h);
+  --nav-active: oklch(from var(--color-indigo-200) calc(l + 0.1) c h);
+  --interactive-hover: oklch(from var(--color-indigo-50) calc(l + 0.03) c h);
+  --card-hover: oklch(from var(--color-indigo-50) calc(l + 0.02) c h);
+  --message-assistant-bg: oklch(from var(--color-indigo-50) calc(l + 0.05) c h);
+
   @variant dark {
     --primary: var(--color-indigo-500);
     --primary-foreground: var(--color-indigo-50);
+
+    --nav-hover: oklch(from var(--color-indigo-900) calc(l + 0.08) c h);
+    --nav-active: oklch(from var(--color-indigo-800) calc(l + 0.15) c h);
+    --interactive-hover: oklch(from var(--color-indigo-900) calc(l + 0.08) c h);
+    --card-hover: oklch(from var(--color-indigo-900) calc(l + 0.08) c h);
+    --message-assistant-bg: oklch(from var(--color-indigo-900) calc(l + 0.1) c h);
   }
 }
 
@@ -241,9 +437,26 @@
   --primary: var(--color-emerald-600);
   --primary-foreground: var(--color-emerald-50);
 
+  /* Theme-specific overrides */
+  --nav-hover: oklch(from var(--color-emerald-100) calc(l + 0.05) c h);
+  --nav-active: oklch(from var(--color-emerald-200) calc(l + 0.1) c h);
+  --interactive-hover: oklch(from var(--color-emerald-50) calc(l + 0.03) c h);
+  --card-hover: oklch(from var(--color-emerald-50) calc(l + 0.02) c h);
+  --message-assistant-bg: oklch(from var(--color-emerald-50) calc(l + 0.05) c h);
+  --status-success: var(--color-emerald-500);
+  --status-success-fg: var(--color-emerald-900);
+
   @variant dark {
     --primary: var(--color-emerald-500);
     --primary-foreground: var(--color-emerald-50);
+
+    --nav-hover: oklch(from var(--color-emerald-900) calc(l + 0.08) c h);
+    --nav-active: oklch(from var(--color-emerald-800) calc(l + 0.15) c h);
+    --interactive-hover: oklch(from var(--color-emerald-900) calc(l + 0.08) c h);
+    --card-hover: oklch(from var(--color-emerald-900) calc(l + 0.08) c h);
+    --message-assistant-bg: oklch(from var(--color-emerald-900) calc(l + 0.1) c h);
+    --status-success: var(--color-emerald-400);
+    --status-success-fg: var(--color-emerald-900);
   }
 }
 
@@ -253,9 +466,22 @@
   --primary: var(--color-neutral-600);
   --primary-foreground: var(--color-neutral-50);
 
+  /* Theme-specific overrides */
+  --nav-hover: oklch(from var(--color-neutral-100) calc(l + 0.05) c h);
+  --nav-active: oklch(from var(--color-neutral-200) calc(l + 0.1) c h);
+  --interactive-hover: oklch(from var(--color-neutral-50) calc(l + 0.03) c h);
+  --card-hover: oklch(from var(--color-neutral-50) calc(l + 0.02) c h);
+  --message-assistant-bg: oklch(from var(--color-neutral-50) calc(l + 0.05) c h);
+
   @variant dark {
     --primary: var(--color-neutral-500);
     --primary-foreground: var(--color-neutral-50);
+
+    --nav-hover: oklch(from var(--color-neutral-900) calc(l + 0.08) c h);
+    --nav-active: oklch(from var(--color-neutral-800) calc(l + 0.15) c h);
+    --interactive-hover: oklch(from var(--color-neutral-900) calc(l + 0.08) c h);
+    --card-hover: oklch(from var(--color-neutral-900) calc(l + 0.08) c h);
+    --message-assistant-bg: oklch(from var(--color-neutral-900) calc(l + 0.1) c h);
   }
 
   .rounded-xs,

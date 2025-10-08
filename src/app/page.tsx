@@ -22,7 +22,6 @@ export default function LandingPage() {
       <StatsSection />
       <Testimonials />
       <Pricing />
-
       <FooterSection />
     </>
   );

@@ -1,3 +1,7 @@
+'use client';
+
+import { motion } from 'motion/react';
+
 export default function StatsSection() {
   return (
     <section className="py-12 md:py-20">
@@ -14,18 +18,36 @@ export default function StatsSection() {
         </div>
 
         <div className="grid gap-0.5 *:text-center md:grid-cols-3 dark:[--color-muted:var(--color-zinc-900)]">
-          <div className="bg-muted space-y-4 rounded-(--radius) py-12">
+          <motion.div
+            className="bg-muted space-y-4 rounded-(--radius) py-12"
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            whileHover={{ scale: 1.05 }}
+          >
             <div className="text-5xl font-bold">+1200</div>
             <p>Stars on GitHub</p>
-          </div>
-          <div className="bg-muted space-y-4 rounded-(--radius) py-12">
+          </motion.div>
+          <motion.div
+            className="bg-muted space-y-4 rounded-(--radius) py-12"
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            whileHover={{ scale: 1.05 }}
+          >
             <div className="text-5xl font-bold">56%</div>
             <p>Conversion rate</p>
-          </div>
-          <div className="bg-muted space-y-4 rounded-(--radius) py-12">
+          </motion.div>
+          <motion.div
+            className="bg-muted space-y-4 rounded-(--radius) py-12"
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            whileHover={{ scale: 1.05 }}
+          >
             <div className="text-5xl font-bold">+500</div>
             <p>Powered Apps</p>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

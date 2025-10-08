@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import {
@@ -8,6 +10,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Check } from 'lucide-react';
+import { motion } from 'motion/react';
 
 export default function Pricing() {
   return (
@@ -25,115 +28,165 @@ export default function Pricing() {
         </div>
 
         <div className="mt-8 grid gap-6 md:mt-20 md:grid-cols-3">
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-medium">Free</CardTitle>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            whileHover={{ scale: 1.02 }}
+          >
+            <Card>
+              <CardHeader>
+                <CardTitle className="font-medium">Free</CardTitle>
 
-              <span className="my-3 block text-2xl font-semibold">$0 / mo</span>
+                <span className="my-3 block text-2xl font-semibold">
+                  $0 / mo
+                </span>
 
-              <CardDescription className="text-sm">Per editor</CardDescription>
-              <Button asChild variant="outline" className="mt-4 w-full">
-                <Link href="/dashboard/subscriptions">Get Started</Link>
-              </Button>
-            </CardHeader>
+                <CardDescription className="text-sm">
+                  Per editor
+                </CardDescription>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Button asChild variant="outline" className="mt-4 w-full">
+                    <Link href="/dashboard/subscriptions">Get Started</Link>
+                  </Button>
+                </motion.div>
+              </CardHeader>
 
-            <CardContent className="space-y-4">
-              <hr className="border-dashed" />
+              <CardContent className="space-y-4">
+                <hr className="border-dashed" />
 
-              <ul className="list-outside space-y-3 text-sm">
-                {[
-                  'Basic Analytics Dashboard',
-                  '5GB Cloud Storage',
-                  'Email and Chat Support',
-                ].map((item, index) => (
-                  <li key={index} className="flex items-center gap-2">
-                    <Check className="size-3" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
+                <ul className="list-outside space-y-3 text-sm">
+                  {[
+                    'Basic Analytics Dashboard',
+                    '5GB Cloud Storage',
+                    'Email and Chat Support',
+                  ].map((item, index) => (
+                    <li key={index} className="flex items-center gap-2">
+                      <motion.div whileHover={{ scale: 1.1 }}>
+                        <Check className="size-3" />
+                      </motion.div>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-          <Card className="relative">
-            <span className="absolute inset-x-0 -top-3 mx-auto flex h-6 w-fit items-center rounded-full bg-linear-to-br/increasing from-purple-400 to-amber-300 px-3 py-1 text-xs font-medium text-amber-950 ring-1 ring-white/20 ring-offset-1 ring-offset-gray-950/5 ring-inset">
-              Popular
-            </span>
-
-            <CardHeader>
-              <CardTitle className="font-medium">Pro</CardTitle>
-
-              <span className="my-3 block text-2xl font-semibold">
-                $19 / mo
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            whileHover={{ scale: 1.02 }}
+          >
+            <Card className="relative">
+              <span className="absolute inset-x-0 -top-3 mx-auto flex h-6 w-fit items-center rounded-full bg-linear-to-br/increasing from-purple-400 to-amber-300 px-3 py-1 text-xs font-medium text-amber-950 ring-1 ring-white/20 ring-offset-1 ring-offset-gray-950/5 ring-inset">
+                Popular
               </span>
 
-              <CardDescription className="text-sm">Per editor</CardDescription>
+              <CardHeader>
+                <CardTitle className="font-medium">Pro</CardTitle>
 
-              <Button
-                asChild
-                className="mt-4 w-full hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:text-white"
-              >
-                <Link href="/dashboard/subscriptions">Upgrade</Link>
-              </Button>
-            </CardHeader>
+                <span className="my-3 block text-2xl font-semibold">
+                  $19 / mo
+                </span>
 
-            <CardContent className="space-y-4">
-              <hr className="border-dashed" />
+                <CardDescription className="text-sm">
+                  Per editor
+                </CardDescription>
 
-              <ul className="list-outside space-y-3 text-sm">
-                {[
-                  'Everything in Free Plan',
-                  '5GB Cloud Storage',
-                  'Email and Chat Support',
-                  'Access to Community Forum',
-                  'Single User Access',
-                  'Access to Basic Templates',
-                  'Mobile App Access',
-                  '1 Custom Report Per Month',
-                  'Monthly Product Updates',
-                  'Standard Security Features',
-                ].map((item, index) => (
-                  <li key={index} className="flex items-center gap-2">
-                    <Check className="size-3" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Button
+                    asChild
+                    className="mt-4 w-full hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:text-white"
+                  >
+                    <Link href="/dashboard/subscriptions">Upgrade</Link>
+                  </Button>
+                </motion.div>
+              </CardHeader>
 
-          <Card className="flex flex-col">
-            <CardHeader>
-              <CardTitle className="font-medium">Startup</CardTitle>
+              <CardContent className="space-y-4">
+                <hr className="border-dashed" />
 
-              <span className="my-3 block text-2xl font-semibold">
-                $29 / mo
-              </span>
+                <ul className="list-outside space-y-3 text-sm">
+                  {[
+                    'Everything in Free Plan',
+                    '5GB Cloud Storage',
+                    'Email and Chat Support',
+                    'Access to Community Forum',
+                    'Single User Access',
+                    'Access to Basic Templates',
+                    'Mobile App Access',
+                    '1 Custom Report Per Month',
+                    'Monthly Product Updates',
+                    'Standard Security Features',
+                  ].map((item, index) => (
+                    <li key={index} className="flex items-center gap-2">
+                      <motion.div whileHover={{ scale: 1.1 }}>
+                        <Check className="size-3" />
+                      </motion.div>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-              <CardDescription className="text-sm">Per editor</CardDescription>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            whileHover={{ scale: 1.02 }}
+          >
+            <Card className="flex flex-col">
+              <CardHeader>
+                <CardTitle className="font-medium">Startup</CardTitle>
 
-              <Button asChild variant="outline" className="mt-4 w-full">
-                <Link href="/dashboard/subscriptions">Get Started</Link>
-              </Button>
-            </CardHeader>
+                <span className="my-3 block text-2xl font-semibold">
+                  $29 / mo
+                </span>
 
-            <CardContent className="space-y-4">
-              <hr className="border-dashed" />
+                <CardDescription className="text-sm">
+                  Per editor
+                </CardDescription>
 
-              <ul className="list-outside space-y-3 text-sm">
-                {[
-                  'Everything in Pro Plan',
-                  '5GB Cloud Storage',
-                  'Email and Chat Support',
-                ].map((item, index) => (
-                  <li key={index} className="flex items-center gap-2">
-                    <Check className="size-3" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Button asChild variant="outline" className="mt-4 w-full">
+                    <Link href="/dashboard/subscriptions">Get Started</Link>
+                  </Button>
+                </motion.div>
+              </CardHeader>
+
+              <CardContent className="space-y-4">
+                <hr className="border-dashed" />
+
+                <ul className="list-outside space-y-3 text-sm">
+                  {[
+                    'Everything in Pro Plan',
+                    '5GB Cloud Storage',
+                    'Email and Chat Support',
+                  ].map((item, index) => (
+                    <li key={index} className="flex items-center gap-2">
+                      <motion.div whileHover={{ scale: 1.1 }}>
+                        <Check className="size-3" />
+                      </motion.div>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          </motion.div>
         </div>
       </div>
     </section>
