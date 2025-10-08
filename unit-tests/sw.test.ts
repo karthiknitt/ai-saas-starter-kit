@@ -106,9 +106,11 @@ describe('service worker (sw.js)', () => {
       expect(hasPromises).toBe(true)
     })
 
-    it('should not have syntax errors', () => {
+    it('should not have syntax errors', async () => {
+      // Use a proper parser that supports top-level script syntax
+      const { parse } = await import('@babel/parser')
       expect(() => {
-        new Function(swCode)
+        parse(swCode, { sourceType: 'script' })
       }).not.toThrow()
     })
   })
