@@ -1,6 +1,7 @@
 import dynamic from 'next/dynamic';
 import { HeroHeader } from '@/components/header';
 import HeroSection from '@/components/hero-section';
+import { HomePageWrapper } from '@/components/home-page-wrapper';
 
 // Lazy load heavy components that don't need to be immediately visible
 const Features = dynamic(() => import('@/components/features-4'), {
@@ -27,13 +28,14 @@ const FooterSection = dynamic(() => import('@/components/footer'));
 
 /**
  * Renders the landing page composed of header, hero, features, content, stats, testimonials, pricing, and footer sections.
+ * The page uses independent styling that adapts to system color scheme but is not affected by user theme selection.
  *
- * @returns The React fragment containing the assembled landing page sections.
+ * @returns The React fragment containing the assembled landing page sections wrapped in HomePageWrapper.
  */
 export default function LandingPage() {
   console.log('[DEBUG] Home page component rendering');
   return (
-    <>
+    <HomePageWrapper>
       <HeroHeader />
       <HeroSection />
       <Features />
@@ -42,6 +44,6 @@ export default function LandingPage() {
       <Testimonials />
       <Pricing />
       <FooterSection />
-    </>
+    </HomePageWrapper>
   );
 }

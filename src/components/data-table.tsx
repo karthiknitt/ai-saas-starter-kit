@@ -56,12 +56,7 @@ import { z } from 'zod';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from '@/components/ui/chart';
+import { ChartConfig, ChartContainer } from '@/components/ui/chart';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   Drawer,
@@ -679,10 +674,6 @@ function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
                     tickMargin={8}
                     tickFormatter={value => value.slice(0, 3)}
                     hide
-                  />
-                  <ChartTooltip
-                    cursor={false}
-                    content={<ChartTooltipContent indicator="dot" />}
                   />
                   <Area
                     dataKey="mobile"

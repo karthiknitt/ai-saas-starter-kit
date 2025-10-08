@@ -149,7 +149,7 @@ export function LoginForm({
                       />
                       <a
                         href="/forgot-password"
-                        className="ml-auto text-sm underline-offset-4 hover:underline"
+                        className="ml-auto text-sm underline-offset-4"
                       >
                         Forgot your password?
                       </a>
@@ -183,7 +183,7 @@ export function LoginForm({
           </Form>
         </CardContent>
       </Card>
-      <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
+      <div className="text-muted-foreground text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
         By clicking continue, you agree to our <a href="#">Terms of Service</a>{' '}
         and <a href="#">Privacy Policy</a>.
       </div>
