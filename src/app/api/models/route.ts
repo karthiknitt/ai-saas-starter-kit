@@ -4,6 +4,7 @@ import { user } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { auth } from '@/lib/auth';
 import { decrypt } from '@/lib/crypto';
+import { aj } from '@/lib/arcjet';
 
 interface OpenAIModel {
   id: string;
@@ -37,6 +38,12 @@ interface OpenRouterModel {
 
 export async function GET(request: NextRequest) {
   try {
+    // Apply Arcjet protection to models API requests
+    const decision = await aj.protect(request);
+    if (decision.isDenied()) {
+      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+    }
+
     const session = await auth.api.getSession({
       headers: request.headers,
     });

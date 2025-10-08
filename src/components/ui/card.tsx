@@ -2,6 +2,13 @@ import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 
+/**
+ * Container component that renders a styled card wrapper.
+ *
+ * @param className - Additional CSS class names to merge with the component's default styles
+ * @param props - Additional props spread onto the root `div`
+ * @returns A `div` element with `data-slot="card"`, combined class names, and any provided props
+ */
 function Card({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div

@@ -10,6 +10,11 @@ import { ProgressiveBlur } from '@/components/ui/progressive-blur';
 import { ChevronRight } from 'lucide-react';
 import { motion } from 'motion/react';
 
+/**
+ * Render the page hero area with header, headline, primary call-to-action buttons, a video showcase, and a continuous partner logo slider with decorative overlays.
+ *
+ * @returns A React element containing the hero header, the main hero content (headline, subtitle, animated CTAs, and background video), and the logos section with an infinite slider and visual decorations.
+ */
 export default function HeroSection() {
   return (
     <>
@@ -81,6 +86,9 @@ export default function HeroSection() {
               <video
                 autoPlay
                 loop
+                muted
+                playsInline
+                preload="metadata"
                 className="size-full object-cover opacity-50 invert dark:opacity-35 dark:invert-0 dark:lg:opacity-75"
                 src="https://ik.imagekit.io/lrigu76hy/tailark/dna-video.mp4?updatedAt=1745736251477"
               ></video>
@@ -101,7 +109,8 @@ export default function HeroSection() {
                       src="https://html.tailus.io/blocks/customers/nvidia.svg"
                       alt="Nvidia Logo"
                       width={120}
-                      height={20}
+                      height={32}
+                      style={{ width: 'auto', height: 'auto' }}
                     />
                   </div>
 
@@ -111,7 +120,8 @@ export default function HeroSection() {
                       src="https://html.tailus.io/blocks/customers/column.svg"
                       alt="Column Logo"
                       width={80}
-                      height={16}
+                      height={32}
+                      style={{ width: 'auto', height: 'auto' }}
                     />
                   </div>
                   <div className="flex">
@@ -120,7 +130,8 @@ export default function HeroSection() {
                       src="https://html.tailus.io/blocks/customers/github.svg"
                       alt="GitHub Logo"
                       width={80}
-                      height={16}
+                      height={32}
+                      style={{ width: 'auto', height: 'auto' }}
                     />
                   </div>
                   <div className="flex">
@@ -129,7 +140,8 @@ export default function HeroSection() {
                       src="https://html.tailus.io/blocks/customers/nike.svg"
                       alt="Nike Logo"
                       width={60}
-                      height={20}
+                      height={32}
+                      style={{ width: 'auto', height: 'auto' }}
                     />
                   </div>
                   <div className="flex">
@@ -138,7 +150,8 @@ export default function HeroSection() {
                       src="https://html.tailus.io/blocks/customers/lemonsqueezy.svg"
                       alt="Lemon Squeezy Logo"
                       width={120}
-                      height={20}
+                      height={32}
+                      style={{ width: 'auto', height: 'auto' }}
                     />
                   </div>
                   <div className="flex">
@@ -147,7 +160,8 @@ export default function HeroSection() {
                       src="https://html.tailus.io/blocks/customers/laravel.svg"
                       alt="Laravel Logo"
                       width={100}
-                      height={16}
+                      height={32}
+                      style={{ width: 'auto', height: 'auto' }}
                     />
                   </div>
                   <div className="flex">
@@ -156,7 +170,8 @@ export default function HeroSection() {
                       src="https://html.tailus.io/blocks/customers/lilly.svg"
                       alt="Lilly Logo"
                       width={80}
-                      height={28}
+                      height={32}
+                      style={{ width: 'auto', height: 'auto' }}
                     />
                   </div>
 
@@ -166,7 +181,8 @@ export default function HeroSection() {
                       src="https://html.tailus.io/blocks/customers/openai.svg"
                       alt="OpenAI Logo"
                       width={100}
-                      height={24}
+                      height={32}
+                      style={{ width: 'auto', height: 'auto' }}
                     />
                   </div>
                 </InfiniteSlider>

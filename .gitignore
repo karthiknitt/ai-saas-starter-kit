@@ -11,6 +11,7 @@
 !.yarn/versions
 
 # testing
+*.log
 /coverage
 
 # next.js
@@ -26,7 +27,8 @@
 
 gpg_key.txt
 
-
+.kilocode/*
+.vscode/
 
 # misc
 .DS_Store

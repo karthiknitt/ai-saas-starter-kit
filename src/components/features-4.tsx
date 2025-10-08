@@ -10,6 +10,13 @@ import {
 } from 'lucide-react';
 import { motion } from 'motion/react';
 
+/**
+ * Render a responsive features section describing the foundation for creative teams management.
+ *
+ * Each feature is presented as an animated card with an icon, title, and description; cards fade and slide into view with staggered delays and slightly scale/rotate on hover to enhance interactivity.
+ *
+ * @returns The section element containing the features grid with animated feature cards.
+ */
 export default function Features() {
   return (
     <section className="py-12 md:py-20">
