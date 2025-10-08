@@ -185,12 +185,83 @@
   --calendar-day-selected-fg: var(--primary-foreground);
 }
 
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --border: oklch(0.4 0 0);
+    --ring: oklch(0.4 0 0);
+  }
+
+  .dark {
+    --border: oklch(0.6 0 0);
+    --ring: oklch(0.6 0 0);
+  }
+}
+
+/* Color blindness accessibility improvements */
+@media (prefers-color-scheme: dark) {
+  .deuteranopia {
+    --chart-1: oklch(0.6 0.15 240);
+    --chart-2: oklch(0.5 0.12 300);
+    --chart-3: oklch(0.7 0.18 180);
+    --chart-4: oklch(0.4 0.1 60);
+    --chart-5: oklch(0.8 0.2 120);
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  .deuteranopia {
+    --chart-1: oklch(0.5 0.18 240);
+    --chart-2: oklch(0.4 0.15 300);
+    --chart-3: oklch(0.6 0.2 180);
+    --chart-4: oklch(0.3 0.12 60);
+    --chart-5: oklch(0.7 0.22 120);
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
+  }
+
+  /* Enhanced focus indicators for better accessibility */
+  *:focus-visible {
+    outline: 3px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  /* Ensure interactive elements have minimum touch target size */
+  button,
+  a,
+  input,
+  select,
+  textarea,
+  [role='button'],
+  [tabindex]:not([tabindex='-1']) {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Improve hover states for better visual feedback */
+  a:hover,
+  button:hover,
+  [role='button']:hover {
+    transform: translateY(-1px);
+    transition: transform 0.2s ease-out;
   }
 }
 

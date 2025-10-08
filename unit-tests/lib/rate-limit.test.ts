@@ -236,7 +236,7 @@ describe('rate-limit', () => {
   describe('pre-configured rate limiters', () => {
     describe('apiRateLimit', () => {
       it('should have correct configuration (100 requests per minute)', () => {
-        const request = createMockRequest('10.0.0.1')
+        const request = createMockRequest('unique-test-ip-100')
 
         // Make 100 requests
         for (let i = 0; i < 100; i++) {

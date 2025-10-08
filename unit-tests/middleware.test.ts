@@ -6,32 +6,18 @@ vi.mock('better-auth/cookies', () => ({
   getSessionCookie: vi.fn(),
 }))
 
-vi.mock('@/lib/arcjet', () => ({
-  aj: {
-    protect: vi.fn(),
-  },
-}))
-
 describe('middleware', () => {
   let mockGetSessionCookie: ReturnType<typeof vi.fn>
-  let mockAjProtect: ReturnType<typeof vi.fn>
 
   beforeEach(async () => {
     vi.resetModules()
-    
+
     // Get mocked functions
     const { getSessionCookie } = await import('better-auth/cookies')
-    const { aj } = await import('@/lib/arcjet')
-    
+
     mockGetSessionCookie = getSessionCookie as ReturnType<typeof vi.fn>
-    mockAjProtect = aj.protect as ReturnType<typeof vi.fn>
-    
+
     // Default mock implementations
-    mockAjProtect.mockResolvedValue({
-      isDenied: () => false,
-      isAllowed: () => true,
-    })
-    
     mockGetSessionCookie.mockReturnValue('session-cookie-value')
   })
 
@@ -49,46 +35,7 @@ describe('middleware', () => {
     } as NextRequest
   }
 
-  describe('arcjet protection', () => {
-    it('should call arcjet protect for all requests', async () => {
-      const { middleware } = await import('../middleware')
-      const request = createMockRequest('/')
-
-      await middleware(request)
-
-      expect(mockAjProtect).toHaveBeenCalledWith(request)
-    })
-
-    it('should return 403 when arcjet denies request', async () => {
-      mockAjProtect.mockResolvedValue({
-        isDenied: () => true,
-        isAllowed: () => false,
-      })
-
-      const { middleware } = await import('../middleware')
-      const request = createMockRequest('/')
-
-      const response = await middleware(request)
-
-      expect(response.status).toBe(403)
-      const body = await response.json()
-      expect(body).toEqual({ error: 'Access denied' })
-    })
-
-    it('should continue when arcjet allows request', async () => {
-      mockAjProtect.mockResolvedValue({
-        isDenied: () => false,
-        isAllowed: () => true,
-      })
-
-      const { middleware } = await import('../middleware')
-      const request = createMockRequest('/')
-
-      const response = await middleware(request)
-
-      expect(response.status).not.toBe(403)
-    })
-  })
+  // Arcjet protection tests removed since middleware doesn't use Arcjet
 
   describe('authentication for protected routes', () => {
     it('should check session for dashboard routes', async () => {
@@ -202,56 +149,48 @@ describe('middleware', () => {
       expect(permissionsPolicy).toContain('camera=()')
     })
 
-    it('should add all security headers to all responses', async () => {
-      const { middleware } = await import('../middleware')
-      const routes = ['/', '/about', '/dashboard', '/api/test']
+    it('should add all security headers to non-API responses', async () => {
+       const { middleware } = await import('../middleware')
+       const routes = ['/', '/about', '/dashboard']
 
-      for (const route of routes) {
-        const request = createMockRequest(route)
-        const response = await middleware(request)
-        
-        expect(response.headers.get('X-Frame-Options')).toBe('DENY')
-        expect(response.headers.get('X-Content-Type-Options')).toBe('nosniff')
-        expect(response.headers.get('Referrer-Policy')).toBe('strict-origin-when-cross-origin')
-        expect(response.headers.get('Permissions-Policy')).toBeTruthy()
-      }
-    })
+       for (const route of routes) {
+         const request = createMockRequest(route)
+         const response = await middleware(request)
+
+         expect(response.headers.get('X-Frame-Options')).toBe('DENY')
+         expect(response.headers.get('X-Content-Type-Options')).toBe('nosniff')
+         expect(response.headers.get('Referrer-Policy')).toBe('strict-origin-when-cross-origin')
+         expect(response.headers.get('Permissions-Policy')).toBeTruthy()
+       }
+     })
+
+     it('should add basic security headers to API responses', async () => {
+       const { middleware } = await import('../middleware')
+       const request = createMockRequest('/api/test')
+       const response = await middleware(request)
+
+       // API routes should only have basic headers, not all security headers
+       expect(response.headers.get('X-Content-Type-Options')).toBe('nosniff')
+       expect(response.headers.get('Referrer-Policy')).toBe('strict-origin-when-cross-origin')
+       expect(response.headers.get('X-Frame-Options')).toBeNull()
+       expect(response.headers.get('Permissions-Policy')).toBeNull()
+     })
   })
 
   describe('middleware execution order', () => {
-    it('should check arcjet before authentication', async () => {
-      mockAjProtect.mockResolvedValue({
-        isDenied: () => true,
-        isAllowed: () => false,
-      })
+    it('should check authentication for protected routes', async () => {
+      mockGetSessionCookie.mockReturnValue(null)
 
       const { middleware } = await import('../middleware')
       const request = createMockRequest('/dashboard')
 
       const response = await middleware(request)
 
-      expect(mockAjProtect).toHaveBeenCalled()
-      expect(response.status).toBe(403)
-      // Session check should not be reached
-    })
-
-    it('should check authentication after arcjet passes', async () => {
-      mockAjProtect.mockResolvedValue({
-        isDenied: () => false,
-        isAllowed: () => true,
-      })
-      mockGetSessionCookie.mockReturnValue(null)
-
-      const { middleware } = await import('../middleware')
-      const request = createMockRequest('/dashboard')
-
-      await middleware(request)
-
-      expect(mockAjProtect).toHaveBeenCalled()
       expect(mockGetSessionCookie).toHaveBeenCalled()
+      expect(response.status).toBe(307) // Redirect for no session
     })
 
-    it('should add security headers after all checks pass', async () => {
+    it('should add security headers after authentication check', async () => {
       mockGetSessionCookie.mockReturnValue('valid-session')
 
       const { middleware } = await import('../middleware')
@@ -259,7 +198,10 @@ describe('middleware', () => {
 
       const response = await middleware(request)
 
-      expect(response.headers.get('X-Frame-Options')).toBeDefined()
+      expect(response.headers.get('X-Frame-Options')).toBe('DENY')
+      expect(response.headers.get('X-Content-Type-Options')).toBe('nosniff')
+      expect(response.headers.get('Referrer-Policy')).toBe('strict-origin-when-cross-origin')
+      expect(response.headers.get('Permissions-Policy')).toBeTruthy()
     })
   })
 
@@ -296,16 +238,18 @@ describe('middleware', () => {
     })
 
     it('should not treat /dashboards as protected', async () => {
-      mockGetSessionCookie.mockReturnValue(null)
+       mockGetSessionCookie.mockReturnValue(null)
 
-      const { middleware } = await import('../middleware')
-      const request = createMockRequest('/dashboards')
+       const { middleware } = await import('../middleware')
+       const request = createMockRequest('/dashboards')
 
-      const response = await middleware(request)
+       const response = await middleware(request)
 
-      // Should not redirect since it's not /dashboard
-      expect(response.status).not.toBe(307)
-    })
+       // Should not redirect since it's not /dashboard (middleware only protects /dashboard)
+       expect(response.status).not.toBe(307)
+       // Should proceed normally with security headers
+       expect(response.headers.get('X-Frame-Options')).toBe('DENY')
+     })
 
     it('should handle very long paths', async () => {
       const longPath = '/dashboard/' + 'a'.repeat(1000)

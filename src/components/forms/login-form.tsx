@@ -126,7 +126,7 @@ export function LoginForm({
                         name="password"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Pasword</FormLabel>
+                            <FormLabel>Password</FormLabel>
                             <FormControl>
                               <Input
                                 placeholder="********"
@@ -154,7 +154,10 @@ export function LoginForm({
                     onClick={form.handleSubmit(onSubmit)}
                   >
                     {isLoading ? (
-                      <Loader2 className="size-4 animate-spin" />
+                      <Loader2
+                        className="size-4 animate-spin"
+                        aria-label="Signing in..."
+                      />
                     ) : (
                       'Login'
                     )}

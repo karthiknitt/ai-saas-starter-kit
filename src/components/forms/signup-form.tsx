@@ -186,7 +186,10 @@ export function SignUpForm({
                   </div>
                   <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? (
-                      <Loader2 className="size-4 animate-spin" />
+                      <Loader2
+                        className="size-4 animate-spin"
+                        aria-label="Creating account..."
+                      />
                     ) : (
                       'Sign Up'
                     )}

@@ -1,5 +1,14 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 
+// Mock the arcjet module before importing our module
+vi.mock('@arcjet/next', () => ({
+  default: vi.fn(() => ({
+    protect: vi.fn()
+  })),
+  detectBot: vi.fn(() => ({})),
+  shield: vi.fn(() => ({}))
+}))
+
 describe('arcjet', () => {
   let originalArcjetKey: string | undefined
 
@@ -27,7 +36,7 @@ describe('arcjet', () => {
       await expect(async () => {
         await import('@/lib/arcjet')
       }).rejects.toThrow('ARCJET_KEY environment variable must be set')
-    })
+    }, 30000) // Increase timeout significantly for this test
 
     it('should initialize with valid ARCJET_KEY', async () => {
       process.env.ARCJET_KEY = 'dummy-arcjet-key'

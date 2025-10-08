@@ -13,7 +13,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Only apply protection to sensitive routes to reduce bundle size
-  const isProtectedRoute = pathname.startsWith('/dashboard');
+  const isProtectedRoute = pathname === '/dashboard' || pathname.startsWith('/dashboard/');
   const isApiRoute = pathname.startsWith('/api/');
 
   // For API routes, use minimal protection

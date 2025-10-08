@@ -92,11 +92,11 @@ describe('crypto', () => {
     it('should throw an error for tampered encrypted data', () => {
       const originalText = 'hello world'
       const encrypted = encrypt(originalText)
-      // Tamper with the encrypted data part (after the second colon)
+      // Tamper with the auth tag (second part) which should cause authentication to fail
       const parts = encrypted.split(':')
-      if (parts.length === 3 && parts[2].length > 0) {
-        // Change the first character of the encrypted data
-        parts[2] = '0' + parts[2].slice(1)
+      if (parts.length === 3 && parts[1].length > 0) {
+        // Change the first character of the auth tag
+        parts[1] = '0' + parts[1].slice(1)
         const tampered = parts.join(':')
         expect(() => decrypt(tampered)).toThrow()
       } else {
