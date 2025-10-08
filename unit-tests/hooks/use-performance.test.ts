@@ -9,12 +9,24 @@ describe('use-performance', () => {
   let originalReadyState: string
   let mockGtag: ReturnType<typeof vi.fn>
 
+describe('use-performance', () => {
+  let mockPerformance: {
+    getEntriesByType: ReturnType<typeof vi.fn>
+  }
+  let originalReadyState: string
+  let mockGtag: ReturnType<typeof vi.fn>
+  let originalPerformance: typeof globalThis.performance
+  let originalGtag: (typeof window)['gtag']
+
   beforeEach(() => {
+    // Capture originals
+    originalPerformance = global.performance
+    originalGtag = window.gtag
+
     // Mock performance API
     mockPerformance = {
       getEntriesByType: vi.fn(),
     }
-    
     Object.defineProperty(global, 'performance', {
       writable: true,
       configurable: true,
@@ -40,7 +52,21 @@ describe('use-performance', () => {
       configurable: true,
       value: originalReadyState,
     })
+    // Restore originals
+    Object.defineProperty(global, 'performance', {
+      writable: true,
+      configurable: true,
+      value: originalPerformance,
+    })
+    Object.defineProperty(window, 'gtag', {
+      writable: true,
+      configurable: true,
+      value: originalGtag,
+    })
   })
+
+  // …other tests…
+})
 
   describe('usePerformance', () => {
     it('should initialize with loading state', () => {
