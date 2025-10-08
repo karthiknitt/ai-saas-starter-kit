@@ -77,11 +77,11 @@ describe('Database Operations Integration Tests', () => {
     });
 
     it('should update user API keys and provider', async () => {
-      const mockUpdate = vi.fn().mockReturnValue({
-        set: vi.fn().mockReturnThis(),
-        where: vi.fn().mockResolvedValue({ rowCount: 1 })
-      });
-      mockDb.update.mockReturnValue(mockUpdate as any); // eslint-disable-line @typescript-eslint/no-explicit-any
+      mockDb.update.mockReturnValue({
+        set: vi.fn().mockReturnValue({
+          where: vi.fn().mockResolvedValue({ rowCount: 1 })
+        })
+      } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
       const result = await mockDb
         .update(user)
@@ -96,10 +96,9 @@ describe('Database Operations Integration Tests', () => {
     });
 
     it('should delete user and cascade to related tables', async () => {
-      const mockDelete = vi.fn().mockReturnValue({
+      mockDb.delete.mockReturnValue({
         where: vi.fn().mockResolvedValue({ rowCount: 1 })
-      });
-      mockDb.delete.mockReturnValue(mockDelete as any); // eslint-disable-line @typescript-eslint/no-explicit-any
+      } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
       const result = await mockDb
         .delete(user)
@@ -154,11 +153,11 @@ describe('Database Operations Integration Tests', () => {
     });
 
     it('should update session expiration', async () => {
-      const mockUpdate = vi.fn().mockReturnValue({
-        set: vi.fn().mockReturnThis(),
-        where: vi.fn().mockResolvedValue({ rowCount: 1 })
-      });
-      mockDb.update.mockReturnValue(mockUpdate as any); // eslint-disable-line @typescript-eslint/no-explicit-any
+      mockDb.update.mockReturnValue({
+        set: vi.fn().mockReturnValue({
+          where: vi.fn().mockResolvedValue({ rowCount: 1 })
+        })
+      } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
       const newExpiresAt = new Date(Date.now() + 48 * 60 * 60 * 1000);
 
@@ -172,10 +171,9 @@ describe('Database Operations Integration Tests', () => {
     });
 
     it('should delete expired sessions', async () => {
-      const mockDelete = vi.fn().mockReturnValue({
+      mockDb.delete.mockReturnValue({
         where: vi.fn().mockResolvedValue({ rowCount: 5 })
-      });
-      mockDb.delete.mockReturnValue(mockDelete as any); // eslint-disable-line @typescript-eslint/no-explicit-any
+      } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
       const expiredDate = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
@@ -237,11 +235,11 @@ describe('Database Operations Integration Tests', () => {
     });
 
     it('should update account tokens', async () => {
-      const mockUpdate = vi.fn().mockReturnValue({
-        set: vi.fn().mockReturnThis(),
-        where: vi.fn().mockResolvedValue({ rowCount: 1 })
-      });
-      mockDb.update.mockReturnValue(mockUpdate as any); // eslint-disable-line @typescript-eslint/no-explicit-any
+      mockDb.update.mockReturnValue({
+        set: vi.fn().mockReturnValue({
+          where: vi.fn().mockResolvedValue({ rowCount: 1 })
+        })
+      } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
       const newAccessToken = 'new-access-token';
 
@@ -305,10 +303,9 @@ describe('Database Operations Integration Tests', () => {
     });
 
     it('should delete expired verifications', async () => {
-      const mockDelete = vi.fn().mockReturnValue({
+      mockDb.delete.mockReturnValue({
         where: vi.fn().mockResolvedValue({ rowCount: 3 })
-      });
-      mockDb.delete.mockReturnValue(mockDelete as any); // eslint-disable-line @typescript-eslint/no-explicit-any
+      } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
       const expiredDate = new Date(Date.now() - 60 * 60 * 1000);
 
@@ -368,11 +365,11 @@ describe('Database Operations Integration Tests', () => {
     });
 
     it('should update subscription status', async () => {
-      const mockUpdate = vi.fn().mockReturnValue({
-        set: vi.fn().mockReturnThis(),
-        where: vi.fn().mockResolvedValue({ rowCount: 1 })
-      });
-      mockDb.update.mockReturnValue(mockUpdate as any); // eslint-disable-line @typescript-eslint/no-explicit-any
+      mockDb.update.mockReturnValue({
+        set: vi.fn().mockReturnValue({
+          where: vi.fn().mockResolvedValue({ rowCount: 1 })
+        })
+      } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
       const result = await mockDb
         .update(subscription)
@@ -390,13 +387,18 @@ describe('Database Operations Integration Tests', () => {
 
   describe('Transaction Safety', () => {
     it('should handle transaction rollback on error', async () => {
-      // Mock a transaction that fails partway through
-      const mockTransaction = vi.fn().mockImplementation(async (tx) => {
-        await tx.insert(user).values(testUser);
-        throw new Error('Transaction failed');
-      });
+      // Mock insert for the transaction
+      const mockInsert = vi.fn().mockResolvedValue({ rows: [testUser] });
+      mockDb.insert.mockReturnValue({
+        values: vi.fn().mockReturnValue({
+          returning: vi.fn().mockReturnValue(mockInsert)
+        })
+      } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
-      mockDb.transaction = mockTransaction;
+      // Mock a transaction that fails partway through
+      mockDb.transaction = vi.fn().mockImplementation(async (callback) => {
+        await callback(mockDb);
+      });
 
       await expect(mockDb.transaction(async (tx) => {
         await tx.insert(user).values(testUser);
@@ -405,12 +407,17 @@ describe('Database Operations Integration Tests', () => {
     });
 
     it('should complete successful transactions', async () => {
-      const mockTransaction = vi.fn().mockImplementation(async (tx) => {
-        await tx.insert(user).values(testUser);
-        return { success: true };
-      });
+      // Mock insert for the transaction
+      const mockInsert = vi.fn().mockResolvedValue({ rows: [testUser] });
+      mockDb.insert.mockReturnValue({
+        values: vi.fn().mockReturnValue({
+          returning: vi.fn().mockReturnValue(mockInsert)
+        })
+      } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
-      mockDb.transaction = mockTransaction;
+      mockDb.transaction = vi.fn().mockImplementation(async (callback) => {
+        return await callback(mockDb);
+      });
 
       const result = await mockDb.transaction(async (tx) => {
         await tx.insert(user).values(testUser);

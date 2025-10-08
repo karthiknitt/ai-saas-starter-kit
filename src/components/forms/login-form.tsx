@@ -31,7 +31,7 @@ import Link from 'next/link';
 
 const formSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(8, 'Password must be at least 6 characters long'),
+  password: z.string().min(8, 'Password must be at least 8 characters long'),
 });
 
 const signInWithGoogle = async () => {
@@ -60,12 +60,17 @@ export function LoginForm({
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     setIsLoading(true);
-    const { success, message } = await signIn(values.email, values.password);
-    if (success) {
-      toast.success(message as string);
-      router.push('/dashboard');
-    } else {
-      toast.error(message as string);
+    try {
+      const { success, message } = await signIn(values.email, values.password);
+      if (success) {
+        toast.success(message as string);
+        router.push('/dashboard');
+      } else {
+        toast.error(message as string);
+      }
+    } catch (error) {
+      toast.error('An error occurred during login');
+      console.error('Login error:', error);
     }
     setIsLoading(false);
   }
@@ -79,7 +84,10 @@ export function LoginForm({
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              data-testid="login-form"
+            >
               <div className="grid gap-6">
                 <div className="flex flex-col gap-4">
                   <Button
@@ -147,12 +155,7 @@ export function LoginForm({
                       </a>
                     </div>
                   </div>
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={isLoading}
-                    onClick={form.handleSubmit(onSubmit)}
-                  >
+                  <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? (
                       <Loader2
                         className="size-4 animate-spin"

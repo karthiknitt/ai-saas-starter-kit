@@ -1,7 +1,5 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { eq } from 'drizzle-orm';
+import { describe, it, expect, beforeEach, vi, Mock } from 'vitest';
 import { POST } from '../../src/app/api/chat/route';
-import { user } from '../../src/db/schema';
 
 // Mock external dependencies
 vi.mock('@/lib/auth');
@@ -12,6 +10,7 @@ vi.mock('@/lib/logger');
 vi.mock('ai');
 vi.mock('@ai-sdk/openai');
 vi.mock('@openrouter/ai-sdk-provider');
+vi.mock('next/headers');
 
 // Import after mocking to get the mocked versions
 import { auth } from '../../src/lib/auth';
@@ -42,6 +41,12 @@ vi.mock('@openrouter/ai-sdk-provider', () => ({
   createOpenRouter: vi.fn(() => vi.fn()),
 }));
 
+vi.mock('next/headers', () => ({
+  cookies: vi.fn(() => ({
+    get: vi.fn(() => null),
+  })),
+}));
+
 describe('/api/chat', () => {
   const mockUser = {
     id: 'user-123',
@@ -60,6 +65,8 @@ describe('/api/chat', () => {
     session: { id: 'session-123' },
   };
 
+  let limitMock: Mock<() => Promise<typeof mockUser[]>>;
+
   beforeEach(() => {
     vi.clearAllMocks();
 
@@ -73,14 +80,15 @@ describe('/api/chat', () => {
       ip: '127.0.0.1'
     } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
     mockAuth.api.getSession.mockResolvedValue(mockSession as { user: { id: string }; session: { id: string } });
+    // Create a mockable limit function
+    limitMock = vi.fn().mockResolvedValue([mockUser]);
     mockDb.select.mockReturnValue({
       from: vi.fn().mockReturnValue({
         where: vi.fn().mockReturnValue({
-          limit: vi.fn().mockResolvedValue([mockUser])
+          limit: limitMock
         })
       })
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any);
+    } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
     mockDecrypt.mockReturnValue('decrypted-api-key');
   });
 
@@ -101,7 +109,7 @@ describe('/api/chat', () => {
     });
 
     it('should return 404 for non-existent user', async () => {
-      mockDb.select().from(user).where(eq(user.id, 'user-123')).limit(1).mockResolvedValue([]);
+      limitMock.mockResolvedValue([]);
 
       const request = new Request('http://localhost:3000/api/chat', {
         method: 'POST',
@@ -118,7 +126,7 @@ describe('/api/chat', () => {
 
   describe('API Key Validation', () => {
     it('should return 400 for missing API keys', async () => {
-      mockDb.select().from(user).where(eq(user.id, 'user-123')).limit(1).mockResolvedValue([{
+      limitMock.mockResolvedValue([{
         ...mockUser,
         apiKeys: null,
         provider: null,
@@ -221,7 +229,7 @@ describe('/api/chat', () => {
     });
 
     it('should handle OpenRouter provider correctly', async () => {
-      mockDb.select().from(user).where(eq(user.id, 'user-123')).limit(1).mockResolvedValue([{
+      limitMock.mockResolvedValue([{
         ...mockUser,
         provider: 'openrouter',
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -239,7 +247,7 @@ describe('/api/chat', () => {
     });
 
     it('should return 400 for unsupported provider', async () => {
-      mockDb.select().from(user).where(eq(user.id, 'user-123')).limit(1).mockResolvedValue([{
+      limitMock.mockResolvedValue([{
         ...mockUser,
         provider: 'unsupported',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

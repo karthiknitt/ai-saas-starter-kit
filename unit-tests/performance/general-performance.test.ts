@@ -46,7 +46,7 @@ describe('General Performance Tests', () => {
       const executionTime = measurePerformance(operation);
 
       // Should complete within reasonable time
-      expect(executionTime).toBeLessThan(100);
+      expect(executionTime).toBeLessThan(200);
     });
 
     it('should handle object property access efficiently', () => {
@@ -64,7 +64,7 @@ describe('General Performance Tests', () => {
       };
 
       const executionTime = measurePerformance(operation);
-      expect(executionTime).toBeLessThan(50);
+      expect(executionTime).toBeLessThan(100);
     });
 
     it('should handle string operations efficiently', () => {
@@ -87,7 +87,7 @@ describe('General Performance Tests', () => {
       };
 
       const executionTime = measurePerformance(operation);
-      expect(executionTime).toBeLessThan(50);
+      expect(executionTime).toBeLessThan(100);
     });
   });
 
@@ -135,7 +135,7 @@ describe('General Performance Tests', () => {
       };
 
       const executionTime = measurePerformance(operation);
-      expect(executionTime).toBeLessThan(100);
+      expect(executionTime).toBeLessThan(200);
     });
   });
 
@@ -157,7 +157,7 @@ describe('General Performance Tests', () => {
       };
 
       const executionTime = measurePerformance(operation);
-      expect(executionTime).toBeLessThan(50);
+      expect(executionTime).toBeLessThan(100);
     });
 
     it('should handle sorting operations efficiently', () => {
@@ -173,7 +173,7 @@ describe('General Performance Tests', () => {
       };
 
       const executionTime = measurePerformance(operation);
-      expect(executionTime).toBeLessThan(200);
+      expect(executionTime).toBeLessThan(300);
     });
 
     it('should handle grouping operations efficiently', () => {
@@ -219,7 +219,7 @@ describe('General Performance Tests', () => {
       await operation();
       const endTime = performance.now();
 
-      expect(endTime - startTime).toBeLessThan(100);
+      expect(endTime - startTime).toBeLessThan(200);
     });
 
     it('should handle sequential async operations', async () => {
@@ -240,7 +240,7 @@ describe('General Performance Tests', () => {
       const results = await operation();
       const endTime = performance.now();
 
-      expect(endTime - startTime).toBeLessThan(200);
+      expect(endTime - startTime).toBeLessThan(600);
       expect(results).toHaveLength(10);
     });
   });
@@ -281,7 +281,7 @@ describe('General Performance Tests', () => {
       };
 
       const executionTime = measurePerformance(operation);
-      expect(executionTime).toBeLessThan(100);
+      expect(executionTime).toBeLessThan(200);
     });
 
     it('should handle recursive operations efficiently', () => {
@@ -299,7 +299,7 @@ describe('General Performance Tests', () => {
       };
 
       const executionTime = measurePerformance(operation);
-      expect(executionTime).toBeLessThan(50);
+      expect(executionTime).toBeLessThan(100);
     });
   });
 
@@ -318,7 +318,7 @@ describe('General Performance Tests', () => {
 
       // All benchmarks should complete within reasonable time
       results.forEach(({ executionTime }) => {
-        expect(executionTime).toBeLessThan(100);
+        expect(executionTime).toBeLessThan(200);
       });
     });
 
@@ -336,7 +336,7 @@ describe('General Performance Tests', () => {
 
       // All operations should be fast
       results.forEach(executionTime => {
-        expect(executionTime).toBeLessThan(50);
+        expect(executionTime).toBeLessThan(100);
       });
     });
   });

@@ -2,6 +2,29 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { NextRequest } from 'next/server'
 
 // Mock the dependencies
+vi.mock('next/server', () => ({
+  NextResponse: {
+    next: vi.fn(() => {
+      const headers = new Headers()
+      return {
+        headers,
+        status: 200,
+        get: (name: string) => headers.get(name),
+        set: (name: string, value: string) => headers.set(name, value),
+      }
+    }),
+    redirect: vi.fn((url) => {
+      const headers = new Headers([['location', url.toString()]])
+      return {
+        headers,
+        status: 307,
+        get: (name: string) => headers.get(name),
+        set: (name: string, value: string) => headers.set(name, value),
+      }
+    }),
+  },
+}))
+
 vi.mock('better-auth/cookies', () => ({
   getSessionCookie: vi.fn(),
 }))
