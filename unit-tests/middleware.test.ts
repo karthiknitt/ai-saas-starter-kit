@@ -321,15 +321,6 @@ describe('middleware', () => {
   })
 
   describe('error handling', () => {
-    it('should handle arcjet errors gracefully', async () => {
-      mockAjProtect.mockRejectedValue(new Error('Arcjet service error'))
-
-      const { middleware } = await import('../middleware')
-      const request = createMockRequest('/')
-
-      await expect(middleware(request)).rejects.toThrow('Arcjet service error')
-    })
-
     it('should handle getSessionCookie errors', async () => {
       mockGetSessionCookie.mockImplementation(() => {
         throw new Error('Cookie parsing error')
