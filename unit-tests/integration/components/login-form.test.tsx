@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import { LoginForm } from '../../../src/components/forms/login-form';
-import { authClient } from '../../../src/lib/auth-client';
+import { LoginForm } from '@/components/forms/login-form';
+import { authClient } from '@/lib/auth-client';
 import { signIn } from '../../../server/users';
 
 // Mock external dependencies
@@ -40,22 +40,25 @@ const mockAuthClient = vi.mocked(authClient) as any;
 const mockSignIn = vi.mocked(signIn);
 
 describe('LoginForm Integration Tests', () => {
-
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   const renderLoginForm = () => {
-       return render(<LoginForm />);
-     };
+    return render(<LoginForm />);
+  };
 
   describe('Form Rendering', () => {
     it('should render all form elements correctly', () => {
       renderLoginForm();
 
       expect(screen.getByText('Welcome back')).toBeInTheDocument();
-      expect(screen.getByText('Login with your Google account')).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /login with google/i })).toBeInTheDocument();
+      expect(
+        screen.getByText('Login with your Google account'),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /login with google/i }),
+      ).toBeInTheDocument();
       expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Login' })).toBeInTheDocument();
@@ -105,7 +108,9 @@ describe('LoginForm Integration Tests', () => {
       fireEvent.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/password must be at least 8 characters long/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/password must be at least 8 characters long/i),
+        ).toBeInTheDocument();
       });
     });
 
@@ -121,14 +126,19 @@ describe('LoginForm Integration Tests', () => {
       // Wait a bit to ensure no validation errors appear
       await waitFor(() => {
         expect(screen.queryByText(/invalid email/i)).not.toBeInTheDocument();
-        expect(screen.queryByText(/password must be at least 6 characters long/i)).not.toBeInTheDocument();
+        expect(
+          screen.queryByText(/password must be at least 6 characters long/i),
+        ).not.toBeInTheDocument();
       });
     });
   });
 
   describe('Form Submission', () => {
     it('should call signIn with correct credentials on valid submission', async () => {
-      mockSignIn.mockResolvedValue({ success: true, message: 'Login successful' });
+      mockSignIn.mockResolvedValue({
+        success: true,
+        message: 'Login successful',
+      });
 
       renderLoginForm();
 
@@ -141,7 +151,10 @@ describe('LoginForm Integration Tests', () => {
       fireEvent.click(submitButton);
 
       await waitFor(() => {
-        expect(mockSignIn).toHaveBeenCalledWith('test@example.com', 'validpassword');
+        expect(mockSignIn).toHaveBeenCalledWith(
+          'test@example.com',
+          'validpassword',
+        );
       });
     });
 
@@ -157,7 +170,10 @@ describe('LoginForm Integration Tests', () => {
         prefetch: vi.fn(),
       });
 
-      mockSignIn.mockResolvedValue({ success: true, message: 'Login successful' });
+      mockSignIn.mockResolvedValue({
+        success: true,
+        message: 'Login successful',
+      });
 
       renderLoginForm();
 
@@ -175,7 +191,10 @@ describe('LoginForm Integration Tests', () => {
     });
 
     it('should show error toast on failed login', async () => {
-      mockSignIn.mockResolvedValue({ success: false, message: 'Invalid credentials' });
+      mockSignIn.mockResolvedValue({
+        success: false,
+        message: 'Invalid credentials',
+      });
 
       renderLoginForm();
 
@@ -190,15 +209,24 @@ describe('LoginForm Integration Tests', () => {
       await waitFor(() => {
         // Toast messages are handled by sonner, so we can't easily test them
         // but we can verify the signIn function was called
-        expect(mockSignIn).toHaveBeenCalledWith('test@example.com', 'wrongpassword');
+        expect(mockSignIn).toHaveBeenCalledWith(
+          'test@example.com',
+          'wrongpassword',
+        );
       });
     });
 
     it('should show loading state during submission', async () => {
       // Mock a delayed response
-      mockSignIn.mockImplementation(() => new Promise(resolve =>
-        setTimeout(() => resolve({ success: true, message: 'Success' }), 100)
-      ));
+      mockSignIn.mockImplementation(
+        () =>
+          new Promise(resolve =>
+            setTimeout(
+              () => resolve({ success: true, message: 'Success' }),
+              100,
+            ),
+          ),
+      );
 
       renderLoginForm();
 
@@ -216,9 +244,14 @@ describe('LoginForm Integration Tests', () => {
       });
 
       // Wait for the request to complete
-      await waitFor(() => {
-        expect(screen.queryByLabelText(/signing in/i)).not.toBeInTheDocument();
-      }, { timeout: 200 });
+      await waitFor(
+        () => {
+          expect(
+            screen.queryByLabelText(/signing in/i),
+          ).not.toBeInTheDocument();
+        },
+        { timeout: 200 },
+      );
     });
   });
 
@@ -226,12 +259,14 @@ describe('LoginForm Integration Tests', () => {
     it('should call Google sign-in when Google button is clicked', async () => {
       mockAuthClient.signIn.social.mockResolvedValue({
         data: { user: { id: '123' } },
-        error: null
-      } as { data: { user: { id: string } }, error: null });
+        error: null,
+      } as { data: { user: { id: string } }; error: null });
 
       renderLoginForm();
 
-      const googleButton = screen.getByRole('button', { name: /login with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /login with google/i,
+      });
       fireEvent.click(googleButton);
 
       expect(mockAuthClient.signIn.social).toHaveBeenCalledWith({
@@ -243,12 +278,14 @@ describe('LoginForm Integration Tests', () => {
     it('should handle Google sign-in errors gracefully', async () => {
       mockAuthClient.signIn.social.mockResolvedValue({
         data: null,
-        error: { message: 'OAuth failed' }
-      } as { data: null, error: { message: string } });
+        error: { message: 'OAuth failed' },
+      } as { data: null; error: { message: string } });
 
       renderLoginForm();
 
-      const googleButton = screen.getByRole('button', { name: /login with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /login with google/i,
+      });
       fireEvent.click(googleButton);
 
       // The component doesn't handle errors explicitly, but the call should still be made
@@ -291,7 +328,9 @@ describe('LoginForm Integration Tests', () => {
     it('should have proper button roles', () => {
       renderLoginForm();
 
-      const googleButton = screen.getByRole('button', { name: /login with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /login with google/i,
+      });
       const submitButton = screen.getByRole('button', { name: 'Login' });
 
       expect(googleButton).toBeInTheDocument();
@@ -330,7 +369,10 @@ describe('LoginForm Integration Tests', () => {
     });
 
     it('should handle malformed response from signIn', async () => {
-      mockSignIn.mockResolvedValue({ success: false, message: 'Error' } as { success: boolean; message: string });
+      mockSignIn.mockResolvedValue({ success: false, message: 'Error' } as {
+        success: boolean;
+        message: string;
+      });
 
       renderLoginForm();
 
