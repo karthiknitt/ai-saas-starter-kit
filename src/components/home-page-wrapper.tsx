@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useTheme } from 'next-themes';
 
 /**
@@ -9,33 +8,14 @@ import { useTheme } from 'next-themes';
  */
 export function HomePageWrapper({ children }: { children: React.ReactNode }) {
   const { resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    if (typeof window !== 'undefined') {
-      return window.matchMedia('(prefers-color-scheme: dark)').matches
-        ? 'dark'
-        : 'light';
-    }
 
-    return 'light';
-  });
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (resolvedTheme === 'dark' || resolvedTheme === 'light') {
-      setTheme(resolvedTheme);
-    }
-  }, [resolvedTheme]);
-
-  if (!mounted) {
-    return <div className="opacity-0">{children}</div>;
+  // Return null until theme is resolved to avoid hydration mismatch
+  if (!resolvedTheme) {
+    return null;
   }
 
   return (
-    <div data-theme={theme} className="home-page-wrapper">
+    <div data-theme={resolvedTheme} className="home-page-wrapper">
       {children}
     </div>
   );
