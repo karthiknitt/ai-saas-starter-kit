@@ -127,7 +127,7 @@ describe('LoginForm Integration Tests', () => {
       await waitFor(() => {
         expect(screen.queryByText(/invalid email/i)).not.toBeInTheDocument();
         expect(
-          screen.queryByText(/password must be at least 6 characters long/i),
+          screen.queryByText(/password must be at least 8 characters long/i),
         ).not.toBeInTheDocument();
       });
     });
