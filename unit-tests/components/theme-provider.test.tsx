@@ -4,19 +4,6 @@ import { render, screen } from '@testing-library/react'
 import { ThemeProvider } from '@/components/theme-provider'
 
 // Mock matchMedia
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: vi.fn().mockImplementation(query => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: vi.fn(), // deprecated
-    removeListener: vi.fn(), // deprecated
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-    dispatchEvent: vi.fn(),
-  })),
-})
 
 describe('ThemeProvider', () => {
   it('should render children correctly', () => {
