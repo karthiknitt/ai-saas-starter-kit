@@ -37,7 +37,9 @@ export function usePerformance() {
         'navigation',
       )[0] as PerformanceNavigationTiming;
       const paint = performance.getEntriesByType('paint');
-      const lcpEntries = performance.getEntriesByType('largest-contentful-paint');
+      const lcpEntries = performance.getEntriesByType(
+        'largest-contentful-paint',
+      );
       const lcp = lcpEntries.at(-1);
 
       const newMetrics: PerformanceMetrics = {};

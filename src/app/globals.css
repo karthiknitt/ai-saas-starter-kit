@@ -185,12 +185,83 @@
   --calendar-day-selected-fg: var(--primary-foreground);
 }
 
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --border: oklch(0.4 0 0);
+    --ring: oklch(0.4 0 0);
+  }
+
+  .dark {
+    --border: oklch(0.6 0 0);
+    --ring: oklch(0.6 0 0);
+  }
+}
+
+/* Color blindness accessibility improvements */
+@media (prefers-color-scheme: dark) {
+  .deuteranopia {
+    --chart-1: oklch(0.6 0.15 240);
+    --chart-2: oklch(0.5 0.12 300);
+    --chart-3: oklch(0.7 0.18 180);
+    --chart-4: oklch(0.4 0.1 60);
+    --chart-5: oklch(0.8 0.2 120);
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  .deuteranopia {
+    --chart-1: oklch(0.5 0.18 240);
+    --chart-2: oklch(0.4 0.15 300);
+    --chart-3: oklch(0.6 0.2 180);
+    --chart-4: oklch(0.3 0.12 60);
+    --chart-5: oklch(0.7 0.22 120);
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
+  }
+
+  /* Enhanced focus indicators for better accessibility */
+  *:focus-visible {
+    outline: 3px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  /* Ensure interactive elements have minimum touch target size */
+  button,
+  a,
+  input,
+  select,
+  textarea,
+  [role='button'],
+  [tabindex]:not([tabindex='-1']) {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Improve hover states for better visual feedback */
+  a:hover,
+  button:hover,
+  [role='button']:hover {
+    transform: translateY(-1px);
+    transition: transform 0.2s ease-out;
   }
 }
 
@@ -524,5 +595,198 @@
   [data-slot='toggle-group'],
   [data-slot='toggle-group-item'] {
     @apply !rounded-none !shadow-none;
+  }
+}
+
+/* Home Page Independent Styling - Not affected by theme selection */
+@layer base {
+  .home-page-wrapper[data-theme='light'] {
+    /* Force light mode colors with proper contrast */
+    --background: oklch(0.99 0 0);
+    --foreground: oklch(0.09 0 0);
+    --card: oklch(0.98 0 0);
+    --card-foreground: oklch(0.09 0 0);
+    --popover: oklch(0.99 0 0);
+    --popover-foreground: oklch(0.09 0 0);
+    --primary: oklch(0.15 0 0);
+    --primary-foreground: oklch(0.99 0 0);
+    --secondary: oklch(0.95 0 0);
+    --secondary-foreground: oklch(0.09 0 0);
+    --muted: oklch(0.96 0 0);
+    --muted-foreground: oklch(0.45 0 0);
+    --accent: oklch(0.95 0 0);
+    --accent-foreground: oklch(0.09 0 0);
+    --destructive: oklch(0.577 0.245 27.325);
+    --border: oklch(0.88 0 0);
+    --input: oklch(0.88 0 0);
+    --ring: oklch(0.65 0 0);
+
+    /* Navigation & Interactive Elements */
+    --nav-hover: oklch(0.92 0 0);
+    --nav-active: oklch(0.88 0 0);
+    --interactive-hover: oklch(0.93 0 0);
+
+    /* Form Components */
+    --input-hover: oklch(0.85 0 0);
+    --input-focus: oklch(0.65 0 0);
+
+    /* Content Components - Improved visibility */
+    --card-hover: oklch(0.96 0 0);
+    --table-row-hover: oklch(0.94 0 0);
+
+    /* Status colors for light mode */
+    --status-success: oklch(0.5 0.15 142);
+    --status-success-fg: oklch(0.99 0 0);
+    --status-warning: oklch(0.6 0.15 85);
+    --status-warning-fg: oklch(0.09 0 0);
+    --status-error: oklch(0.5 0.2 27);
+    --status-error-fg: oklch(0.99 0 0);
+    --status-info: oklch(0.45 0.15 240);
+    --status-info-fg: oklch(0.99 0 0);
+
+    /* Header specific overrides for light mode */
+    --header-bg: oklch(0.99 0 0 / 0.95);
+    --header-border: oklch(0.88 0 0);
+    --header-text: oklch(0.09 0 0);
+    --header-text-muted: oklch(0.45 0 0);
+  }
+
+  /* Enhanced card and border visibility in light mode */
+  .home-page-wrapper[data-theme='light'] [class*='bg-card/'],
+  .home-page-wrapper[data-theme='light'] [class*='border-border/'] {
+    --tw-bg-opacity: 0.7;
+    --tw-border-opacity: 0.8;
+  }
+
+  /* Ensure text has proper contrast in light mode */
+  .home-page-wrapper[data-theme='light'] h1,
+  .home-page-wrapper[data-theme='light'] h2,
+  .home-page-wrapper[data-theme='light'] h3,
+  .home-page-wrapper[data-theme='light'] h4,
+  .home-page-wrapper[data-theme='light'] h5,
+  .home-page-wrapper[data-theme='light'] h6 {
+    color: oklch(0.09 0 0);
+  }
+
+  /* Improve link visibility in light mode */
+  .home-page-wrapper[data-theme='light'] a {
+    color: oklch(0.15 0 0);
+  }
+
+  .home-page-wrapper[data-theme='light'] a:hover {
+    color: oklch(0.09 0 0);
+  }
+
+  /* Header visibility fixes for light mode */
+  .home-page-wrapper[data-theme='light'] header {
+    background-color: var(--header-bg) !important;
+    border-color: var(--header-border) !important;
+    color: var(--header-text) !important;
+  }
+
+  .home-page-wrapper[data-theme='light'] header .text-foreground\/80 {
+    color: var(--header-text) !important;
+  }
+
+  .home-page-wrapper[data-theme='light'] header .text-muted-foreground {
+    color: var(--header-text-muted) !important;
+  }
+
+  /* Scrolled header background override */
+  .home-page-wrapper[data-theme='light'] .bg-background\/50 {
+    background-color: var(--header-bg) !important;
+  }
+
+  /* Link text visibility in header */
+  .home-page-wrapper[data-theme='light'] header a:not(.header-auth-button) {
+    color: var(--header-text) !important;
+  }
+
+  /* Mode toggle button visibility */
+  .home-page-wrapper[data-theme='light'] .bg-background {
+    background-color: var(--header-bg) !important;
+  }
+
+  .home-page-wrapper[data-theme='dark'] {
+    /* Force dark mode colors */
+    --background: oklch(0.145 0 0);
+    --foreground: oklch(0.985 0 0);
+    --card: oklch(0.205 0 0);
+    --card-foreground: oklch(0.985 0 0);
+    --popover: oklch(0.205 0 0);
+    --popover-foreground: oklch(0.985 0 0);
+    --primary: oklch(0.922 0 0);
+    --primary-foreground: oklch(0.205 0 0);
+    --secondary: oklch(0.269 0 0);
+    --secondary-foreground: oklch(0.985 0 0);
+    --muted: oklch(0.269 0 0);
+    --muted-foreground: oklch(0.708 0 0);
+    --accent: oklch(0.269 0 0);
+    --accent-foreground: oklch(0.985 0 0);
+    --destructive: oklch(0.704 0.191 22.216);
+    --border: oklch(1 0 0 / 10%);
+    --input: oklch(1 0 0 / 15%);
+    --ring: oklch(0.556 0 0);
+
+    /* Navigation & Interactive Elements */
+    --nav-hover: oklch(from var(--accent) calc(l + 0.08) c h);
+    --nav-active: oklch(from var(--accent) calc(l + 0.15) c h);
+    --interactive-hover: oklch(from var(--muted) calc(l + 0.08) c h);
+  }
+
+  /* Improve card backgrounds in light mode - override opacity */
+  .home-page-wrapper[data-theme='light'] .backdrop-blur-sm {
+    background-color: oklch(0.98 0 0 / 0.85) !important;
+  }
+
+  .home-page-wrapper[data-theme='light'] [class*='bg-card/30'] {
+    background-color: oklch(0.98 0 0 / 0.75) !important;
+  }
+
+  .home-page-wrapper[data-theme='light'] [class*='border-border/50'] {
+    border-color: oklch(0.88 0 0 / 0.85) !important;
+  }
+
+  /* Ensure proper contrast for muted text in light mode */
+  .home-page-wrapper[data-theme='light'] .text-muted-foreground {
+    color: oklch(0.45 0 0) !important;
+  }
+
+  /* Fix scrolled header background in light mode */
+  .home-page-wrapper[data-theme='light'] .bg-background\/50 {
+    background-color: var(--header-bg) !important;
+  }
+
+  /* Hero section text contrast improvements */
+  .home-page-wrapper[data-theme='light'] .text-balance {
+    color: oklch(0.09 0 0) !important;
+  }
+
+  /* Button visibility in light mode */
+  .home-page-wrapper[data-theme='light'] .bg-card {
+    background-color: oklch(0.98 0 0) !important;
+    border-color: oklch(0.88 0 0) !important;
+  }
+
+  .home-page-wrapper[data-theme='light'] .border-2 {
+    border-color: oklch(0.88 0 0) !important;
+  }
+
+  /* Logo and brand text visibility */
+  .home-page-wrapper[data-theme='light'] .text-foreground {
+    color: oklch(0.09 0 0) !important;
+  }
+
+  /* High contrast support */
+  @media (prefers-contrast: high) {
+    .home-page-wrapper[data-theme='light'] {
+      --border: oklch(0.4 0 0);
+      --ring: oklch(0.4 0 0);
+    }
+
+    .home-page-wrapper[data-theme='dark'] {
+      --border: oklch(0.6 0 0);
+      --ring: oklch(0.6 0 0);
+    }
   }
 }

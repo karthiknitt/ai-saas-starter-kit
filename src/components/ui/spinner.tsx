@@ -12,11 +12,18 @@ import { cn } from '@/lib/utils';
  * @param props - Other SVG attributes forwarded to the icon element
  * @returns The spinner SVG element with `role="status"` and `aria-label="Loading"`
  */
-function Spinner({ className, ...props }: React.ComponentProps<'svg'>) {
+function Spinner({
+  className,
+  label,
+  ...props
+}: React.ComponentProps<'svg'> & {
+  label?: string;
+}) {
   return (
     <Loader2Icon
       role="status"
-      aria-label="Loading"
+      aria-label={label || 'Loading'}
+      aria-live="polite"
       className={cn('size-4 animate-spin', className)}
       {...props}
     />

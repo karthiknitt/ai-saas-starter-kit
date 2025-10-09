@@ -70,7 +70,7 @@ export const HeroHeader = () => {
                     <li key={index}>
                       <Link
                         href={item.href}
-                        className="text-muted-foreground block duration-150 hover:text-[var(--nav-hover)]"
+                        className="text-foreground/80 hover:text-foreground block font-medium underline-offset-4 duration-150 hover:underline"
                       >
                         <span>{item.name}</span>
                       </Link>
@@ -80,14 +80,14 @@ export const HeroHeader = () => {
               </div>
             </div>
 
-            <div className="bg-background mb-6 hidden w-full flex-wrap items-center justify-end space-y-8 rounded-3xl border p-6 shadow-2xl shadow-zinc-300/20 in-data-[state=active]:block md:flex-nowrap lg:m-0 lg:flex lg:w-fit lg:gap-6 lg:space-y-0 lg:border-transparent lg:bg-transparent lg:p-0 lg:shadow-none lg:in-data-[state=active]:flex dark:shadow-none dark:lg:bg-transparent">
+            <div className="bg-card border-border mb-6 hidden w-full flex-wrap items-center justify-end space-y-8 rounded-3xl border p-6 shadow-2xl shadow-zinc-300/20 in-data-[state=active]:block md:flex-nowrap lg:m-0 lg:flex lg:w-fit lg:gap-6 lg:space-y-0 lg:border-transparent lg:bg-transparent lg:p-0 lg:shadow-none lg:in-data-[state=active]:flex dark:shadow-none dark:lg:bg-transparent">
               <div className="lg:hidden">
                 <ul className="space-y-6 text-base">
                   {menuItems.map((item, index) => (
                     <li key={index}>
                       <Link
                         href={item.href}
-                        className="text-muted-foreground block duration-150 hover:text-[var(--nav-hover)]"
+                        className="text-foreground/80 hover:text-foreground block font-medium duration-150"
                       >
                         <span>{item.name}</span>
                       </Link>
@@ -96,12 +96,12 @@ export const HeroHeader = () => {
                 </ul>
               </div>
               <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
-                <Button asChild size="sm">
+                <Button asChild size="sm" className="header-auth-button">
                   <Link href="/login">
                     <span>Login</span>
                   </Link>
                 </Button>
-                <Button asChild size="sm">
+                <Button asChild size="sm" className="header-auth-button">
                   <Link href="/signup">
                     <span>Sign Up</span>
                   </Link>

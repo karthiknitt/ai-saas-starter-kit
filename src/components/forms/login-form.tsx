@@ -31,7 +31,7 @@ import Link from 'next/link';
 
 const formSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(8, 'Password must be at least 6 characters long'),
+  password: z.string().min(8, 'Password must be at least 8 characters long'),
 });
 
 const signInWithGoogle = async () => {
@@ -60,12 +60,17 @@ export function LoginForm({
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     setIsLoading(true);
-    const { success, message } = await signIn(values.email, values.password);
-    if (success) {
-      toast.success(message as string);
-      router.push('/dashboard');
-    } else {
-      toast.error(message as string);
+    try {
+      const { success, message } = await signIn(values.email, values.password);
+      if (success) {
+        toast.success(message as string);
+        router.push('/dashboard');
+      } else {
+        toast.error(message as string);
+      }
+    } catch (error) {
+      toast.error('An error occurred during login');
+      console.error('Login error:', error);
     }
     setIsLoading(false);
   }
@@ -79,7 +84,10 @@ export function LoginForm({
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              data-testid="login-form"
+            >
               <div className="grid gap-6">
                 <div className="flex flex-col gap-4">
                   <Button
@@ -126,7 +134,7 @@ export function LoginForm({
                         name="password"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Pasword</FormLabel>
+                            <FormLabel>Password</FormLabel>
                             <FormControl>
                               <Input
                                 placeholder="********"
@@ -141,20 +149,18 @@ export function LoginForm({
                       />
                       <a
                         href="/forgot-password"
-                        className="ml-auto text-sm underline-offset-4 hover:underline"
+                        className="ml-auto text-sm underline-offset-4"
                       >
                         Forgot your password?
                       </a>
                     </div>
                   </div>
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={isLoading}
-                    onClick={form.handleSubmit(onSubmit)}
-                  >
+                  <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? (
-                      <Loader2 className="size-4 animate-spin" />
+                      <Loader2
+                        className="size-4 animate-spin"
+                        aria-label="Signing in..."
+                      />
                     ) : (
                       'Login'
                     )}
@@ -177,7 +183,7 @@ export function LoginForm({
           </Form>
         </CardContent>
       </Card>
-      <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
+      <div className="text-muted-foreground text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
         By clicking continue, you agree to our <a href="#">Terms of Service</a>{' '}
         and <a href="#">Privacy Policy</a>.
       </div>

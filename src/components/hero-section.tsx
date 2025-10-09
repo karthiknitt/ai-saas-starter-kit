@@ -71,11 +71,21 @@ export default function HeroSection() {
                       key={2}
                       asChild
                       size="lg"
-                      variant="ghost"
-                      className="h-12 rounded-full px-5 text-base hover:bg-zinc-950/5 dark:hover:bg-white/5"
+                      variant="outline"
+                      className="bg-card hover:bg-accent hover:border-foreground/20 h-12 rounded-full border-2 pr-3 pl-5 text-base font-medium"
                     >
                       <Link href="#link">
                         <span className="text-nowrap">Request a demo</span>
+                        <motion.div
+                          whileHover={{ x: 2 }}
+                          transition={{
+                            type: 'spring',
+                            stiffness: 400,
+                            damping: 10,
+                          }}
+                        >
+                          <ChevronRight className="ml-1" />
+                        </motion.div>
                       </Link>
                     </Button>
                   </motion.div>

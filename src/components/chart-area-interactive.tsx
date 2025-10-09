@@ -12,12 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from '@/components/ui/chart';
+import { ChartConfig, ChartContainer } from '@/components/ui/chart';
 import {
   Select,
   SelectContent,
@@ -209,6 +204,8 @@ export function ChartAreaInteractive() {
         <ChartContainer
           config={chartConfig}
           className="aspect-auto h-[250px] w-full"
+          role="img"
+          aria-label={`Visitor analytics chart showing desktop and mobile traffic data for ${timeRange === '7d' ? 'last 7 days' : timeRange === '30d' ? 'last 30 days' : 'last 3 months'}`}
         >
           <AreaChart data={filteredData}>
             <defs>
@@ -251,20 +248,6 @@ export function ChartAreaInteractive() {
                   day: 'numeric',
                 });
               }}
-            />
-            <ChartTooltip
-              cursor={false}
-              content={
-                <ChartTooltipContent
-                  labelFormatter={value => {
-                    return new Date(value).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                    });
-                  }}
-                  indicator="dot"
-                />
-              }
             />
             <Area
               dataKey="mobile"

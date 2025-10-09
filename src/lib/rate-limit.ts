@@ -46,8 +46,11 @@ export function createRateLimit(config: RateLimitConfig) {
       rateLimitStore.set(ip, entry);
     }
 
+    // Increment counter first
+    entry.count++;
+
     // Check if rate limit exceeded
-    if (entry.count >= maxRequests) {
+    if (entry.count > maxRequests) {
       const resetIn = Math.ceil((entry.resetTime - now) / 1000);
 
       return NextResponse.json(
@@ -66,9 +69,6 @@ export function createRateLimit(config: RateLimitConfig) {
         },
       );
     }
-
-    // Increment counter
-    entry.count++;
 
     // Create response with rate limit headers
     const response = NextResponse.next();
