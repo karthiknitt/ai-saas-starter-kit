@@ -84,12 +84,13 @@ describe('Error Scenario Integration Tests', () => {
 
     it('should handle external API failures', async () => {
       // Mock fetch failure for external APIs
+      const originalFetch = global.fetch;
       global.fetch = vi.fn().mockRejectedValue(new Error('Network error'));
 
       await expect(fetch('https://api.openai.com/v1/chat/completions')).rejects.toThrow('Network error');
 
       // Restore fetch
-      global.fetch = vi.fn();
+      global.fetch = originalFetch;
     });
 
     it('should handle timeout errors', async () => {
