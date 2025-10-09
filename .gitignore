@@ -12,7 +12,7 @@
 
 # testing
 *.log
-/unit-tests/coverage/*
+/unit-tests/coverage/
 
 # next.js
 /.next/
