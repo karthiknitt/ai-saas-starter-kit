@@ -26,6 +26,14 @@ export const polarConfig = {
 };
 
 export const auth = betterAuth({
+  user: {
+    additionalFields: {
+      role: {
+        type: 'string',
+        input: false,
+      },
+    },
+  },
   emailVerification: {
     sendVerificationEmail: async ({ user, url }) => {
       resend.emails.send({
