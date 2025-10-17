@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom'
 import { config } from 'dotenv'
 import React from 'react'
-import { vi } from 'vitest'
+import { vi, beforeEach, afterEach } from 'vitest'
 
 // Load environment variables from .env file
 config()
@@ -28,4 +28,20 @@ Object.defineProperty(window, 'matchMedia', {
     removeEventListener: vi.fn(),
     dispatchEvent: vi.fn(),
   })),
+})
+
+// Mock console methods to suppress expected error logs during tests
+const originalError = console.error
+const originalWarn = console.warn
+
+beforeEach(() => {
+  // Suppress console.error and console.warn during tests to avoid stderr output in CI
+  console.error = vi.fn()
+  console.warn = vi.fn()
+})
+
+afterEach(() => {
+  // Restore original console methods after each test
+  console.error = originalError
+  console.warn = originalWarn
 })

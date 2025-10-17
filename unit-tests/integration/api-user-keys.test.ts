@@ -97,7 +97,6 @@ describe('/api/user/api-keys', () => {
 
     it('should return provider and null apiKey when decryption fails', async () => {
       mockDecrypt.mockImplementation(() => {
-        console.error('Failed to decrypt API key for user');
         throw new Error('Decryption failed');
       });
 
