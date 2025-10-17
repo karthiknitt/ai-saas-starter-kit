@@ -97,6 +97,10 @@ interface User {
   name: string;
   email: string;
   image?: string | null | undefined;
+  role?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  emailVerified: boolean;
 }
 
 interface ApiConfig {

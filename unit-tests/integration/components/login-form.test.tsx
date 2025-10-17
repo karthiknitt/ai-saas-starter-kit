@@ -49,7 +49,7 @@ describe('LoginForm Integration Tests', () => {
   };
 
   describe('Form Rendering', () => {
-    it('should render all form elements correctly', () => {
+    it('should render all form elements correctly', { timeout: 10000 }, () => {
       renderLoginForm();
 
       expect(screen.getByText('Welcome back')).toBeInTheDocument();

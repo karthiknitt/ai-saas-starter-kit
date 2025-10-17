@@ -32,12 +32,17 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { authClient } from '@/lib/auth-client';
 
 interface User {
   id: string;
   name: string;
   email: string;
   image?: string | null | undefined;
+  role?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  emailVerified: boolean;
 }
 
 const defaultUser = {
@@ -46,39 +51,41 @@ const defaultUser = {
   avatar: '/avatars/guest.jpg',
 };
 
+const baseNavMain = [
+  {
+    title: 'Dashboard',
+    url: '/dashboard',
+    icon: IconDashboard,
+  },
+  {
+    title: 'AI Chat',
+    url: '/aichat',
+    icon: IconFileAi,
+  },
+  {
+    title: 'Lifecycle',
+    url: '#',
+    icon: IconListDetails,
+  },
+  {
+    title: 'Analytics',
+    url: '#',
+    icon: IconChartBar,
+  },
+  {
+    title: 'Projects',
+    url: '#',
+    icon: IconFolder,
+  },
+  {
+    title: 'Team',
+    url: '#',
+    icon: IconUsers,
+  },
+];
+
 const data = {
-  navMain: [
-    {
-      title: 'Dashboard',
-      url: '/dashboard',
-      icon: IconDashboard,
-    },
-    {
-      title: 'AI Chat',
-      url: '/aichat',
-      icon: IconFileAi,
-    },
-    {
-      title: 'Lifecycle',
-      url: '#',
-      icon: IconListDetails,
-    },
-    {
-      title: 'Analytics',
-      url: '#',
-      icon: IconChartBar,
-    },
-    {
-      title: 'Projects',
-      url: '#',
-      icon: IconFolder,
-    },
-    {
-      title: 'Team',
-      url: '#',
-      icon: IconUsers,
-    },
-  ],
+  navMain: baseNavMain,
   navClouds: [
     {
       title: 'Capture',
@@ -168,6 +175,24 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
 }
 
 export function AppSidebar({ user, ...props }: AppSidebarProps) {
+  const [isAdmin, setIsAdmin] = React.useState<boolean | undefined>(undefined);
+
+  React.useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const session = await authClient.getSession();
+        const role = (session.data?.user as User)?.role as string | undefined;
+        if (!cancelled) setIsAdmin(role === 'admin');
+      } catch {
+        if (!cancelled) setIsAdmin(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const currentUser = user
     ? {
         name: user.name,
@@ -176,7 +201,17 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
       }
     : defaultUser;
 
-  console.log('[DEBUG] AppSidebar user:', currentUser);
+  const navItems = React.useMemo(() => {
+    const items = [...baseNavMain];
+    if (isAdmin === true) {
+      items.push({
+        title: 'Admin',
+        url: '/admin',
+        icon: IconSettings,
+      });
+    }
+    return items;
+  }, [isAdmin]);
 
   return (
     <Sidebar collapsible="offcanvas" {...props}>
@@ -196,7 +231,7 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={navItems} />
         <NavDocuments items={data.documents} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>

@@ -12,13 +12,18 @@ if (!process.env.OPENAI_API_KEY) {
 
 async function generateCommitMessage() {
   try {
-    // Get git diff
-    const diff = execSync('git diff --staged --no-color', { encoding: 'utf8' });
+    // Get git diff, limited to prevent context window issues
+    const fullDiff = execSync('git diff --staged --no-color', { encoding: 'utf8' });
 
-    if (!diff.trim()) {
+    if (!fullDiff.trim()) {
       console.error('No staged changes');
       process.exit(1);
     }
+
+    // Truncate diff to first 2000 lines to stay within context limits
+    const diffLines = fullDiff.split('\n');
+    const truncatedDiff = diffLines.slice(0, 2000).join('\n');
+    const diff = truncatedDiff + (diffLines.length > 2000 ? '\n... (diff truncated)' : '');
 
     const prompt = `Generate a single conventional commit message for the following git diff. Follow the format: type(scope): description
 
