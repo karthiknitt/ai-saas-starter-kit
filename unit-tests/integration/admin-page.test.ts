@@ -57,15 +57,14 @@ describe('/admin page access', () => {
     });
 
     // Mock the db query to return a role
-    const { db } = await import('../../src/db/drizzle');
-    vi.mocked(db.select).mockReturnValue({
+    const { db } = await import('@/db/drizzle');
+    vi.mocked((db as any).select).mockReturnValue({
       from: vi.fn().mockReturnValue({
         where: vi.fn().mockReturnValue({
-          limit: vi.fn().mockResolvedValue([{ role: 'member' }])
-        })
-      })
-    } as unknown as ReturnType<typeof db.select>);
-
+          limit: vi.fn().mockResolvedValue([{ role: 'member' }]),
+        }),
+      }),
+    } as any);
     const mod = await import('../../src/app/admin/page');
     await mod.default();
     expect(vi.mocked(redirect)).toHaveBeenCalledWith('/');
