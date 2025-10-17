@@ -1,7 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { TypedUser } from '@/lib/auth';
 
 vi.mock('@/lib/auth', () => ({
-  auth: { api: { getSession: vi.fn<[], Promise<any>>() } },
+  auth: { api: { getSession: vi.fn() } },
 }));
 vi.mock('@/db/drizzle', () => ({
   db: { select: vi.fn() },
@@ -36,7 +37,7 @@ describe('/admin page access', () => {
       user: { id: '1', name: 'User', email: 'u@b.c', role: 'member', createdAt: new Date(), updatedAt: new Date(), emailVerified: true, image: null } as TypedUser
     });
     const mod = await import('../../src/app/admin/page');
-    await mod.default();
+    await expect(mod.default()).rejects.toMatchObject({ digest: 'NEXT_REDIRECT' });
     expect(vi.mocked(redirect)).toHaveBeenCalledWith('/');
   });
 
@@ -58,15 +59,16 @@ describe('/admin page access', () => {
 
     // Mock the db query to return a role
     const { db } = await import('@/db/drizzle');
-    vi.mocked((db as any).select).mockReturnValue({
+    vi.mocked(db.select).mockReturnValue({
       from: vi.fn().mockReturnValue({
         where: vi.fn().mockReturnValue({
           limit: vi.fn().mockResolvedValue([{ role: 'member' }]),
         }),
       }),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
     const mod = await import('../../src/app/admin/page');
-    await mod.default();
+    await expect(mod.default()).rejects.toMatchObject({ digest: 'NEXT_REDIRECT' });
     expect(vi.mocked(redirect)).toHaveBeenCalledWith('/');
   });
 });
