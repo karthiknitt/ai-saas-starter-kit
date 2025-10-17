@@ -98,7 +98,7 @@ describe('crypto', () => {
         // Change the first character of the auth tag
         parts[1] = '0' + parts[1].slice(1)
         const tampered = parts.join(':')
-        expect(() => decrypt(tampered)).toThrow()
+        expect(() => decrypt(tampered)).toThrow('Decryption failed: invalid data or wrong key')
       } else {
         // Fallback: just test with obviously invalid data
         expect(() => decrypt('invalid')).toThrow()

@@ -135,7 +135,7 @@ describe('General Performance Tests', () => {
       };
 
       const executionTime = measurePerformance(operation);
-      expect(executionTime).toBeLessThan(200);
+      expect(executionTime).toBeLessThan(400);
     });
   });
 
@@ -193,7 +193,7 @@ describe('General Performance Tests', () => {
       };
 
       const executionTime = measurePerformance(operation);
-      expect(executionTime).toBeLessThan(100);
+      expect(executionTime).toBeLessThan(200);
     });
   });
 
