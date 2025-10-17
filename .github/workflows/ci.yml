@@ -31,20 +31,20 @@ jobs:
 
       - name: Run type check
         env:
-          DATABASE_URL: postgresql://dummy:dummy@localhost:5432/dummy
-          BETTER_AUTH_SECRET: dummy-secret-for-ci
-          BETTER_AUTH_URL: http://localhost:3000
-          GOOGLE_CLIENT_ID: dummy-client-id
-          GOOGLE_CLIENT_SECRET: dummy-client-secret
-          POLAR_ACCESS_TOKEN: dummy-token
-          POLAR_SUCCESS_URL: http://localhost:3000/success
-          POLAR_PRODUCT_FREE: dummy-free-id
-          POLAR_PRODUCT_PRO: dummy-pro-id
-          POLAR_PRODUCT_STARTUP: dummy-startup-id
-          RESEND_API_KEY: dummy-resend-key
-          RESEND_SENDER_EMAIL: test@example.com
-          OPENAI_API_KEY: dummy-openai-key
-          ENCRYPTION_KEY: dummy-32-char-encryption-key!!!
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+          BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          POLAR_ACCESS_TOKEN: ${{ secrets.POLAR_ACCESS_TOKEN }}
+          POLAR_SUCCESS_URL: ${{ secrets.POLAR_SUCCESS_URL }}
+          POLAR_PRODUCT_FREE: ${{ secrets.POLAR_PRODUCT_FREE }}
+          POLAR_PRODUCT_PRO: ${{ secrets.POLAR_PRODUCT_PRO }}
+          POLAR_PRODUCT_STARTUP: ${{ secrets.POLAR_PRODUCT_STARTUP }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          RESEND_SENDER_EMAIL: ${{ secrets.RESEND_SENDER_EMAIL }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
         run: npm run type-check
 
       - name: Run linter
@@ -52,36 +52,36 @@ jobs:
 
       - name: Run tests
         env:
-          DATABASE_URL: postgresql://dummy:dummy@localhost:5432/dummy
-          BETTER_AUTH_SECRET: dummy-secret-for-ci
-          BETTER_AUTH_URL: http://localhost:3000
-          GOOGLE_CLIENT_ID: dummy-client-id
-          GOOGLE_CLIENT_SECRET: dummy-client-secret
-          POLAR_ACCESS_TOKEN: dummy-token
-          POLAR_SUCCESS_URL: http://localhost:3000/success
-          POLAR_PRODUCT_FREE: dummy-free-id
-          POLAR_PRODUCT_PRO: dummy-pro-id
-          POLAR_PRODUCT_STARTUP: dummy-startup-id
-          RESEND_API_KEY: dummy-resend-key
-          RESEND_SENDER_EMAIL: test@example.com
-          OPENAI_API_KEY: dummy-openai-key
-          ENCRYPTION_KEY: dummy-32-char-encryption-key!!!
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+          BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          POLAR_ACCESS_TOKEN: ${{ secrets.POLAR_ACCESS_TOKEN }}
+          POLAR_SUCCESS_URL: ${{ secrets.POLAR_SUCCESS_URL }}
+          POLAR_PRODUCT_FREE: ${{ secrets.POLAR_PRODUCT_FREE }}
+          POLAR_PRODUCT_PRO: ${{ secrets.POLAR_PRODUCT_PRO }}
+          POLAR_PRODUCT_STARTUP: ${{ secrets.POLAR_PRODUCT_STARTUP }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          RESEND_SENDER_EMAIL: ${{ secrets.RESEND_SENDER_EMAIL }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
         run: npm run test:run
 
       - name: Build project
         env:
-          DATABASE_URL: postgresql://dummy:dummy@localhost:5432/dummy
-          BETTER_AUTH_SECRET: dummy-secret-for-ci
-          BETTER_AUTH_URL: http://localhost:3000
-          GOOGLE_CLIENT_ID: dummy-client-id
-          GOOGLE_CLIENT_SECRET: dummy-client-secret
-          POLAR_ACCESS_TOKEN: dummy-token
-          POLAR_SUCCESS_URL: http://localhost:3000/success
-          POLAR_PRODUCT_FREE: dummy-free-id
-          POLAR_PRODUCT_PRO: dummy-pro-id
-          POLAR_PRODUCT_STARTUP: dummy-startup-id
-          RESEND_API_KEY: dummy-resend-key
-          RESEND_SENDER_EMAIL: test@example.com
-          OPENAI_API_KEY: dummy-openai-key
-          ENCRYPTION_KEY: dummy-32-char-encryption-key!!!
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+          BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          POLAR_ACCESS_TOKEN: ${{ secrets.POLAR_ACCESS_TOKEN }}
+          POLAR_SUCCESS_URL: ${{ secrets.POLAR_SUCCESS_URL }}
+          POLAR_PRODUCT_FREE: ${{ secrets.POLAR_PRODUCT_FREE }}
+          POLAR_PRODUCT_PRO: ${{ secrets.POLAR_PRODUCT_PRO }}
+          POLAR_PRODUCT_STARTUP: ${{ secrets.POLAR_PRODUCT_STARTUP }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          RESEND_SENDER_EMAIL: ${{ secrets.RESEND_SENDER_EMAIL }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
         run: npm run build
