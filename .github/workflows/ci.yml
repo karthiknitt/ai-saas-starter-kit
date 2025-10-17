@@ -1,13 +1,27 @@
 name: CI
-
 on:
   pull_request:
     branches: [main]
-
 jobs:
   test:
     runs-on: ubuntu-latest
-
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+      BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
+      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      POLAR_ACCESS_TOKEN: ${{ secrets.POLAR_ACCESS_TOKEN }}
+      POLAR_SUCCESS_URL: ${{ secrets.POLAR_SUCCESS_URL }}
+      POLAR_PRODUCT_FREE: ${{ secrets.POLAR_PRODUCT_FREE }}
+      POLAR_PRODUCT_PRO: ${{ secrets.POLAR_PRODUCT_PRO }}
+      POLAR_PRODUCT_STARTUP: ${{ secrets.POLAR_PRODUCT_STARTUP }}
+      POLAR_WEBHOOK_SECRET: ${{ secrets.POLAR_WEBHOOK_SECRET }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      RESEND_SENDER_EMAIL: ${{ secrets.RESEND_SENDER_EMAIL }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+      ARCJET_KEY: ${{ secrets.ARCJET_KEY }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -26,65 +40,18 @@ jobs:
           key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+
       - name: Install dependencies
         run: npm ci
 
       - name: Run type check
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
-          BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
-          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-          POLAR_ACCESS_TOKEN: ${{ secrets.POLAR_ACCESS_TOKEN }}
-          POLAR_SUCCESS_URL: ${{ secrets.POLAR_SUCCESS_URL }}
-          POLAR_PRODUCT_FREE: ${{ secrets.POLAR_PRODUCT_FREE }}
-          POLAR_PRODUCT_PRO: ${{ secrets.POLAR_PRODUCT_PRO }}
-          POLAR_PRODUCT_STARTUP: ${{ secrets.POLAR_PRODUCT_STARTUP }}
-          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-          RESEND_SENDER_EMAIL: ${{ secrets.RESEND_SENDER_EMAIL }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
-          ARCJET_KEY: ${{ secrets.ARCJET_KEY }}
         run: npm run type-check
 
       - name: Run linter
         run: npm run lint
 
       - name: Run tests
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
-          BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
-          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-          POLAR_ACCESS_TOKEN: ${{ secrets.POLAR_ACCESS_TOKEN }}
-          POLAR_SUCCESS_URL: ${{ secrets.POLAR_SUCCESS_URL }}
-          POLAR_PRODUCT_FREE: ${{ secrets.POLAR_PRODUCT_FREE }}
-          POLAR_PRODUCT_PRO: ${{ secrets.POLAR_PRODUCT_PRO }}
-          POLAR_PRODUCT_STARTUP: ${{ secrets.POLAR_PRODUCT_STARTUP }}
-          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-          RESEND_SENDER_EMAIL: ${{ secrets.RESEND_SENDER_EMAIL }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
-          ARCJET_KEY: ${{ secrets.ARCJET_KEY }}
         run: npm run test:run
 
       - name: Build project
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
-          BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
-          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-          POLAR_ACCESS_TOKEN: ${{ secrets.POLAR_ACCESS_TOKEN }}
-          POLAR_SUCCESS_URL: ${{ secrets.POLAR_SUCCESS_URL }}
-          POLAR_PRODUCT_FREE: ${{ secrets.POLAR_PRODUCT_FREE }}
-          POLAR_PRODUCT_PRO: ${{ secrets.POLAR_PRODUCT_PRO }}
-          POLAR_PRODUCT_STARTUP: ${{ secrets.POLAR_PRODUCT_STARTUP }}
-          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-          RESEND_SENDER_EMAIL: ${{ secrets.RESEND_SENDER_EMAIL }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
-          ARCJET_KEY: ${{ secrets.ARCJET_KEY }}
         run: npm run build

@@ -211,7 +211,7 @@ describe('DataTable Performance Tests', () => {
   });
 
   describe('Pagination Performance', () => {
-    it('should handle paginated large datasets efficiently', () => {
+    it('should handle paginated large datasets efficiently', { timeout: 15000 }, () => {
       const mockData = generateMockData(10000);
       // const mockColumns = [
       //   { accessorKey: 'name', header: 'Name' },

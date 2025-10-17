@@ -82,12 +82,7 @@ const baseNavMain = [
     url: '#',
     icon: IconUsers,
   },
-  {
-    title: 'Admin',
-    url: '/admin',
-    icon: IconSettings,
-  },
-] as const;
+];
 
 const data = {
   navMain: baseNavMain,
@@ -209,7 +204,11 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
   const navItems = React.useMemo(() => {
     const items = [...baseNavMain];
     if (isAdmin) {
-      // Admin is already in baseNavMain, so no need to add it again
+      items.push({
+        title: 'Admin',
+        url: '/admin',
+        icon: IconSettings,
+      });
     }
     return items;
   }, [isAdmin]);

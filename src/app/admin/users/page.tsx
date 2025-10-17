@@ -1,14 +1,16 @@
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { auth } from '@/lib/auth';
+import { auth, TypedSession } from '@/lib/auth';
 import { db } from '@/db/drizzle';
 import { user as userTable } from '@/db/schema';
 import { UsersClient } from '@/components/users-client';
 
 export default async function AdminUsersPage() {
-  const session = await auth.api.getSession({ headers: await headers() });
+  const session = (await auth.api.getSession({
+    headers: await headers(),
+  })) as TypedSession | null;
   if (!session) redirect('/');
-  const role = (session.user as { role?: string })?.role as string | undefined;
+  const role = session.user.role;
   if (role !== 'admin') redirect('/');
 
   const users = await db

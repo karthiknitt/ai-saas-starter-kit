@@ -45,8 +45,10 @@ export default function SubscriptionsPage() {
         return;
       }
 
-      const result = await authClient.checkout({ slug });
-      console.log('Checkout result:', result);
+      // TODO: Implement checkout when polar is properly configured
+      console.log('Checkout not yet implemented for plan:', planName);
+      alert(`Checkout not yet implemented for ${planName} plan`);
+      return;
     } catch (error) {
       console.error('Checkout failed:', error);
       // Show user-friendly error message
