@@ -22,11 +22,7 @@ describe('/admin page access', () => {
   it('redirects unauthenticated users', async () => {
     vi.mocked(auth.api.getSession).mockResolvedValue(null);
     const mod = await import('../../src/app/admin/page');
-    try {
-      await mod.default();
-    } catch {
-      // Expected to throw due to null session.user access
-    }
+    await expect(mod.default()).rejects.toMatchObject({ digest: 'NEXT_REDIRECT' });
     expect(vi.mocked(redirect)).toHaveBeenCalledWith('/');
   });
 
