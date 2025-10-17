@@ -20,14 +20,18 @@ describe('/admin page access', () => {
   it('redirects unauthenticated users', async () => {
     vi.mocked(auth.api.getSession).mockResolvedValue(null);
     const mod = await import('../../src/app/admin/page');
-    await mod.default();
+    try {
+      await mod.default();
+    } catch {
+      // Expected to throw due to null session.user access
+    }
     expect(vi.mocked(redirect)).toHaveBeenCalledWith('/');
   });
 
   it('redirects non-admin users', async () => {
     vi.mocked(auth.api.getSession).mockResolvedValue({
       session: { id: '1', userId: '1', token: 'token', expiresAt: new Date(), createdAt: new Date(), updatedAt: new Date() },
-      user: { id: '1', name: 'User', email: 'u@b.c', createdAt: new Date(), updatedAt: new Date(), emailVerified: true }
+      user: { id: '1', name: 'User', email: 'u@b.c', role: 'member', createdAt: new Date(), updatedAt: new Date(), emailVerified: true }
     });
     const mod = await import('../../src/app/admin/page');
     await mod.default();
@@ -37,7 +41,7 @@ describe('/admin page access', () => {
   it('allows admin users', async () => {
     vi.mocked(auth.api.getSession).mockResolvedValue({
       session: { id: '1', userId: '1', token: 'token', expiresAt: new Date(), createdAt: new Date(), updatedAt: new Date() },
-      user: { id: '1', name: 'Admin', email: 'a@b.c', createdAt: new Date(), updatedAt: new Date(), emailVerified: true }
+      user: { id: '1', name: 'Admin', email: 'a@b.c', role: 'admin', createdAt: new Date(), updatedAt: new Date(), emailVerified: true }
     });
     const mod = await import('../../src/app/admin/page');
     const el = await mod.default();
@@ -49,6 +53,17 @@ describe('/admin page access', () => {
       session: { id: '1', userId: '1', token: 'token', expiresAt: new Date(), createdAt: new Date(), updatedAt: new Date() },
       user: { id: '1', name: 'User', email: 'u@b.c', createdAt: new Date(), updatedAt: new Date(), emailVerified: true }
     });
+
+    // Mock the db query to return a role
+    const { db } = await import('../../src/db/drizzle');
+    vi.mocked(db.select).mockReturnValue({
+      from: vi.fn().mockReturnValue({
+        where: vi.fn().mockReturnValue({
+          limit: vi.fn().mockResolvedValue([{ role: 'member' }])
+        })
+      })
+    });
+
     const mod = await import('../../src/app/admin/page');
     await mod.default();
     expect(vi.mocked(redirect)).toHaveBeenCalledWith('/');

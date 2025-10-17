@@ -12,6 +12,11 @@ const mockAuth = vi.mocked(auth) as any;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mockDb = vi.mocked(db) as any;
 
+// Mock headers to avoid Next.js context issues
+vi.mock('next/headers', () => ({
+  headers: vi.fn(() => new Headers())
+}));
+
 describe('/api/admin/users', () => {
   const adminSession = { user: { id: 'admin-1', role: 'admin' } };
   const memberSession = { user: { id: 'user-1', role: 'member' } };
