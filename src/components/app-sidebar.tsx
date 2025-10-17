@@ -175,7 +175,7 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
 }
 
 export function AppSidebar({ user, ...props }: AppSidebarProps) {
-  const [isAdmin, setIsAdmin] = React.useState(false);
+  const [isAdmin, setIsAdmin] = React.useState<boolean | undefined>(undefined);
 
   React.useEffect(() => {
     let cancelled = false;
@@ -203,7 +203,7 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
 
   const navItems = React.useMemo(() => {
     const items = [...baseNavMain];
-    if (isAdmin) {
+    if (isAdmin === true) {
       items.push({
         title: 'Admin',
         url: '/admin',

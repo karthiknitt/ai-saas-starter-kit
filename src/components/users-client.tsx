@@ -11,10 +11,19 @@ function RoleBadge({ role }: { role: string }) {
   );
 }
 
+interface PaginationData {
+  currentPage: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+}
+
 export function UsersClient({
   users: initialUsers,
+  pagination,
 }: {
   users: { id: string; name: string; email: string; role: string }[];
+  pagination?: PaginationData;
 }) {
   const [users, setUsers] = React.useState(initialUsers);
   const [saving, setSaving] = React.useState<string | null>(null);
@@ -38,6 +47,15 @@ export function UsersClient({
     } finally {
       setSaving(null);
     }
+  }
+
+  function createPageUrl(page: number) {
+    const params = new URLSearchParams();
+    params.set('page', page.toString());
+    if (pagination) {
+      params.set('pageSize', pagination.pageSize.toString());
+    }
+    return `?${params.toString()}`;
   }
 
   return (
@@ -79,6 +97,59 @@ export function UsersClient({
           ))}
         </tbody>
       </table>
+
+      {pagination && (
+        <div className="flex items-center justify-between">
+          <div className="text-sm text-gray-600">
+            Showing {(pagination.currentPage - 1) * pagination.pageSize + 1} to{' '}
+            {Math.min(
+              pagination.currentPage * pagination.pageSize,
+              pagination.totalCount,
+            )}{' '}
+            of {pagination.totalCount} users
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <a
+              href={
+                pagination.currentPage > 1
+                  ? createPageUrl(pagination.currentPage - 1)
+                  : undefined
+              }
+              className={`rounded px-3 py-1 text-sm ${
+                pagination.currentPage > 1
+                  ? 'bg-purple-600 text-white hover:bg-purple-700'
+                  : 'cursor-not-allowed bg-gray-200 text-gray-400'
+              }`}
+              {...(pagination.currentPage <= 1 && { 'aria-disabled': 'true' })}
+            >
+              Previous
+            </a>
+
+            <span className="text-sm text-gray-600">
+              Page {pagination.currentPage} of {pagination.totalPages}
+            </span>
+
+            <a
+              href={
+                pagination.currentPage < pagination.totalPages
+                  ? createPageUrl(pagination.currentPage + 1)
+                  : undefined
+              }
+              className={`rounded px-3 py-1 text-sm ${
+                pagination.currentPage < pagination.totalPages
+                  ? 'bg-purple-600 text-white hover:bg-purple-700'
+                  : 'cursor-not-allowed bg-gray-200 text-gray-400'
+              }`}
+              {...(pagination.currentPage >= pagination.totalPages && {
+                'aria-disabled': 'true',
+              })}
+            >
+              Next
+            </a>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
