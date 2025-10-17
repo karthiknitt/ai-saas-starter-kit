@@ -1,10 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('@/lib/auth');
-vi.mock('@/db/drizzle');
-
-import { auth, TypedUser } from '../../src/lib/auth';
-
+vi.mock('@/lib/auth', () => ({
+  auth: { api: { getSession: vi.fn<[], Promise<any>>() } },
+}));
+vi.mock('@/db/drizzle', () => ({
+  db: { select: vi.fn() },
+}));
+import { auth } from '@/lib/auth';
 // Mock next/navigation redirect
 vi.mock('next/navigation', () => ({ redirect: vi.fn() }));
 import { redirect } from 'next/navigation';
