@@ -27,9 +27,9 @@ export function decrypt(encryptedText: string): string {
     throw new Error('Invalid IV or auth tag length');
   }
   const decipher = createDecipheriv(algorithm, key, iv);
-  decipher.setAuthTag(authTag);
   try {
     let decrypted = decipher.update(encrypted, 'hex', 'utf8');
+    decipher.setAuthTag(authTag);
     decrypted += decipher.final('utf8');
     return decrypted;
   } catch {
