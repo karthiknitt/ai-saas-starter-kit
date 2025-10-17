@@ -45,6 +45,7 @@ jobs:
           RESEND_SENDER_EMAIL: ${{ secrets.RESEND_SENDER_EMAIL }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+          ARCJET_KEY: ${{ secrets.ARCJET_KEY }}
         run: npm run type-check
 
       - name: Run linter
@@ -66,6 +67,7 @@ jobs:
           RESEND_SENDER_EMAIL: ${{ secrets.RESEND_SENDER_EMAIL }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+          ARCJET_KEY: ${{ secrets.ARCJET_KEY }}
         run: npm run test:run
 
       - name: Build project
@@ -84,4 +86,5 @@ jobs:
           RESEND_SENDER_EMAIL: ${{ secrets.RESEND_SENDER_EMAIL }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+          ARCJET_KEY: ${{ secrets.ARCJET_KEY }}
         run: npm run build
