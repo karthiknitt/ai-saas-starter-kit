@@ -1,14 +1,20 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('@/lib/auth');
-vi.mock('@/db/drizzle');
-
-import { auth, TypedUser } from '../../src/lib/auth';
-
+vi.mock('@/lib/auth', () => ({
+  auth: { api: { getSession: vi.fn<[], Promise<any>>() } },
+}));
+vi.mock('@/db/drizzle', () => ({
+  db: { select: vi.fn() },
+}));
+import { auth } from '@/lib/auth';
 // Mock next/navigation redirect
-vi.mock('next/navigation', () => ({ redirect: vi.fn() }));
+vi.mock('next/navigation', () => ({
+  redirect: vi.fn((path: string) => {
+    const err = Object.assign(new Error('REDIRECT'), { digest: 'NEXT_REDIRECT', path });
+    throw err;
+  }),
+}));
 import { redirect } from 'next/navigation';
-
 // Mock headers
 vi.mock('next/headers', () => ({ headers: vi.fn(async () => new Headers()) }));
 
@@ -20,11 +26,7 @@ describe('/admin page access', () => {
   it('redirects unauthenticated users', async () => {
     vi.mocked(auth.api.getSession).mockResolvedValue(null);
     const mod = await import('../../src/app/admin/page');
-    try {
-      await mod.default();
-    } catch {
-      // Expected to throw due to null session.user access
-    }
+    await expect(mod.default()).rejects.toMatchObject({ digest: 'NEXT_REDIRECT' });
     expect(vi.mocked(redirect)).toHaveBeenCalledWith('/');
   });
 
@@ -55,15 +57,14 @@ describe('/admin page access', () => {
     });
 
     // Mock the db query to return a role
-    const { db } = await import('../../src/db/drizzle');
-    vi.mocked(db.select).mockReturnValue({
+    const { db } = await import('@/db/drizzle');
+    vi.mocked((db as any).select).mockReturnValue({
       from: vi.fn().mockReturnValue({
         where: vi.fn().mockReturnValue({
-          limit: vi.fn().mockResolvedValue([{ role: 'member' }])
-        })
-      })
-    } as unknown as ReturnType<typeof db.select>);
-
+          limit: vi.fn().mockResolvedValue([{ role: 'member' }]),
+        }),
+      }),
+    } as any);
     const mod = await import('../../src/app/admin/page');
     await mod.default();
     expect(vi.mocked(redirect)).toHaveBeenCalledWith('/');
