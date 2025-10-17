@@ -8,9 +8,13 @@ vi.mock('@/db/drizzle', () => ({
 }));
 import { auth } from '@/lib/auth';
 // Mock next/navigation redirect
-vi.mock('next/navigation', () => ({ redirect: vi.fn() }));
+vi.mock('next/navigation', () => ({
+  redirect: vi.fn((path: string) => {
+    const err = Object.assign(new Error('REDIRECT'), { digest: 'NEXT_REDIRECT', path });
+    throw err;
+  }),
+}));
 import { redirect } from 'next/navigation';
-
 // Mock headers
 vi.mock('next/headers', () => ({ headers: vi.fn(async () => new Headers()) }));
 
