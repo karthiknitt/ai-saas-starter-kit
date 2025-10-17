@@ -13,7 +13,9 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Only apply protection to sensitive routes to reduce bundle size
-  const isProtectedRoute = pathname === '/dashboard' || pathname.startsWith('/dashboard/');
+  const isDashboardRoute = pathname === '/dashboard' || pathname.startsWith('/dashboard/');
+  const isAdminRoute = pathname === '/admin' || pathname.startsWith('/admin/');
+  const isProtectedRoute = isDashboardRoute || isAdminRoute;
   const isApiRoute = pathname.startsWith('/api/');
 
   // For API routes, use minimal protection
@@ -25,7 +27,7 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 
-  // For protected routes, we need authentication but can optimize
+  // For protected routes, require authentication (role checks are handled server-side)
   if (isProtectedRoute) {
     const sessionCookie = getSessionCookie(request);
 

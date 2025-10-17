@@ -129,6 +129,30 @@ describe('middleware', () => {
         expect(response.status).not.toBe(307)
       }
     })
+
+    // Admin-specific tests
+    it('should redirect to home when accessing admin without session', async () => {
+      mockGetSessionCookie.mockReturnValue(null)
+
+      const { middleware } = await import('../middleware')
+      const request = createMockRequest('/admin')
+
+      const response = await middleware(request)
+
+      expect(response.status).toBe(307)
+      expect(response.headers.get('location')).toBe('http://localhost:3000/')
+    })
+
+    it('should allow admin route with valid session (role checked server-side)', async () => {
+      mockGetSessionCookie.mockReturnValue('valid-session-cookie')
+
+      const { middleware } = await import('../middleware')
+      const request = createMockRequest('/admin')
+
+      const response = await middleware(request)
+
+      expect(response.status).not.toBe(307)
+    })
   })
 
   describe('security headers', () => {

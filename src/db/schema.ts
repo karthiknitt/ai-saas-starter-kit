@@ -1,34 +1,58 @@
-import { pgTable, text, timestamp, boolean } from 'drizzle-orm/pg-core';
+import {
+  pgTable,
+  text,
+  timestamp,
+  boolean,
+  pgEnum,
+  index,
+} from 'drizzle-orm/pg-core';
 
-export const user = pgTable('user', {
-  id: text('id').primaryKey(),
-  name: text('name').notNull(),
-  email: text('email').notNull().unique(),
-  emailVerified: boolean('email_verified').default(false).notNull(),
-  image: text('image'),
-  apiKeys: text('api_keys'), // encrypted JSON string for API keys
-  provider: text('provider'), // 'openai' or 'openrouter'
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at')
-    .defaultNow()
-    .$onUpdate(() => /* @__PURE__ */ new Date())
-    .notNull(),
-});
+// RBAC: define user_role enum with 'member' and 'admin'
+export const userRole = pgEnum('user_role', ['member', 'admin']);
 
-export const session = pgTable('session', {
-  id: text('id').primaryKey(),
-  expiresAt: timestamp('expires_at').notNull(),
-  token: text('token').notNull().unique(),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at')
-    .$onUpdate(() => /* @__PURE__ */ new Date())
-    .notNull(),
-  ipAddress: text('ip_address'),
-  userAgent: text('user_agent'),
-  userId: text('user_id')
-    .notNull()
-    .references(() => user.id, { onDelete: 'cascade' }),
-});
+export const user = pgTable(
+  'user',
+  {
+    id: text('id').primaryKey(),
+    name: text('name').notNull(),
+    email: text('email').notNull().unique(),
+    emailVerified: boolean('email_verified').default(false).notNull(),
+    image: text('image'),
+    apiKeys: text('api_keys'), // encrypted JSON string for API keys
+    provider: text('provider'), // 'openai' or 'openrouter'
+    // Role-based access control
+    role: userRole('role').default('member').notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  table => ({
+    idxUserRole: index('idx_user_role').on(table.role),
+  }),
+);
+
+export const session = pgTable(
+  'session',
+  {
+    id: text('id').primaryKey(),
+    expiresAt: timestamp('expires_at').notNull(),
+    token: text('token').notNull().unique(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+    ipAddress: text('ip_address'),
+    userAgent: text('user_agent'),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+  },
+  table => ({
+    idxSessionUserId: index('idx_session_user_id').on(table.userId),
+  }),
+);
 
 export const account = pgTable('account', {
   id: text('id').primaryKey(),
@@ -81,4 +105,11 @@ export const subscription = pgTable('subscription', {
     .notNull(),
 });
 
-export const schema = { user, session, account, verification, subscription };
+export const schema = {
+  user,
+  session,
+  account,
+  verification,
+  subscription,
+  userRole,
+};
