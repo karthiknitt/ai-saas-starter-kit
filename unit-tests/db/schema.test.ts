@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { user, session, account, verification, subscription, schema } from '@/db/schema'
+import { user, session, account, verification, subscription, schema, userRole } from '@/db/schema'
 
 describe('database schema', () => {
   describe('table definitions', () => {
@@ -30,12 +30,13 @@ describe('database schema', () => {
       expect(columns).toContain('image')
       expect(columns).toContain('apiKeys')
       expect(columns).toContain('provider')
+      expect(columns).toContain('role')
       expect(columns).toContain('createdAt')
       expect(columns).toContain('updatedAt')
     })
 
     it('should have correct number of columns', () => {
-      expect(Object.keys(user)).toHaveLength(10) // includes enableRLS
+      expect(Object.keys(user)).toHaveLength(11)
     })
   })
 
@@ -124,10 +125,11 @@ describe('database schema', () => {
       expect(schema).toHaveProperty('account')
       expect(schema).toHaveProperty('verification')
       expect(schema).toHaveProperty('subscription')
+      expect(schema).toHaveProperty('userRole')
     })
 
-    it('should have exactly 5 tables', () => {
-      expect(Object.keys(schema)).toHaveLength(5)
+    it('should have exactly 6 tables', () => {
+      expect(Object.keys(schema)).toHaveLength(6)
     })
 
     it('should reference the correct table instances', () => {
@@ -136,6 +138,7 @@ describe('database schema', () => {
       expect(schema.account).toBe(account)
       expect(schema.verification).toBe(verification)
       expect(schema.subscription).toBe(subscription)
+      expect(schema.userRole).toBe(userRole)
     })
   })
 })

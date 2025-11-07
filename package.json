@@ -18,6 +18,7 @@
     "db:push": "drizzle-kit push",
     "db:migrate": "drizzle-kit migrate",
     "db:seed": "npx tsx scripts/seed.ts",
+    "make-admin": "npx tsx scripts/make-admin.ts",
     "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,json,css,scss,sql,md,html,mjs}'",
     "analyze": "npx vite-bundle-analyzer .next/static",
     "prepare": "husky"

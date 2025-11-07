@@ -1,31 +1,24 @@
 import { betterAuth } from 'better-auth';
-import { polar, checkout, usage, portal } from '@polar-sh/better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { db } from '@/db/drizzle';
 import { nextCookies } from 'better-auth/next-js';
 import { schema } from '@/db/schema';
 import { Resend } from 'resend';
-import { Polar } from '@polar-sh/sdk';
 
 import ForgotPasswordEmail from '@/components/forms/reset-password';
 import EmailVerification from '@/components/forms/verify-email';
 
 const resend = new Resend(process.env.RESEND_API_KEY as string);
 
-// Polar client
-const polarClient = new Polar({
-  accessToken: process.env.POLAR_ACCESS_TOKEN!,
-  // Use 'sandbox' if you're using the Polar Sandbox environment
-  server: 'sandbox',
-});
-
-// Polar configuration
-export const polarConfig = {
-  accessToken: process.env.POLAR_ACCESS_TOKEN!,
-  successUrl: process.env.POLAR_SUCCESS_URL!,
-};
-
 export const auth = betterAuth({
+  user: {
+    additionalFields: {
+      role: {
+        type: 'string',
+        input: false,
+      },
+    },
+  },
   emailVerification: {
     sendVerificationEmail: async ({ user, url }) => {
       resend.emails.send({
@@ -69,32 +62,6 @@ export const auth = betterAuth({
   }),
   plugins: [
     nextCookies(),
-    polar({
-      client: polarClient,
-      createCustomerOnSignUp: true,
-      use: [
-        checkout({
-          products: [
-            {
-              slug: 'free',
-              productId: process.env.POLAR_PRODUCT_FREE as string,
-            },
-            {
-              slug: 'pro',
-              productId: process.env.POLAR_PRODUCT_PRO as string,
-            },
-            {
-              slug: 'startup',
-              productId: process.env.POLAR_PRODUCT_STARTUP as string,
-            },
-          ],
-          successUrl: '/billing/success?checkout_id={CHECKOUT_ID}',
-          authenticatedUsersOnly: true,
-        }),
-        portal(),
-        usage(),
-      ],
-    }),
 
     /*polar({
       client: polarClient,
@@ -131,4 +98,30 @@ export const auth = betterAuth({
 /* export const polarClientConfig = {
   accessToken: process.env.POLAR_ACCESS_TOKEN!,
 };
- */
+  */
+
+// Export properly typed session and user interfaces
+export type TypedUser = {
+  id: string;
+  name: string;
+  email: string;
+  emailVerified: boolean;
+  image?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  role: string;
+};
+
+export type TypedSession = {
+  user: TypedUser;
+  session: {
+    id: string;
+    expiresAt: Date;
+    token: string;
+    createdAt: Date;
+    updatedAt: Date;
+    ipAddress?: string | null;
+    userAgent?: string | null;
+    userId: string;
+  };
+};

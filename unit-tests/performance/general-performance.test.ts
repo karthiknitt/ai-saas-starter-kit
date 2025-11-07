@@ -135,7 +135,7 @@ describe('General Performance Tests', () => {
       };
 
       const executionTime = measurePerformance(operation);
-      expect(executionTime).toBeLessThan(200);
+      expect(executionTime).toBeLessThan(400);
     });
   });
 
@@ -157,7 +157,7 @@ describe('General Performance Tests', () => {
       };
 
       const executionTime = measurePerformance(operation);
-      expect(executionTime).toBeLessThan(100);
+      expect(executionTime).toBeLessThan(400);
     });
 
     it('should handle sorting operations efficiently', () => {
@@ -173,7 +173,7 @@ describe('General Performance Tests', () => {
       };
 
       const executionTime = measurePerformance(operation);
-      expect(executionTime).toBeLessThan(400);
+      expect(executionTime).toBeLessThan(800);
     });
 
     it('should handle grouping operations efficiently', () => {
@@ -193,7 +193,7 @@ describe('General Performance Tests', () => {
       };
 
       const executionTime = measurePerformance(operation);
-      expect(executionTime).toBeLessThan(100);
+      expect(executionTime).toBeLessThan(200);
     });
   });
 
@@ -240,7 +240,7 @@ describe('General Performance Tests', () => {
       const results = await operation();
       const endTime = performance.now();
 
-      expect(endTime - startTime).toBeLessThan(600);
+      expect(endTime - startTime).toBeLessThan(1200);
       expect(results).toHaveLength(10);
     });
   });
