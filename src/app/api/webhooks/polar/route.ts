@@ -2,8 +2,10 @@ import crypto from 'node:crypto';
 import { eq } from 'drizzle-orm';
 import { type NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db/drizzle';
-import { subscription } from '@/db/schema';
+import { subscription, user } from '@/db/schema';
 import { getPlanName } from '@/lib/plan-map';
+import { logSubscriptionChange } from '@/lib/audit-logger';
+import { getOrCreateQuota } from '@/lib/usage-tracker';
 
 // TypeScript interfaces for webhook data
 interface PolarSubscription {
@@ -68,9 +70,19 @@ async function handleSubscriptionCreated(data: WebhookEventData) {
     console.log('Product ID from webhook:', subscriptionData.product_id);
     console.log('Resolved plan from getPlanName:', plan);
 
+    // Find user by email to get the actual userId
+    const userRecord = await db.query.user.findFirst({
+      where: eq(user.email, customerData.email),
+    });
+
+    if (!userRecord) {
+      console.error('User not found for email:', customerData.email);
+      return;
+    }
+
     await db.insert(subscription).values({
       id: subscriptionData.id,
-      userId: customerData.id, // Assuming customer.id maps to user.id
+      userId: userRecord.id,
       polarSubscriptionId: subscriptionData.id,
       polarCustomerId: customerData.id,
       status: subscriptionData.status,
@@ -82,6 +94,16 @@ async function handleSubscriptionCreated(data: WebhookEventData) {
         ? new Date(subscriptionData.current_period_end)
         : null,
       cancelAtPeriodEnd: subscriptionData.cancel_at_period_end || false,
+    });
+
+    // Initialize usage quota for the user's new plan
+    await getOrCreateQuota(userRecord.id);
+
+    // Log the subscription creation
+    await logSubscriptionChange(userRecord.id, 'created', {
+      plan,
+      status: subscriptionData.status,
+      subscriptionId: subscriptionData.id,
     });
 
     console.log('Subscription created successfully');
@@ -105,6 +127,11 @@ async function handleSubscriptionUpdated(data: WebhookEventData) {
     console.log('Product ID from webhook:', subscriptionData.product_id);
     console.log('Resolved plan from getPlanName:', plan);
 
+    // Get existing subscription to track changes
+    const existing = await db.query.subscription.findFirst({
+      where: eq(subscription.polarSubscriptionId, subscriptionData.id),
+    });
+
     await db
       .update(subscription)
       .set({
@@ -120,6 +147,28 @@ async function handleSubscriptionUpdated(data: WebhookEventData) {
         updatedAt: new Date(),
       })
       .where(eq(subscription.polarSubscriptionId, subscriptionData.id));
+
+    // Update usage quota if plan changed
+    if (existing && existing.plan !== plan) {
+      await getOrCreateQuota(existing.userId);
+    }
+
+    // Log the subscription update
+    if (existing) {
+      await logSubscriptionChange(
+        existing.userId,
+        'updated',
+        {
+          plan,
+          status: subscriptionData.status,
+          subscriptionId: subscriptionData.id,
+        },
+        {
+          before: { plan: existing.plan, status: existing.status },
+          after: { plan, status: subscriptionData.status },
+        },
+      );
+    }
 
     console.log('Subscription updated successfully');
   } catch (error) {
@@ -138,6 +187,11 @@ async function handleSubscriptionCanceled(data: WebhookEventData) {
 
     console.log('Canceling subscription:', subscriptionData.id);
 
+    // Get existing subscription
+    const existing = await db.query.subscription.findFirst({
+      where: eq(subscription.polarSubscriptionId, subscriptionData.id),
+    });
+
     await db
       .update(subscription)
       .set({
@@ -146,6 +200,15 @@ async function handleSubscriptionCanceled(data: WebhookEventData) {
         updatedAt: new Date(),
       })
       .where(eq(subscription.polarSubscriptionId, subscriptionData.id));
+
+    // Log the subscription cancellation
+    if (existing) {
+      await logSubscriptionChange(existing.userId, 'canceled', {
+        plan: existing.plan,
+        status: 'canceled',
+        subscriptionId: subscriptionData.id,
+      });
+    }
 
     console.log('Subscription canceled successfully');
   } catch (error) {

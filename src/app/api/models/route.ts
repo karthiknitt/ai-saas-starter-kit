@@ -5,6 +5,7 @@ import { user } from '@/db/schema';
 import { aj } from '@/lib/arcjet';
 import { auth } from '@/lib/auth';
 import { decrypt } from '@/lib/crypto';
+import { getAllowedModels } from '@/lib/subscription-features';
 
 interface OpenAIModel {
   id: string;
@@ -68,6 +69,10 @@ export async function GET(request: NextRequest) {
 
     const apiKey = decrypt(userData.apiKeys);
 
+    // Get allowed models for user's subscription plan
+    const allowedModels = await getAllowedModels(session.user.id);
+    const hasAllAccess = allowedModels.includes('*');
+
     if (userData.provider === 'openai') {
       // Fetch OpenAI models
       const response = await fetch('https://api.openai.com/v1/models', {
@@ -83,6 +88,7 @@ export async function GET(request: NextRequest) {
       const data = await response.json();
       const models = (data.data as OpenAIModel[])
         .filter((model) => model.id.includes('gpt'))
+        .filter((model) => hasAllAccess || allowedModels.includes(model.id))
         .sort((a, b) => b.created - a.created)
         .map((model) => ({
           id: model.id,
@@ -91,9 +97,10 @@ export async function GET(request: NextRequest) {
             .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
             .join(' '),
           provider: 'openai',
+          locked: !hasAllAccess && !allowedModels.includes(model.id),
         }));
 
-      return NextResponse.json({ models });
+      return NextResponse.json({ models, planModels: allowedModels });
     } else if (userData.provider === 'openrouter') {
       // Fetch OpenRouter models
       const response = await fetch('https://openrouter.ai/api/v1/models', {
@@ -116,6 +123,7 @@ export async function GET(request: NextRequest) {
             model.pricing && parseFloat(model.pricing.prompt) > 0;
           return isAvailable;
         })
+        .filter((model) => hasAllAccess || allowedModels.some(allowed => model.id.includes(allowed)))
         .sort((a, b) => {
           // Sort by popularity/creation date
           return b.created - a.created;
@@ -126,9 +134,10 @@ export async function GET(request: NextRequest) {
           provider: 'openrouter',
           contextLength: model.context_length,
           description: model.description,
+          locked: !hasAllAccess && !allowedModels.some(allowed => model.id.includes(allowed)),
         }));
 
-      return NextResponse.json({ models });
+      return NextResponse.json({ models, planModels: allowedModels });
     }
 
     return NextResponse.json({ error: 'Invalid provider' }, { status: 400 });

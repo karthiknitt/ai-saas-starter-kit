@@ -105,11 +105,72 @@ export const subscription = pgTable('subscription', {
     .notNull(),
 });
 
+// Usage tracking tables
+export const usageLog = pgTable(
+  'usage_log',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    resourceType: text('resource_type').notNull(), // 'ai_request', 'api_call', 'storage'
+    resourceId: text('resource_id'),
+    quantity: text('quantity').default('1').notNull(), // Using text to store numbers for flexibility
+    metadata: text('metadata'), // JSON string for additional data
+    timestamp: timestamp('timestamp').defaultNow().notNull(),
+  },
+  (table) => ({
+    idxUsageUserId: index('idx_usage_user_id').on(table.userId),
+    idxUsageTimestamp: index('idx_usage_timestamp').on(table.timestamp),
+    idxUsageResourceType: index('idx_usage_resource_type').on(
+      table.resourceType,
+    ),
+  }),
+);
+
+export const usageQuota = pgTable('usage_quota', {
+  userId: text('user_id')
+    .primaryKey()
+    .references(() => user.id, { onDelete: 'cascade' }),
+  aiRequestsUsed: text('ai_requests_used').default('0').notNull(), // Text to store numbers
+  aiRequestsLimit: text('ai_requests_limit').notNull(),
+  resetAt: timestamp('reset_at').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at')
+    .defaultNow()
+    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .notNull(),
+});
+
+// Audit logging table
+export const auditLog = pgTable(
+  'audit_log',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id').references(() => user.id, { onDelete: 'set null' }),
+    action: text('action').notNull(),
+    resourceType: text('resource_type'),
+    resourceId: text('resource_id'),
+    changes: text('changes'), // JSON string for before/after state
+    ipAddress: text('ip_address'),
+    userAgent: text('user_agent'),
+    timestamp: timestamp('timestamp').defaultNow().notNull(),
+  },
+  (table) => ({
+    idxAuditUserId: index('idx_audit_user_id').on(table.userId),
+    idxAuditTimestamp: index('idx_audit_timestamp').on(table.timestamp),
+    idxAuditAction: index('idx_audit_action').on(table.action),
+  }),
+);
+
 export const schema = {
   user,
   session,
   account,
   verification,
   subscription,
+  usageLog,
+  usageQuota,
+  auditLog,
   userRole,
 };
