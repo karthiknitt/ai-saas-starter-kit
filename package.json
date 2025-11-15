@@ -138,8 +138,8 @@
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx}": [
-      "npm run format",
-      "npm run lint",
+      "pnpm run format",
+      "pnpm run lint",
       "bash -c tsc --noEmit"
     ]
   },

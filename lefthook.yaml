@@ -5,44 +5,34 @@
 pre-commit:
   commands:
     lint-staged:
-      run: npx lint-staged
+      run: pnpm exec lint-staged
       stage_fixed: true
 
 # Prepare commit message hook: Auto-generate AI commit messages
 prepare-commit-msg:
   commands:
     generate-message:
-      run: |
-        if ! COMMIT_MSG=$(node generate-commit-msg.js 2>&1); then
-          echo "Warning: Failed to generate commit message: $COMMIT_MSG" >&2
-          exit 0
-        fi
-
-        if [ -n "$COMMIT_MSG" ]; then
-          echo "$COMMIT_MSG" > {1}
-        else
-          echo "Warning: No commit message generated (no staged changes?)" >&2
-        fi
+      run: bash scripts/generate-commit-msg.sh {1}
       fail_text: "Failed to generate commit message"
 
 # Commit message validation: Ensure conventional commit format
 commit-msg:
   commands:
     commitlint:
-      run: npx commitlint --edit {1}
+      run: pnpm exec commitlint --edit {1}
       fail_text: "Commit message doesn't follow conventional commits format"
 
 # Pre-push hook: Run quality checks before pushing
 pre-push:
   commands:
     lint:
-      run: npm run lint
+      run: pnpm run lint
       fail_text: "Linting failed. Fix the errors before pushing."
     type-check:
-      run: npm run type-check
+      run: pnpm run type-check
       fail_text: "Type checking failed. Fix the errors before pushing."
     build:
-      run: npm run build
+      run: pnpm run build
       fail_text: "Build failed. Fix the errors before pushing."
   # Uncomment below to run tests before push
   # parallel: true  # Run commands in parallel for faster execution
