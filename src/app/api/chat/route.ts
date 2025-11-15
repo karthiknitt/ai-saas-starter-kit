@@ -1,3 +1,36 @@
+/**
+ * AI chat API endpoint with streaming support.
+ *
+ * This API route processes chat requests and streams AI-generated responses back to the client.
+ * It handles multiple AI providers (OpenAI, OpenRouter) and enforces quota limits based on
+ * user subscription plans.
+ *
+ * Request Flow:
+ * 1. Arcjet protection (rate limiting, bot detection)
+ * 2. User authentication via session
+ * 3. Usage quota validation
+ * 4. API key decryption
+ * 5. Request validation (Zod schema)
+ * 6. Model access verification (plan-based)
+ * 7. AI provider initialization
+ * 8. Stream AI response to client
+ *
+ * Supported Providers:
+ * - OpenAI (gpt-4o, gpt-3.5-turbo, etc.)
+ * - OpenRouter (claude-3.5-sonnet, and 200+ other models)
+ *
+ * Security Features:
+ * - Arcjet bot detection and rate limiting
+ * - Encrypted API key storage (AES-256-GCM)
+ * - Plan-based model access control
+ * - Usage quota enforcement
+ * - Request validation with Zod
+ * - Comprehensive error logging
+ *
+ * @module api/chat
+ * @see {@link https://sdk.vercel.ai/docs Vercel AI SDK Documentation}
+ */
+
 import { createOpenAI } from '@ai-sdk/openai';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import type { LanguageModel } from 'ai';
@@ -15,7 +48,26 @@ import { logApiRequest, logError } from '@/lib/logger';
 import { hasModelAccess } from '@/lib/subscription-features';
 import { trackAndCheckAiRequest } from '@/lib/usage-tracker';
 
-// Zod schema for validating chat requests
+/**
+ * Zod schema for validating chat request payloads.
+ *
+ * Validates:
+ * - Messages array (1-100 messages)
+ * - Message role (user, assistant, system)
+ * - Message content (1-50000 chars)
+ * - Optional model override
+ *
+ * @example
+ * Valid request:
+ * ```json
+ * {
+ *   "messages": [
+ *     { "role": "user", "content": "Hello, how are you?" }
+ *   ],
+ *   "model": "gpt-4o"
+ * }
+ * ```
+ */
 const chatRequestSchema = z.object({
   messages: z
     .array(
@@ -41,9 +93,63 @@ const chatRequestSchema = z.object({
 });
 
 /**
- * Handle POST /api/chat: authenticate the requester, validate and normalize the chat payload, select the user's AI provider and model, and stream the model-generated messages back to the client.
+ * POST /api/chat
  *
- * @returns An HTTP Response containing a streaming AI-generated message stream on success, or a JSON error payload with an appropriate status code on failure.
+ * Processes chat requests and streams AI-generated responses.
+ *
+ * Authentication: Required (session-based)
+ *
+ * Request Body:
+ * ```json
+ * {
+ *   "messages": [
+ *     { "role": "user", "content": "Your message here" },
+ *     { "role": "assistant", "content": "Previous response" }
+ *   ],
+ *   "model": "gpt-4o" // optional, falls back to cookie or user's default
+ * }
+ * ```
+ *
+ * Response:
+ * - 200: Streamed AI response (text/event-stream)
+ * - 400: Invalid request format, missing API key
+ * - 401: Unauthorized (no session)
+ * - 403: Access denied (Arcjet), model not available on plan
+ * - 404: User not found
+ * - 429: Quota exceeded
+ * - 500: Internal error (decryption failure, AI provider error)
+ *
+ * Rate Limiting:
+ * - Enforced by Arcjet based on client IP
+ * - Quota limits based on subscription plan (Free: 10/month, Pro: 1000/month, etc.)
+ *
+ * Model Selection Priority:
+ * 1. Model from request body
+ * 2. Model from selectedModel cookie
+ * 3. Default model based on provider (openai: gpt-4o, openrouter: claude-3.5-sonnet)
+ *
+ * @param {Request} request - HTTP request object
+ * @returns {Promise<Response>} Streaming response or error JSON
+ *
+ * @example
+ * ```typescript
+ * // Client-side usage with fetch
+ * const response = await fetch('/api/chat', {
+ *   method: 'POST',
+ *   headers: { 'Content-Type': 'application/json' },
+ *   body: JSON.stringify({
+ *     messages: [{ role: 'user', content: 'Hello!' }]
+ *   })
+ * });
+ *
+ * // Read streaming response
+ * const reader = response.body.getReader();
+ * while (true) {
+ *   const { done, value } = await reader.read();
+ *   if (done) break;
+ *   console.log(new TextDecoder().decode(value));
+ * }
+ * ```
  */
 export async function POST(request: Request) {
   // Get client IP for logging and Arcjet
