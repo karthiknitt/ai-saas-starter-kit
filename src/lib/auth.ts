@@ -1,3 +1,5 @@
+import { checkout, polar, webhooks } from '@polar-sh/better-auth';
+import { Polar } from '@polar-sh/sdk';
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { nextCookies } from 'better-auth/next-js';
@@ -8,6 +10,11 @@ import { db } from '@/db/drizzle';
 import { schema } from '@/db/schema';
 
 const resend = new Resend(process.env.RESEND_API_KEY as string);
+
+const polarClient = new Polar({
+  accessToken: process.env.POLAR_ACCESS_TOKEN!,
+  server: process.env.NODE_ENV === 'production' ? 'production' : 'sandbox',
+});
 
 export const auth = betterAuth({
   user: {
@@ -61,43 +68,41 @@ export const auth = betterAuth({
   }),
   plugins: [
     nextCookies(),
-
-    /*polar({
-      client: polarClient,
-      createCustomerOnSignUp: true,
-      enableCustomerPortal: true, //api/auth/portal
-      successUrl: process.env.POLAR_SUCCESS_URL!,
-      checkout: {
-        enabled: true,
-        products: [
-          {
-            slug: 'Free',
-            productId: process.env.POLAR_PRODUCT_FREE as string,
-          },
-          {
-            slug: 'Pro',
-            productId: process.env.POLAR_PRODUCT_PRO as string,
-          },
-          {
-            slug: 'Startup',
-            productId: process.env.POLAR_PRODUCT_STARTUP as string,
-          },
-        ],
-      },
-      use: [
-        webhooks({
-          secret: process.env.POLAR_WEBHOOK_SECRET!,
-        }),
-      ],
-    }),*/
+    // TODO: Fix polar plugin version compatibility with better-auth 1.3.34
+    // polar({
+    //   client: polarClient,
+    //   createCustomerOnSignUp: true,
+    //   use: [
+    //     checkout({
+    //       products: [
+    //         {
+    //           slug: 'Free',
+    //           productId: process.env.POLAR_PRODUCT_FREE as string,
+    //         },
+    //         {
+    //           slug: 'Pro',
+    //           productId: process.env.POLAR_PRODUCT_PRO as string,
+    //         },
+    //         {
+    //           slug: 'Startup',
+    //           productId: process.env.POLAR_PRODUCT_STARTUP as string,
+    //         },
+    //       ],
+    //       successUrl: process.env.POLAR_SUCCESS_URL!,
+    //       authenticatedUsersOnly: true,
+    //     }),
+    //     webhooks({
+    //       secret: process.env.POLAR_WEBHOOK_SECRET!,
+    //     }),
+    //   ],
+    // }),
   ],
 });
 
 // Polar client configuration
-/* export const polarClientConfig = {
+export const polarClientConfig = {
   accessToken: process.env.POLAR_ACCESS_TOKEN!,
 };
-  */
 
 // Export properly typed session and user interfaces
 export type TypedUser = {

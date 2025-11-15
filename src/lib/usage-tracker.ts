@@ -1,8 +1,11 @@
+import { and, eq, gte, sql } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
 import { db } from '@/db/drizzle';
 import { usageLog, usageQuota } from '@/db/schema';
-import { eq, and, gte, sql } from 'drizzle-orm';
-import { getAiRequestLimit, hasUnlimitedAiRequests } from './subscription-features';
+import {
+  getAiRequestLimit,
+  hasUnlimitedAiRequests,
+} from './subscription-features';
 
 export type ResourceType = 'ai_request' | 'api_call' | 'storage';
 
@@ -179,11 +182,8 @@ export async function getUserUsageStats(userId: string, days = 30) {
 
   // Get usage logs
   const logs = await db.query.usageLog.findMany({
-    where: and(
-      eq(usageLog.userId, userId),
-      gte(usageLog.timestamp, startDate),
-    ),
-    orderBy: (usageLog, { desc }) => [desc(usageLog.timestamp)],
+    where: and(eq(usageLog.userId, userId), gte(usageLog.timestamp, startDate)),
+    orderBy: [sql`${usageLog.timestamp} DESC`],
   });
 
   // Get current quota

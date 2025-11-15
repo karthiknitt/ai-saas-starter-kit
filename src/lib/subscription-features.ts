@@ -1,6 +1,8 @@
+import { eq } from 'drizzle-orm';
 import { db } from '@/db/drizzle';
 import { subscription as subscriptionTable } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+
+// Test commit to verify lefthook migration to pnpm
 
 /**
  * Plan feature definitions
@@ -89,12 +91,12 @@ export async function hasModelAccess(
   const features = await getUserPlanFeatures(userId);
 
   // Check for wildcard (all models)
-  if (features.models.includes('*')) {
+  if (features.models.some((model) => model === '*')) {
     return true;
   }
 
   // Check if model is in allowed list
-  return features.models.includes(modelId);
+  return features.models.some((model) => model === modelId);
 }
 
 /**
@@ -102,7 +104,7 @@ export async function hasModelAccess(
  */
 export async function getAllowedModels(userId: string): Promise<string[]> {
   const features = await getUserPlanFeatures(userId);
-  return features.models;
+  return [...features.models];
 }
 
 /**
@@ -134,9 +136,7 @@ export async function getAiRequestLimit(userId: string): Promise<number> {
 /**
  * Check if user's plan allows unlimited AI requests
  */
-export async function hasUnlimitedAiRequests(
-  userId: string,
-): Promise<boolean> {
+export async function hasUnlimitedAiRequests(userId: string): Promise<boolean> {
   const limit = await getAiRequestLimit(userId);
   return limit === -1;
 }
