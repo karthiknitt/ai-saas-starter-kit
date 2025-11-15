@@ -20,7 +20,7 @@
     "db:seed": "npx tsx scripts/seed.ts",
     "make-admin": "npx tsx scripts/make-admin.ts",
     "analyze": "npx vite-bundle-analyzer .next/static",
-    "prepare": "husky"
+    "prepare": "lefthook install"
   },
   "dependencies": {
     "@ai-sdk/openai": "^2.0.67",
@@ -127,7 +127,7 @@
     "commitizen": "^4.3.1",
     "cz-conventional-changelog": "^3.3.0",
     "drizzle-kit": "^0.31.7",
-    "husky": "^9.1.7",
+    "lefthook": "^1.10.2",
     "jsdom": "^27.2.0",
     "lint-staged": "^16.2.6",
     "postcss": "^8.5.6",
