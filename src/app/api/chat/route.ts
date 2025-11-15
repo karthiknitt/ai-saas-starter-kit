@@ -12,6 +12,8 @@ import { aj } from '@/lib/arcjet';
 import { auth } from '@/lib/auth';
 import { decrypt } from '@/lib/crypto';
 import { logApiRequest, logError } from '@/lib/logger';
+import { trackAndCheckAiRequest } from '@/lib/usage-tracker';
+import { hasModelAccess } from '@/lib/subscription-features';
 
 // Zod schema for validating chat requests
 const chatRequestSchema = z.object({
@@ -87,6 +89,23 @@ export async function POST(request: Request) {
       );
     }
 
+    // Check usage quota before processing request
+    const quotaCheck = await trackAndCheckAiRequest(session.user.id);
+    if (!quotaCheck.allowed) {
+      return NextResponse.json(
+        {
+          error: 'Quota exceeded',
+          details: {
+            used: quotaCheck.quota.used,
+            limit: quotaCheck.quota.limit,
+            remaining: quotaCheck.quota.remaining,
+            message: 'You have reached your monthly AI request limit. Please upgrade your plan to continue.',
+          },
+        },
+        { status: 429 },
+      );
+    }
+
     let apiKey: string;
     try {
       apiKey = decrypt(u.apiKeys);
@@ -134,6 +153,21 @@ export async function POST(request: Request) {
     if (!modelToUse) {
       modelToUse =
         u.provider === 'openai' ? 'gpt-4o' : 'anthropic/claude-3.5-sonnet';
+    }
+
+    // Check if user has access to the requested model based on their plan
+    const hasAccess = await hasModelAccess(session.user.id, modelToUse);
+    if (!hasAccess) {
+      return NextResponse.json(
+        {
+          error: 'Model not available',
+          details: {
+            model: modelToUse,
+            message: 'This model is not available on your current plan. Please upgrade to access it.',
+          },
+        },
+        { status: 403 },
+      );
     }
 
     let aiModel: LanguageModel;
