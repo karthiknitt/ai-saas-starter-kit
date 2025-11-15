@@ -1,3 +1,28 @@
+/**
+ * Polar payment webhook handler.
+ *
+ * This API route processes webhook events from Polar.sh for subscription management.
+ * It handles subscription lifecycle events (created, updated, canceled) and maintains
+ * synchronization between Polar and the local database.
+ *
+ * Security Features:
+ * - HMAC-SHA256 signature verification for all webhooks
+ * - Timing-safe signature comparison to prevent timing attacks
+ * - Environment-based webhook secret configuration
+ *
+ * Supported Events:
+ * - `subscription.created`: New subscription initiated
+ * - `subscription.updated`: Subscription plan or status changed
+ * - `subscription.canceled`: Subscription canceled by user
+ * - `order.created`: One-time order created (logged but not processed)
+ *
+ * Environment Variables Required:
+ * - POLAR_WEBHOOK_SECRET: Secret for verifying webhook signatures
+ *
+ * @module webhooks/polar
+ * @see {@link https://docs.polar.sh/webhooks Polar Webhooks Documentation}
+ */
+
 import crypto from 'node:crypto';
 import { eq } from 'drizzle-orm';
 import { type NextRequest, NextResponse } from 'next/server';
@@ -7,7 +32,16 @@ import { logSubscriptionChange } from '@/lib/audit-logger';
 import { getPlanName } from '@/lib/plan-map';
 import { getOrCreateQuota } from '@/lib/usage-tracker';
 
-// TypeScript interfaces for webhook data
+/**
+ * Polar subscription data structure from webhooks.
+ *
+ * @property {string} id - Unique subscription identifier
+ * @property {string} product_id - Product ID (maps to plan in PRODUCT_MAP)
+ * @property {string} status - Subscription status (active, canceled, past_due, etc.)
+ * @property {string | null} [current_period_start] - ISO 8601 period start date
+ * @property {string | null} [current_period_end] - ISO 8601 period end date
+ * @property {boolean} [cancel_at_period_end] - Whether subscription cancels at period end
+ */
 interface PolarSubscription {
   id: string;
   product_id: string;
@@ -17,17 +51,55 @@ interface PolarSubscription {
   cancel_at_period_end?: boolean;
 }
 
+/**
+ * Polar customer data structure from webhooks.
+ *
+ * @property {string} id - Unique customer identifier in Polar
+ * @property {string} email - Customer email address (used to match local users)
+ */
 interface PolarCustomer {
   id: string;
   email: string;
 }
 
+/**
+ * Webhook event payload data.
+ *
+ * @property {PolarSubscription} [subscription] - Subscription data (if event is subscription-related)
+ * @property {PolarCustomer} [customer] - Customer data
+ */
 interface WebhookEventData {
   subscription?: PolarSubscription;
   customer?: PolarCustomer;
   [key: string]: unknown;
 }
 
+/**
+ * Verifies the HMAC-SHA256 signature of a Polar webhook.
+ *
+ * Polar signs webhooks with HMAC-SHA256 and sends the signature in the
+ * `polar-signature-256` header with format "v1,<base64_signature>".
+ *
+ * This function:
+ * 1. Strips the "v1," prefix from the signature
+ * 2. Decodes the base64 signature
+ * 3. Computes HMAC-SHA256 over the raw body
+ * 4. Performs timing-safe comparison to prevent timing attacks
+ *
+ * @param {string} body - Raw request body (as text, not parsed JSON)
+ * @param {string} signature - Signature from polar-signature-256 header
+ * @param {string} secret - Webhook secret from POLAR_WEBHOOK_SECRET env var
+ * @returns {boolean} True if signature is valid, false otherwise
+ *
+ * @example
+ * ```typescript
+ * const isValid = verifyWebhookSignature(
+ *   rawBody,
+ *   'v1,abc123...',
+ *   process.env.POLAR_WEBHOOK_SECRET
+ * );
+ * ```
+ */
 function verifyWebhookSignature(
   body: string,
   signature: string,
@@ -54,6 +126,36 @@ function verifyWebhookSignature(
   }
 }
 
+/**
+ * Handles the `subscription.created` webhook event.
+ *
+ * When a user successfully completes checkout and a subscription is created in Polar:
+ * 1. Finds the user by email from customer data
+ * 2. Creates a subscription record in the local database
+ * 3. Initializes usage quota for the user's plan
+ * 4. Logs the subscription creation to audit logs
+ *
+ * @param {WebhookEventData} data - Webhook event data
+ * @returns {Promise<void>}
+ *
+ * @example
+ * Event payload structure:
+ * ```json
+ * {
+ *   "subscription": {
+ *     "id": "sub_123",
+ *     "product_id": "prod_abc",
+ *     "status": "active",
+ *     "current_period_start": "2024-01-01T00:00:00Z",
+ *     "current_period_end": "2024-02-01T00:00:00Z"
+ *   },
+ *   "customer": {
+ *     "id": "cus_456",
+ *     "email": "user@example.com"
+ *   }
+ * }
+ * ```
+ */
 async function handleSubscriptionCreated(data: WebhookEventData) {
   try {
     const subscriptionData = data.subscription;
@@ -112,6 +214,23 @@ async function handleSubscriptionCreated(data: WebhookEventData) {
   }
 }
 
+/**
+ * Handles the `subscription.updated` webhook event.
+ *
+ * Triggered when subscription details change (plan upgrade/downgrade, status change, etc.):
+ * 1. Updates the subscription record in the local database
+ * 2. Refreshes usage quota if the plan changed
+ * 3. Logs the subscription update with before/after states
+ *
+ * Common update scenarios:
+ * - Plan upgrade (Free → Pro)
+ * - Plan downgrade (Pro → Free)
+ * - Status change (active → past_due)
+ * - Period renewal
+ *
+ * @param {WebhookEventData} data - Webhook event data
+ * @returns {Promise<void>}
+ */
 async function handleSubscriptionUpdated(data: WebhookEventData) {
   try {
     const subscriptionData = data.subscription;
@@ -176,6 +295,19 @@ async function handleSubscriptionUpdated(data: WebhookEventData) {
   }
 }
 
+/**
+ * Handles the `subscription.canceled` webhook event.
+ *
+ * When a user cancels their subscription:
+ * 1. Updates subscription status to 'canceled'
+ * 2. Sets cancelAtPeriodEnd flag
+ * 3. Logs the cancellation to audit logs
+ *
+ * Note: The subscription typically remains active until the end of the billing period.
+ *
+ * @param {WebhookEventData} data - Webhook event data
+ * @returns {Promise<void>}
+ */
 async function handleSubscriptionCanceled(data: WebhookEventData) {
   try {
     const subscriptionData = data.subscription;
@@ -216,6 +348,38 @@ async function handleSubscriptionCanceled(data: WebhookEventData) {
   }
 }
 
+/**
+ * POST /api/webhooks/polar
+ *
+ * Webhook endpoint for receiving and processing Polar payment events.
+ *
+ * Request Flow:
+ * 1. Extract raw body and signature header
+ * 2. Verify webhook signature using HMAC-SHA256
+ * 3. Parse event payload
+ * 4. Route to appropriate handler based on event type
+ * 5. Return 200 OK to acknowledge receipt
+ *
+ * Security:
+ * - All webhooks must have a valid signature or are rejected with 401
+ * - Uses timing-safe comparison to prevent timing attacks
+ * - Logs all webhook activity for debugging and security auditing
+ *
+ * Error Handling:
+ * - 400: Missing signature header
+ * - 401: Invalid signature
+ * - 500: Server configuration error or processing error
+ * - 200: Successfully processed (even if event type is unhandled)
+ *
+ * @param {NextRequest} req - Next.js request object
+ * @returns {Promise<NextResponse>} HTTP response
+ *
+ * @example
+ * Configure this endpoint in Polar dashboard:
+ * - URL: https://your-domain.com/api/webhooks/polar
+ * - Secret: Same as POLAR_WEBHOOK_SECRET environment variable
+ * - Events: subscription.created, subscription.updated, subscription.canceled
+ */
 export async function POST(req: NextRequest) {
   console.log('=== POLAR WEBHOOK RECEIVED ===');
   console.log('Headers:', Object.fromEntries(req.headers.entries()));
