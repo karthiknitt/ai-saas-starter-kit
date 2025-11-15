@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @theme inline {
   --color-background: var(--background);
@@ -189,10 +189,10 @@
   *,
   *::before,
   *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+    transition-duration: 0.01ms;
+    scroll-behavior: auto;
   }
 }
 
@@ -250,8 +250,8 @@
   input,
   select,
   textarea,
-  [role='button'],
-  [tabindex]:not([tabindex='-1']) {
+  [role="button"],
+  [tabindex]:not([tabindex="-1"]) {
     min-height: 44px;
     min-width: 44px;
   }
@@ -259,7 +259,7 @@
   /* Improve hover states for better visual feedback */
   a:hover,
   button:hover,
-  [role='button']:hover {
+  [role="button"]:hover {
     transform: translateY(-1px);
     transition: transform 0.2s ease-out;
   }
@@ -274,12 +274,12 @@
     --spacing: 0.222222rem;
   }
 
-  [data-slot='card'] {
+  [data-slot="card"] {
     --spacing: 0.16rem;
   }
 
-  [data-slot='select-trigger'],
-  [data-slot='toggle-group-item'] {
+  [data-slot="select-trigger"],
+  [data-slot="toggle-group-item"] {
     --spacing: 0.222222rem;
   }
 }
@@ -290,6 +290,7 @@
   --primary-foreground: var(--color-neutral-50);
 
   @variant dark {
+    /* biome-ignore lint/suspicious/noDuplicateCustomProperties: Intentional override for dark theme */
     --primary: var(--color-neutral-500);
     --primary-foreground: var(--color-neutral-50);
   }
@@ -310,6 +311,7 @@
   --status-info-fg: var(--color-blue-50);
 
   @variant dark {
+    /* biome-ignore lint/suspicious/noDuplicateCustomProperties: Intentional override for dark theme */
     --primary: var(--color-blue-500);
     --primary-foreground: var(--color-blue-50);
 
@@ -338,6 +340,7 @@
   --status-success-fg: var(--color-lime-900);
 
   @variant dark {
+    /* biome-ignore lint/suspicious/noDuplicateCustomProperties: Intentional override for dark theme */
     --primary: var(--color-lime-600);
     --primary-foreground: var(--color-lime-50);
 
@@ -366,6 +369,7 @@
   --status-warning-fg: var(--color-amber-900);
 
   @variant dark {
+    /* biome-ignore lint/suspicious/noDuplicateCustomProperties: Intentional override for dark theme */
     --primary: var(--color-amber-500);
     --primary-foreground: var(--color-amber-50);
 
@@ -396,6 +400,7 @@
   --status-error-fg: var(--color-red-50);
 
   @variant dark {
+    /* biome-ignore lint/suspicious/noDuplicateCustomProperties: Intentional override for dark theme */
     --primary: var(--color-red-500);
     --primary-foreground: var(--color-red-50);
 
@@ -422,6 +427,7 @@
   --message-assistant-bg: oklch(from var(--color-purple-50) calc(l + 0.05) c h);
 
   @variant dark {
+    /* biome-ignore lint/suspicious/noDuplicateCustomProperties: Intentional override for dark theme */
     --primary: var(--color-purple-500);
     --primary-foreground: var(--color-purple-50);
 
@@ -448,6 +454,7 @@
   --message-assistant-bg: oklch(from var(--color-pink-50) calc(l + 0.05) c h);
 
   @variant dark {
+    /* biome-ignore lint/suspicious/noDuplicateCustomProperties: Intentional override for dark theme */
     --primary: var(--color-pink-500);
     --primary-foreground: var(--color-pink-50);
 
@@ -472,6 +479,7 @@
   --message-assistant-bg: oklch(from var(--color-violet-50) calc(l + 0.05) c h);
 
   @variant dark {
+    /* biome-ignore lint/suspicious/noDuplicateCustomProperties: Intentional override for dark theme */
     --primary: var(--color-violet-500);
     --primary-foreground: var(--color-violet-50);
 
@@ -498,6 +506,7 @@
   --message-assistant-bg: oklch(from var(--color-indigo-50) calc(l + 0.05) c h);
 
   @variant dark {
+    /* biome-ignore lint/suspicious/noDuplicateCustomProperties: Intentional override for dark theme */
     --primary: var(--color-indigo-500);
     --primary-foreground: var(--color-indigo-50);
 
@@ -528,6 +537,7 @@
   --status-success-fg: var(--color-emerald-900);
 
   @variant dark {
+    /* biome-ignore lint/suspicious/noDuplicateCustomProperties: Intentional override for dark theme */
     --primary: var(--color-emerald-500);
     --primary-foreground: var(--color-emerald-50);
 
@@ -561,6 +571,7 @@
   );
 
   @variant dark {
+    /* biome-ignore lint/suspicious/noDuplicateCustomProperties: Intentional override for dark theme */
     --primary: var(--color-neutral-500);
     --primary-foreground: var(--color-neutral-50);
 
@@ -592,15 +603,15 @@
     @apply !shadow-none;
   }
 
-  [data-slot='toggle-group'],
-  [data-slot='toggle-group-item'] {
+  [data-slot="toggle-group"],
+  [data-slot="toggle-group-item"] {
     @apply !rounded-none !shadow-none;
   }
 }
 
 /* Home Page Independent Styling - Not affected by theme selection */
 @layer base {
-  .home-page-wrapper[data-theme='light'] {
+  .home-page-wrapper[data-theme="light"] {
     /* Force light mode colors with proper contrast */
     --background: oklch(0.99 0 0);
     --foreground: oklch(0.09 0 0);
@@ -652,62 +663,58 @@
   }
 
   /* Enhanced card and border visibility in light mode */
-  .home-page-wrapper[data-theme='light'] [class*='bg-card/'],
-  .home-page-wrapper[data-theme='light'] [class*='border-border/'] {
+  .home-page-wrapper[data-theme="light"] [class*="bg-card/"],
+  .home-page-wrapper[data-theme="light"] [class*="border-border/"] {
     --tw-bg-opacity: 0.7;
     --tw-border-opacity: 0.8;
   }
 
   /* Ensure text has proper contrast in light mode */
-  .home-page-wrapper[data-theme='light'] h1,
-  .home-page-wrapper[data-theme='light'] h2,
-  .home-page-wrapper[data-theme='light'] h3,
-  .home-page-wrapper[data-theme='light'] h4,
-  .home-page-wrapper[data-theme='light'] h5,
-  .home-page-wrapper[data-theme='light'] h6 {
+  .home-page-wrapper[data-theme="light"] h1,
+  .home-page-wrapper[data-theme="light"] h2,
+  .home-page-wrapper[data-theme="light"] h3,
+  .home-page-wrapper[data-theme="light"] h4,
+  .home-page-wrapper[data-theme="light"] h5,
+  .home-page-wrapper[data-theme="light"] h6 {
     color: oklch(0.09 0 0);
   }
 
   /* Improve link visibility in light mode */
-  .home-page-wrapper[data-theme='light'] a {
+  .home-page-wrapper[data-theme="light"] a {
     color: oklch(0.15 0 0);
   }
 
-  .home-page-wrapper[data-theme='light'] a:hover {
+  .home-page-wrapper[data-theme="light"] a:hover {
     color: oklch(0.09 0 0);
   }
 
   /* Header visibility fixes for light mode */
-  .home-page-wrapper[data-theme='light'] header {
-    background-color: var(--header-bg) !important;
-    border-color: var(--header-border) !important;
-    color: var(--header-text) !important;
+  .home-page-wrapper[data-theme="light"] header {
+    background-color: var(--header-bg);
+    border-color: var(--header-border);
+    color: var(--header-text);
   }
 
-  .home-page-wrapper[data-theme='light'] header .text-foreground\/80 {
-    color: var(--header-text) !important;
-  }
-
-  .home-page-wrapper[data-theme='light'] header .text-muted-foreground {
-    color: var(--header-text-muted) !important;
+  .home-page-wrapper[data-theme="light"] header .text-foreground\/80 {
+    color: var(--header-text);
   }
 
   /* Scrolled header background override */
-  .home-page-wrapper[data-theme='light'] .bg-background\/50 {
-    background-color: var(--header-bg) !important;
+  .home-page-wrapper[data-theme="light"] .bg-background\/50 {
+    background-color: var(--header-bg);
   }
 
   /* Link text visibility in header */
-  .home-page-wrapper[data-theme='light'] header a:not(.header-auth-button) {
-    color: var(--header-text) !important;
+  .home-page-wrapper[data-theme="light"] header a:not(.header-auth-button) {
+    color: var(--header-text);
   }
 
   /* Mode toggle button visibility */
-  .home-page-wrapper[data-theme='light'] .bg-background {
-    background-color: var(--header-bg) !important;
+  .home-page-wrapper[data-theme="light"] .bg-background {
+    background-color: var(--header-bg);
   }
 
-  .home-page-wrapper[data-theme='dark'] {
+  .home-page-wrapper[data-theme="dark"] {
     /* Force dark mode colors */
     --background: oklch(0.145 0 0);
     --foreground: oklch(0.985 0 0);
@@ -735,56 +742,60 @@
   }
 
   /* Improve card backgrounds in light mode - override opacity */
-  .home-page-wrapper[data-theme='light'] .backdrop-blur-sm {
-    background-color: oklch(0.98 0 0 / 0.85) !important;
+  .home-page-wrapper[data-theme="light"] .backdrop-blur-sm {
+    background-color: oklch(0.98 0 0 / 0.85);
   }
 
-  .home-page-wrapper[data-theme='light'] [class*='bg-card/30'] {
-    background-color: oklch(0.98 0 0 / 0.75) !important;
+  .home-page-wrapper[data-theme="light"] [class*="bg-card/30"] {
+    background-color: oklch(0.98 0 0 / 0.75);
   }
 
-  .home-page-wrapper[data-theme='light'] [class*='border-border/50'] {
-    border-color: oklch(0.88 0 0 / 0.85) !important;
+  .home-page-wrapper[data-theme="light"] [class*="border-border/50"] {
+    border-color: oklch(0.88 0 0 / 0.85);
   }
 
   /* Ensure proper contrast for muted text in light mode */
-  .home-page-wrapper[data-theme='light'] .text-muted-foreground {
-    color: oklch(0.45 0 0) !important;
+  .home-page-wrapper[data-theme="light"] .text-muted-foreground {
+    color: oklch(0.45 0 0);
+  }
+
+  .home-page-wrapper[data-theme="light"] header .text-muted-foreground {
+    color: var(--header-text-muted);
   }
 
   /* Fix scrolled header background in light mode */
-  .home-page-wrapper[data-theme='light'] .bg-background\/50 {
-    background-color: var(--header-bg) !important;
+  .home-page-wrapper[data-theme="light"] .bg-background\/50 {
+    background-color: var(--header-bg);
   }
 
   /* Hero section text contrast improvements */
-  .home-page-wrapper[data-theme='light'] .text-balance {
-    color: oklch(0.09 0 0) !important;
+  .home-page-wrapper[data-theme="light"] .text-balance {
+    color: oklch(0.09 0 0);
   }
 
   /* Button visibility in light mode */
-  .home-page-wrapper[data-theme='light'] .bg-card {
-    background-color: oklch(0.98 0 0) !important;
-    border-color: oklch(0.88 0 0) !important;
+  .home-page-wrapper[data-theme="light"] .bg-card {
+    background-color: oklch(0.98 0 0);
+    border-color: oklch(0.88 0 0);
   }
 
-  .home-page-wrapper[data-theme='light'] .border-2 {
-    border-color: oklch(0.88 0 0) !important;
+  .home-page-wrapper[data-theme="light"] .border-2 {
+    border-color: oklch(0.88 0 0);
   }
 
   /* Logo and brand text visibility */
-  .home-page-wrapper[data-theme='light'] .text-foreground {
-    color: oklch(0.09 0 0) !important;
+  .home-page-wrapper[data-theme="light"] .text-foreground {
+    color: oklch(0.09 0 0);
   }
 
   /* High contrast support */
   @media (prefers-contrast: high) {
-    .home-page-wrapper[data-theme='light'] {
+    .home-page-wrapper[data-theme="light"] {
       --border: oklch(0.4 0 0);
       --ring: oklch(0.4 0 0);
     }
 
-    .home-page-wrapper[data-theme='dark'] {
+    .home-page-wrapper[data-theme="dark"] {
       --border: oklch(0.6 0 0);
       --ring: oklch(0.6 0 0);
     }

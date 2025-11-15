@@ -1,6 +1,5 @@
 'use client';
 
-import { useThemeConfig } from './active-theme';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -12,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useThemeConfig } from './active-theme';
 
 const DEFAULT_THEMES = [
   {
@@ -97,7 +97,7 @@ export function ThemeSelector() {
         <SelectContent align="end">
           <SelectGroup>
             <SelectLabel>Default</SelectLabel>
-            {DEFAULT_THEMES.map(theme => (
+            {DEFAULT_THEMES.map((theme) => (
               <SelectItem key={theme.name} value={theme.value}>
                 {theme.name}
               </SelectItem>
@@ -106,7 +106,7 @@ export function ThemeSelector() {
           <SelectSeparator />
           <SelectGroup>
             <SelectLabel>Scaled</SelectLabel>
-            {SCALED_THEMES.map(theme => (
+            {SCALED_THEMES.map((theme) => (
               <SelectItem key={theme.name} value={theme.value}>
                 {theme.name}
               </SelectItem>
@@ -114,7 +114,7 @@ export function ThemeSelector() {
           </SelectGroup>
           <SelectGroup>
             <SelectLabel>Monospaced</SelectLabel>
-            {MONO_THEMES.map(theme => (
+            {MONO_THEMES.map((theme) => (
               <SelectItem key={theme.name} value={theme.value}>
                 {theme.name}
               </SelectItem>

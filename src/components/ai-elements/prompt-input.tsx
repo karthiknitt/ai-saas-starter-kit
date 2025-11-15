@@ -1,34 +1,5 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/command';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { Textarea } from '@/components/ui/textarea';
-import { cn } from '@/lib/utils';
 import type { ChatStatus, FileUIPart } from 'ai';
 import {
   CheckIcon,
@@ -62,6 +33,28 @@ import {
   useRef,
   useState,
 } from 'react';
+import { Button } from '@/components/ui/button';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Textarea } from '@/components/ui/textarea';
+import { cn } from '@/lib/utils';
 
 type AttachmentsContext = {
   files: (FileUIPart & { id: string })[];
@@ -171,7 +164,7 @@ export function PromptInputAttachments({
       {...props}
     >
       <div className="flex flex-wrap gap-2 p-3 pt-3" ref={contentRef}>
-        {attachments.files.map(file => (
+        {attachments.files.map((file) => (
           <Fragment key={file.id}>{children(file)}</Fragment>
         ))}
       </div>
@@ -194,7 +187,7 @@ export const PromptInputActionAddAttachments = ({
   return (
     <DropdownMenuItem
       {...props}
-      onSelect={e => {
+      onSelect={(e) => {
         e.preventDefault();
         attachments.openFileDialog();
       }}
@@ -279,7 +272,7 @@ export const PromptInput = ({
   const add = useCallback(
     (files: File[] | FileList) => {
       const incoming = Array.from(files);
-      const accepted = incoming.filter(f => matchesAccept(f));
+      const accepted = incoming.filter((f) => matchesAccept(f));
       if (accepted.length === 0) {
         onError?.({
           code: 'accept',
@@ -297,7 +290,7 @@ export const PromptInput = ({
         });
         return;
       }
-      setItems(prev => {
+      setItems((prev) => {
         const capacity =
           typeof maxFiles === 'number'
             ? Math.max(0, maxFiles - prev.length)
@@ -327,17 +320,17 @@ export const PromptInput = ({
   );
 
   const remove = useCallback((id: string) => {
-    setItems(prev => {
-      const found = prev.find(file => file.id === id);
+    setItems((prev) => {
+      const found = prev.find((file) => file.id === id);
       if (found?.url) {
         URL.revokeObjectURL(found.url);
       }
-      return prev.filter(file => file.id !== id);
+      return prev.filter((file) => file.id !== id);
     });
   }, []);
 
   const clear = useCallback(() => {
-    setItems(prev => {
+    setItems((prev) => {
       for (const file of prev) {
         if (file.url) {
           URL.revokeObjectURL(file.url);
@@ -410,7 +403,7 @@ export const PromptInput = ({
     };
   }, [add, globalDrop]);
 
-  const handleChange: ChangeEventHandler<HTMLInputElement> = event => {
+  const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
     if (event.currentTarget.files) {
       add(event.currentTarget.files);
     }
@@ -427,7 +420,7 @@ export const PromptInput = ({
     });
   };
 
-  const handleSubmit: FormEventHandler<HTMLFormElement> = event => {
+  const handleSubmit: FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
@@ -436,7 +429,7 @@ export const PromptInput = ({
     // Convert blob URLs to data URLs asynchronously
     Promise.all(
       items.map(async ({ id, ...item }) => {
-        if (item.url && item.url.startsWith('blob:')) {
+        if (item.url?.startsWith('blob:')) {
           return {
             ...item,
             url: await convertBlobUrlToDataUrl(item.url),
@@ -452,7 +445,7 @@ export const PromptInput = ({
 
   const ctx = useMemo<AttachmentsContext>(
     () => ({
-      files: items.map(item => ({ ...item, id: item.id })),
+      files: items.map((item) => ({ ...item, id: item.id })),
       add,
       remove,
       clear,
@@ -506,7 +499,7 @@ export const PromptInputTextarea = ({
 }: PromptInputTextareaProps) => {
   const attachments = usePromptInputAttachments();
 
-  const handleKeyDown: KeyboardEventHandler<HTMLTextAreaElement> = e => {
+  const handleKeyDown: KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
     if (e.key === 'Enter') {
       // Don't submit if IME composition is in progress
       if (e.nativeEvent.isComposing) {
@@ -527,7 +520,7 @@ export const PromptInputTextarea = ({
     }
   };
 
-  const handlePaste: ClipboardEventHandler<HTMLTextAreaElement> = event => {
+  const handlePaste: ClipboardEventHandler<HTMLTextAreaElement> = (event) => {
     const items = event.clipboardData?.items;
 
     if (!items) {
@@ -561,7 +554,7 @@ export const PromptInputTextarea = ({
         className,
       )}
       name="message"
-      onChange={e => {
+      onChange={(e) => {
         onChange?.(e);
       }}
       onKeyDown={handleKeyDown}
@@ -727,7 +720,7 @@ export const PromptInputModelSelect = ({
 }: PromptInputModelSelectProps) => {
   const [open, setOpen] = useState(false);
 
-  const selectedModel = models.find(model => model.id === value);
+  const selectedModel = models.find((model) => model.id === value);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -750,11 +743,11 @@ export const PromptInputModelSelect = ({
           <CommandList>
             <CommandEmpty>No models found.</CommandEmpty>
             <CommandGroup>
-              {models.map(model => (
+              {models.map((model) => (
                 <CommandItem
                   key={model.id}
                   value={model.id}
-                  onSelect={selectedValue => {
+                  onSelect={(selectedValue) => {
                     onValueChange?.(selectedValue);
                     setOpen(false);
                   }}

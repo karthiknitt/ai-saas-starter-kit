@@ -1,11 +1,11 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@/lib/auth');
 vi.mock('@/db/drizzle');
 
-import { auth } from '../../src/lib/auth';
-import { db } from '../../src/db/drizzle';
 import { GET, PATCH } from '../../src/app/api/admin/users/route';
+import { db } from '../../src/db/drizzle';
+import { auth } from '../../src/lib/auth';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mockAuth = vi.mocked(auth) as any;
@@ -14,7 +14,7 @@ const mockDb = vi.mocked(db) as any;
 
 // Mock headers to avoid Next.js context issues
 vi.mock('next/headers', () => ({
-  headers: vi.fn(() => new Headers())
+  headers: vi.fn(() => new Headers()),
 }));
 
 describe('/api/admin/users', () => {
@@ -48,7 +48,10 @@ describe('/api/admin/users', () => {
   });
 
   it('PATCH should update role for admin', async () => {
-    const mockUpdate = { set: vi.fn().mockReturnThis(), where: vi.fn().mockResolvedValue({}) };
+    const mockUpdate = {
+      set: vi.fn().mockReturnThis(),
+      where: vi.fn().mockResolvedValue({}),
+    };
     mockDb.update = vi.fn().mockReturnValue(mockUpdate);
 
     const req = new Request('http://localhost:3000/api/admin/users', {

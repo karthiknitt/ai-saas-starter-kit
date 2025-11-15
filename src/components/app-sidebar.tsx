@@ -1,6 +1,5 @@
 'use client';
 
-import * as React from 'react';
 import {
   IconCamera,
   IconChartBar,
@@ -18,6 +17,7 @@ import {
   IconSettings,
   IconUsers,
 } from '@tabler/icons-react';
+import * as React from 'react';
 
 import { NavDocuments } from '@/components/nav-documents';
 import { NavMain } from '@/components/nav-main';
@@ -222,7 +222,7 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <a href="#">
+              <a href="/">
                 <IconInnerShadowTop className="!size-5" />
                 <span className="text-base font-semibold">Acme Inc.</span>
               </a>

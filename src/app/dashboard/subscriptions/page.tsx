@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { authClient } from '@/lib/auth-client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { authClient } from '@/lib/auth-client';
 
 interface Plan {
   name: string;
@@ -117,7 +117,7 @@ export default function SubscriptionsPage() {
 
       {/* Plans */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        {plans.map(plan => (
+        {plans.map((plan) => (
           <Card
             key={plan.name}
             className={plan.name === 'Pro' ? 'border-purple-500' : ''}
@@ -128,8 +128,8 @@ export default function SubscriptionsPage() {
             </CardHeader>
             <CardContent>
               <ul className="space-y-2">
-                {plan.features.map((feature, index) => (
-                  <li key={index} className="flex items-center gap-2">
+                {plan.features.map((feature) => (
+                  <li key={feature} className="flex items-center gap-2">
                     <span>✓</span> {feature}
                   </li>
                 ))}

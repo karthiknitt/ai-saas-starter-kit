@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach, vi, type Mocked } from 'vitest';
-import type { auth } from '../../src/lib/auth';
+import type { ArcjetDecision } from '@arcjet/next';
+import { beforeEach, describe, expect, it, type Mocked, vi } from 'vitest';
 import type { db } from '../../src/db/drizzle';
 import type { aj } from '../../src/lib/arcjet';
-import type { ArcjetDecision } from '@arcjet/next';
+import type { auth } from '../../src/lib/auth';
 
 // Mock external dependencies
 vi.mock('../../src/lib/auth', () => ({
@@ -73,13 +73,13 @@ describe('Error Scenario Integration Tests', () => {
         from: vi.fn().mockReturnThis(),
         where: vi.fn().mockReturnThis(),
         limit: vi.fn().mockReturnThis(),
-        execute: vi.fn().mockRejectedValue(new Error('Connection timeout'))
+        execute: vi.fn().mockRejectedValue(new Error('Connection timeout')),
       };
-      (mockDb.select as unknown as ReturnType<typeof vi.fn>).mockReturnValue(mockQuery);
+      (mockDb.select as unknown as ReturnType<typeof vi.fn>).mockReturnValue(
+        mockQuery,
+      );
 
-      await expect(
-        mockQuery.execute()
-      ).rejects.toThrow('Connection timeout');
+      await expect(mockQuery.execute()).rejects.toThrow('Connection timeout');
     });
 
     it('should handle external API failures', async () => {
@@ -87,7 +87,9 @@ describe('Error Scenario Integration Tests', () => {
       const originalFetch = global.fetch;
       global.fetch = vi.fn().mockRejectedValue(new Error('Network error'));
 
-      await expect(fetch('https://api.openai.com/v1/chat/completions')).rejects.toThrow('Network error');
+      await expect(
+        fetch('https://api.openai.com/v1/chat/completions'),
+      ).rejects.toThrow('Network error');
 
       // Restore fetch
       global.fetch = originalFetch;
@@ -95,9 +97,10 @@ describe('Error Scenario Integration Tests', () => {
 
     it('should handle timeout errors', async () => {
       // Mock a slow operation that times out
-      const slowOperation = () => new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Operation timeout')), 100)
-      );
+      const slowOperation = () =>
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Operation timeout')), 100),
+        );
 
       await expect(slowOperation()).rejects.toThrow('Operation timeout');
     });
@@ -105,27 +108,33 @@ describe('Error Scenario Integration Tests', () => {
 
   describe('Authentication Errors', () => {
     it('should handle expired sessions', async () => {
-      (mockAuth.api.getSession as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(null);
+      (
+        mockAuth.api.getSession as unknown as ReturnType<typeof vi.fn>
+      ).mockResolvedValue(null);
 
       const session = await mockAuth.api.getSession({ headers: new Headers() });
       expect(session).toBeNull();
     });
 
     it('should handle malformed auth tokens', async () => {
-      (mockAuth.api.getSession as unknown as ReturnType<typeof vi.fn>).mockRejectedValue(new Error('Invalid token format'));
+      (
+        mockAuth.api.getSession as unknown as ReturnType<typeof vi.fn>
+      ).mockRejectedValue(new Error('Invalid token format'));
 
       await expect(
-        mockAuth.api.getSession({ headers: new Headers() })
+        mockAuth.api.getSession({ headers: new Headers() }),
       ).rejects.toThrow('Invalid token format');
     });
 
     it('should handle missing authentication headers', async () => {
       // Mock missing or invalid headers
-      (mockAuth.api.getSession as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(null);
+      (
+        mockAuth.api.getSession as unknown as ReturnType<typeof vi.fn>
+      ).mockResolvedValue(null);
 
       const session = await mockAuth.api.getSession({
         headers: new Headers(),
-        query: { disableCookieCache: true }
+        query: { disableCookieCache: true },
       });
 
       expect(session).toBeNull();
@@ -141,7 +150,7 @@ describe('Error Scenario Integration Tests', () => {
         'user@example',
       ];
 
-      invalidEmails.forEach(email => {
+      invalidEmails.forEach((email) => {
         expect(() => {
           // Basic email validation regex
           const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -158,7 +167,7 @@ describe('Error Scenario Integration Tests', () => {
         'short', // Too short
       ];
 
-      invalidKeys.forEach(key => {
+      invalidKeys.forEach((key) => {
         expect(() => {
           if (key.length < 20) {
             throw new Error(`Invalid API key length: ${key.length}`);
@@ -175,7 +184,7 @@ describe('Error Scenario Integration Tests', () => {
         '{"email": "test@example.com"', // Missing closing brace
       ];
 
-      malformedJSON.forEach(json => {
+      malformedJSON.forEach((json) => {
         expect(() => {
           JSON.parse(json);
         }).toThrow();
@@ -191,7 +200,7 @@ describe('Error Scenario Integration Tests', () => {
         id: 'test-id',
         ttl: 60,
         results: [],
-        ip: '127.0.0.1'
+        ip: '127.0.0.1',
       } as unknown as ArcjetDecision);
 
       const decision = await mockAj.protect(new Request('http://localhost'));
@@ -200,16 +209,17 @@ describe('Error Scenario Integration Tests', () => {
 
     it('should handle concurrent request limits', async () => {
       // Simulate multiple rapid requests
-      const requests = Array(10).fill(null).map(() =>
-        mockAj.protect(new Request('http://localhost'))
-      );
+      const requests = Array(10)
+        .fill(null)
+        .map(() => mockAj.protect(new Request('http://localhost')));
 
       const results = await Promise.allSettled(requests);
 
       // Some requests should be rate limited
-      const deniedResults = results.filter(result =>
-        result.status === 'fulfilled' &&
-        (result.value as { isDenied?: () => boolean }).isDenied?.() === true
+      const deniedResults = results.filter(
+        (result) =>
+          result.status === 'fulfilled' &&
+          (result.value as { isDenied?: () => boolean }).isDenied?.() === true,
       );
 
       expect(deniedResults.length).toBeGreaterThanOrEqual(0);
@@ -222,7 +232,7 @@ describe('Error Scenario Integration Tests', () => {
       const largeArray = Array(1000000).fill('x');
 
       expect(() => {
-        const processed = largeArray.map(item => item.toUpperCase());
+        const processed = largeArray.map((item) => item.toUpperCase());
         // Just check that the operation completes without throwing
         expect(processed.length).toBe(1000000);
       }).not.toThrow();
@@ -244,28 +254,42 @@ describe('Error Scenario Integration Tests', () => {
       const dbError = new Error('Database connection lost');
 
       // Mock all database operations to fail
-      (mockDb.select as unknown as ReturnType<typeof vi.fn>).mockImplementation(() => {
-        throw dbError;
-      });
-      (mockDb.insert as unknown as ReturnType<typeof vi.fn>).mockImplementation(() => {
-        throw dbError;
-      });
-      (mockDb.update as unknown as ReturnType<typeof vi.fn>).mockImplementation(() => {
-        throw dbError;
-      });
+      (mockDb.select as unknown as ReturnType<typeof vi.fn>).mockImplementation(
+        () => {
+          throw dbError;
+        },
+      );
+      (mockDb.insert as unknown as ReturnType<typeof vi.fn>).mockImplementation(
+        () => {
+          throw dbError;
+        },
+      );
+      (mockDb.update as unknown as ReturnType<typeof vi.fn>).mockImplementation(
+        () => {
+          throw dbError;
+        },
+      );
 
       // All operations should fail with the same error
       expect(() => mockDb.select()).toThrow('Database connection lost');
-      expect(() => (mockDb.insert as unknown as () => void)()).toThrow('Database connection lost');
-      expect(() => (mockDb.update as unknown as () => void)()).toThrow('Database connection lost');
+      expect(() => (mockDb.insert as unknown as () => void)()).toThrow(
+        'Database connection lost',
+      );
+      expect(() => (mockDb.update as unknown as () => void)()).toThrow(
+        'Database connection lost',
+      );
     });
 
     it('should handle partial service degradation', async () => {
       // Auth works but database fails
-      (mockAuth.api.getSession as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({ user: { id: '123' } } as { user?: { id: string } });
-      (mockDb.select as unknown as ReturnType<typeof vi.fn>).mockImplementation(() => {
-        throw new Error('Database unavailable');
-      });
+      (
+        mockAuth.api.getSession as unknown as ReturnType<typeof vi.fn>
+      ).mockResolvedValue({ user: { id: '123' } } as { user?: { id: string } });
+      (mockDb.select as unknown as ReturnType<typeof vi.fn>).mockImplementation(
+        () => {
+          throw new Error('Database unavailable');
+        },
+      );
 
       const session = await mockAuth.api.getSession({ headers: new Headers() });
       expect(session?.user?.id).toBe('123');
@@ -336,7 +360,7 @@ describe('Error Scenario Integration Tests', () => {
         } catch (error) {
           if (i === maxAttempts - 1) throw error;
           // Wait before retry (simplified)
-          await new Promise(resolve => setTimeout(resolve, 10));
+          await new Promise((resolve) => setTimeout(resolve, 10));
         }
       }
 
@@ -354,9 +378,10 @@ describe('Error Scenario Integration Tests', () => {
         "'; UPDATE users SET password='hacked'; --",
       ];
 
-      maliciousInputs.forEach(input => {
+      maliciousInputs.forEach((input) => {
         // Basic check for suspicious patterns
-        const hasSqlKeywords = /\b(DROP|UPDATE|DELETE|INSERT|UNION|SELECT)\b/i.test(input);
+        const hasSqlKeywords =
+          /\b(DROP|UPDATE|DELETE|INSERT|UNION|SELECT)\b/i.test(input);
         const hasCommentSyntax = /--|\/\*|\*\//.test(input);
 
         if (hasSqlKeywords || hasCommentSyntax) {
@@ -375,7 +400,7 @@ describe('Error Scenario Integration Tests', () => {
         '"><script>alert("xss")</script>',
       ];
 
-      maliciousInputs.forEach(input => {
+      maliciousInputs.forEach((input) => {
         // Basic check for script tags and event handlers
         const hasScriptTags = /<script|javascript:|on\w+\s*=/i.test(input);
 
@@ -395,7 +420,7 @@ describe('Error Scenario Integration Tests', () => {
         '..%252f..%252f..%252f',
       ];
 
-      maliciousPaths.forEach(path => {
+      maliciousPaths.forEach((path) => {
         // Check for directory traversal patterns
         const hasTraversal = /(\.\.[/\\])|(%2e%2e)|(\.\.%252f)/i.test(path);
 

@@ -1,7 +1,7 @@
 'use client';
 
+import { type Icon, IconCirclePlusFilled, IconMail } from '@tabler/icons-react';
 import Link from 'next/link';
-import { IconCirclePlusFilled, IconMail, type Icon } from '@tabler/icons-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -50,7 +50,7 @@ export function NavMain({
           </SidebarMenuItem>
         </SidebarMenu>
         <SidebarMenu>
-          {items.map(item => (
+          {items.map((item) => (
             <SidebarMenuItem key={item.title}>
               {item.url !== '#' ? (
                 <SidebarMenuButton tooltip={item.title} asChild>

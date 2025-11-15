@@ -79,6 +79,7 @@ export function UsersClient({
               </td>
               <td className="space-x-2 p-2">
                 <button
+                  type="button"
                   className="rounded bg-gray-200 px-2 py-1 text-xs disabled:opacity-50"
                   disabled={saving === u.id || u.role === 'member'}
                   onClick={() => updateRole(u.id, 'member')}
@@ -86,6 +87,7 @@ export function UsersClient({
                   Make Member
                 </button>
                 <button
+                  type="button"
                   className="rounded bg-purple-600 px-2 py-1 text-xs text-white disabled:opacity-50"
                   disabled={saving === u.id || u.role === 'admin'}
                   onClick={() => updateRole(u.id, 'admin')}

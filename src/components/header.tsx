@@ -1,10 +1,10 @@
 'use client';
-import Link from 'next/link';
-import { Logo } from '@/components/logo';
 import { Menu, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { motion, useScroll } from 'motion/react';
+import Link from 'next/link';
 import React from 'react';
-import { useScroll, motion } from 'motion/react';
+import { Logo } from '@/components/logo';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { ModeToggle } from './ui/modetoggle';
 
@@ -21,7 +21,7 @@ export const HeroHeader = () => {
   const { scrollYProgress } = useScroll();
 
   React.useEffect(() => {
-    const unsubscribe = scrollYProgress.on('change', latest => {
+    const unsubscribe = scrollYProgress.on('change', (latest) => {
       setScrolled(latest > 0.05);
     });
     return () => unsubscribe();
@@ -56,8 +56,9 @@ export const HeroHeader = () => {
               </Link>
 
               <button
+                type="button"
                 onClick={() => setMenuState(!menuState)}
-                aria-label={menuState == true ? 'Close Menu' : 'Open Menu'}
+                aria-label={menuState === true ? 'Close Menu' : 'Open Menu'}
                 className="relative z-20 -m-2.5 -mr-4 block cursor-pointer p-2.5 lg:hidden"
               >
                 <Menu className="m-auto size-6 duration-200 in-data-[state=active]:scale-0 in-data-[state=active]:rotate-180 in-data-[state=active]:opacity-0" />
@@ -66,8 +67,8 @@ export const HeroHeader = () => {
 
               <div className="hidden lg:block">
                 <ul className="flex gap-8 text-sm">
-                  {menuItems.map((item, index) => (
-                    <li key={index}>
+                  {menuItems.map((item) => (
+                    <li key={item.name}>
                       <Link
                         href={item.href}
                         className="text-foreground/80 hover:text-foreground block font-medium underline-offset-4 duration-150 hover:underline"
@@ -83,8 +84,8 @@ export const HeroHeader = () => {
             <div className="bg-card border-border mb-6 hidden w-full flex-wrap items-center justify-end space-y-8 rounded-3xl border p-6 shadow-2xl shadow-zinc-300/20 in-data-[state=active]:block md:flex-nowrap lg:m-0 lg:flex lg:w-fit lg:gap-6 lg:space-y-0 lg:border-transparent lg:bg-transparent lg:p-0 lg:shadow-none lg:in-data-[state=active]:flex dark:shadow-none dark:lg:bg-transparent">
               <div className="lg:hidden">
                 <ul className="space-y-6 text-base">
-                  {menuItems.map((item, index) => (
-                    <li key={index}>
+                  {menuItems.map((item) => (
+                    <li key={item.name}>
                       <Link
                         href={item.href}
                         className="text-foreground/80 hover:text-foreground block font-medium duration-150"

@@ -1,12 +1,12 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { eq, and } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { db } from '@/db/drizzle';
 import {
-  user,
-  session,
   account,
-  verification,
+  session,
   subscription,
+  user,
+  verification,
 } from '../../src/db/schema';
 
 // Mock the database
@@ -415,12 +415,12 @@ describe('Database Operations Integration Tests', () => {
       } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
       // Mock a transaction that fails partway through
-      mockDb.transaction = vi.fn().mockImplementation(async callback => {
+      mockDb.transaction = vi.fn().mockImplementation(async (callback) => {
         await callback(mockDb);
       });
 
       await expect(
-        mockDb.transaction(async tx => {
+        mockDb.transaction(async (tx) => {
           await tx.insert(user).values(testUser);
           throw new Error('Transaction failed');
         }),
@@ -436,11 +436,11 @@ describe('Database Operations Integration Tests', () => {
         }),
       } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
-      mockDb.transaction = vi.fn().mockImplementation(async callback => {
+      mockDb.transaction = vi.fn().mockImplementation(async (callback) => {
         return await callback(mockDb);
       });
 
-      const result = await mockDb.transaction(async tx => {
+      const result = await mockDb.transaction(async (tx) => {
         await tx.insert(user).values(testUser);
         return { success: true };
       });

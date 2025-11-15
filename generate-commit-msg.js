@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 
-import { execSync } from 'child_process';
+import { execSync } from 'node:child_process';
 import { openai } from '@ai-sdk/openai';
 import { generateText } from 'ai';
 import 'dotenv/config';
@@ -13,7 +13,9 @@ if (!process.env.OPENAI_API_KEY) {
 async function generateCommitMessage() {
   try {
     // Get git diff, limited to prevent context window issues
-    const fullDiff = execSync('git diff --staged --no-color', { encoding: 'utf8' });
+    const fullDiff = execSync('git diff --staged --no-color', {
+      encoding: 'utf8',
+    });
 
     if (!fullDiff.trim()) {
       console.error('No staged changes');
@@ -23,7 +25,8 @@ async function generateCommitMessage() {
     // Truncate diff to first 2000 lines to stay within context limits
     const diffLines = fullDiff.split('\n');
     const truncatedDiff = diffLines.slice(0, 2000).join('\n');
-    const diff = truncatedDiff + (diffLines.length > 2000 ? '\n... (diff truncated)' : '');
+    const diff =
+      truncatedDiff + (diffLines.length > 2000 ? '\n... (diff truncated)' : '');
 
     const prompt = `Generate a single conventional commit message for the following git diff. Follow the format: type(scope): description
 

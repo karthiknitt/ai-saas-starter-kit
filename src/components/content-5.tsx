@@ -1,8 +1,8 @@
 'use client';
 
 import { Cpu, Lock, Sparkles, Zap } from 'lucide-react';
-import Image from 'next/image';
 import { motion } from 'motion/react';
+import Image from 'next/image';
 
 /**
  * Renders the content section for the Lyra ecosystem, including a heading,

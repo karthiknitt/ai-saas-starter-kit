@@ -1,14 +1,13 @@
 'use client';
 
-import React from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { Button } from '@/components/ui/button';
-import { HeroHeader } from './header';
-import { InfiniteSlider } from '@/components/ui/infinite-slider';
-import { ProgressiveBlur } from '@/components/ui/progressive-blur';
 import { ChevronRight } from 'lucide-react';
 import { motion } from 'motion/react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { InfiniteSlider } from '@/components/ui/infinite-slider';
+import { ProgressiveBlur } from '@/components/ui/progressive-blur';
+import { HeroHeader } from './header';
 
 /**
  * Render the page hero area with header, headline, primary call-to-action buttons, a video showcase, and a continuous partner logo slider with decorative overlays.

@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { eq } from 'drizzle-orm';
+import { type NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db/drizzle';
 import { user } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { aj } from '@/lib/arcjet';
 import { auth } from '@/lib/auth';
 import { decrypt } from '@/lib/crypto';
-import { aj } from '@/lib/arcjet';
 
 interface OpenAIModel {
   id: string;
@@ -82,13 +82,13 @@ export async function GET(request: NextRequest) {
 
       const data = await response.json();
       const models = (data.data as OpenAIModel[])
-        .filter(model => model.id.includes('gpt'))
+        .filter((model) => model.id.includes('gpt'))
         .sort((a, b) => b.created - a.created)
-        .map(model => ({
+        .map((model) => ({
           id: model.id,
           name: model.id
             .split('-')
-            .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+            .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
             .join(' '),
           provider: 'openai',
         }));
@@ -110,7 +110,7 @@ export async function GET(request: NextRequest) {
 
       const data = await response.json();
       const models = (data.data as OpenRouterModel[])
-        .filter(model => {
+        .filter((model) => {
           // Filter out models that are unavailable or have issues
           const isAvailable =
             model.pricing && parseFloat(model.pricing.prompt) > 0;
@@ -120,7 +120,7 @@ export async function GET(request: NextRequest) {
           // Sort by popularity/creation date
           return b.created - a.created;
         })
-        .map(model => ({
+        .map((model) => ({
           id: model.id,
           name: model.name,
           provider: 'openrouter',

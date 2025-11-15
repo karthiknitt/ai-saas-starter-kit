@@ -3,10 +3,10 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Separator } from '@/components/ui/separator';
 import { SidebarTrigger } from '@/components/ui/sidebar';
-import { ModeToggle } from './ui/modetoggle';
-import { ThemeSelector } from './theme-selector';
-import { SignoutButton } from './forms/signout';
 import { authClient } from '@/lib/auth-client';
+import { SignoutButton } from './forms/signout';
+import { ThemeSelector } from './theme-selector';
+import { ModeToggle } from './ui/modetoggle';
 
 interface User {
   id: string;

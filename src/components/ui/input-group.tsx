@@ -1,12 +1,11 @@
 'use client';
 
-import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
-
-import { cn } from '@/lib/utils';
+import type * as React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { cn } from '@/lib/utils';
 
 /**
  * Renders a container element that groups input controls and optional addons with consistent layout, alignment-aware spacing, and built-in focus/error styling.
@@ -83,7 +82,7 @@ function InputGroupAddon({
       data-slot="input-group-addon"
       data-align={align}
       className={cn(inputGroupAddonVariants({ align }), className)}
-      onClick={e => {
+      onClick={(e) => {
         if ((e.target as HTMLElement).closest('button')) {
           return;
         }

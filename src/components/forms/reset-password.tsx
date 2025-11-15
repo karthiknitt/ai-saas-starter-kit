@@ -1,4 +1,3 @@
-import * as React from 'react';
 import {
   Body,
   Button,
@@ -8,8 +7,8 @@ import {
   Html,
   Preview,
   Section,
-  Text,
   Tailwind,
+  Text,
 } from '@react-email/components';
 
 interface ForgotPasswordEmailProps {
@@ -114,6 +113,7 @@ const ForgotPasswordEmail = (props: ForgotPasswordEmailProps) => {
               </Text>
               <Text className="m-0 text-center text-[12px] leading-[16px] text-gray-700">
                 © 2025 Your Company Name. All rights reserved. |
+                {/* biome-ignore lint/a11y/useValidAnchor: Placeholder link for email template */}
                 <a href="#" className="ml-[4px] text-blue-600 no-underline">
                   Unsubscribe
                 </a>

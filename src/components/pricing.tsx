@@ -1,5 +1,7 @@
 'use client';
 
+import { Check } from 'lucide-react';
+import { motion } from 'motion/react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import {
@@ -9,8 +11,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Check } from 'lucide-react';
-import { motion } from 'motion/react';
 
 /**
  * Renders a responsive pricing section with three animated pricing tiers: Free, Pro (Popular), and Startup.
@@ -68,8 +68,8 @@ export default function Pricing() {
                     'Basic Analytics Dashboard',
                     '5GB Cloud Storage',
                     'Email and Chat Support',
-                  ].map((item, index) => (
-                    <li key={index} className="flex items-center gap-2">
+                  ].map((item) => (
+                    <li key={item} className="flex items-center gap-2">
                       <motion.div whileHover={{ scale: 1.1 }}>
                         <Check className="size-3" />
                       </motion.div>
@@ -131,8 +131,8 @@ export default function Pricing() {
                     '1 Custom Report Per Month',
                     'Monthly Product Updates',
                     'Standard Security Features',
-                  ].map((item, index) => (
-                    <li key={index} className="flex items-center gap-2">
+                  ].map((item) => (
+                    <li key={item} className="flex items-center gap-2">
                       <motion.div whileHover={{ scale: 1.1 }}>
                         <Check className="size-3" />
                       </motion.div>
@@ -180,8 +180,8 @@ export default function Pricing() {
                     'Everything in Pro Plan',
                     '5GB Cloud Storage',
                     'Email and Chat Support',
-                  ].map((item, index) => (
-                    <li key={index} className="flex items-center gap-2">
+                  ].map((item) => (
+                    <li key={item} className="flex items-center gap-2">
                       <motion.div whileHover={{ scale: 1.1 }}>
                         <Check className="size-3" />
                       </motion.div>

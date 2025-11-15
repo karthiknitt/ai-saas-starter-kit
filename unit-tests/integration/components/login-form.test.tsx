@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { LoginForm } from '@/components/forms/login-form';
 import { authClient } from '@/lib/auth-client';
 import { signIn } from '../../../server/users';
@@ -220,7 +220,7 @@ describe('LoginForm Integration Tests', () => {
       // Mock a delayed response
       mockSignIn.mockImplementation(
         () =>
-          new Promise(resolve =>
+          new Promise((resolve) =>
             setTimeout(
               () => resolve({ success: true, message: 'Success' }),
               100,

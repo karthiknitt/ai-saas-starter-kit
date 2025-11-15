@@ -1,10 +1,10 @@
 import {
+  boolean,
+  index,
+  pgEnum,
   pgTable,
   text,
   timestamp,
-  boolean,
-  pgEnum,
-  index,
 } from 'drizzle-orm/pg-core';
 
 // RBAC: define user_role enum with 'member' and 'admin'
@@ -28,7 +28,7 @@ export const user = pgTable(
       .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
   },
-  table => ({
+  (table) => ({
     idxUserRole: index('idx_user_role').on(table.role),
   }),
 );
@@ -49,7 +49,7 @@ export const session = pgTable(
       .notNull()
       .references(() => user.id, { onDelete: 'cascade' }),
   },
-  table => ({
+  (table) => ({
     idxSessionUserId: index('idx_session_user_id').on(table.userId),
   }),
 );

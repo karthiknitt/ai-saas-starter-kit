@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { getSessionCookie } from 'better-auth/cookies';
+import { type NextRequest, NextResponse } from 'next/server';
 
 /**
  * Apply Arcjet protection, enforce session-based access for protected routes, and attach security headers to the response.
@@ -9,11 +9,12 @@ import { getSessionCookie } from 'better-auth/cookies';
  * - a redirect to `/` for unauthenticated requests to protected routes (paths starting with `/dashboard`),
  * - or a forwarded response (`NextResponse.next()`) with security headers set (`X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`).
  */
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Only apply protection to sensitive routes to reduce bundle size
-  const isDashboardRoute = pathname === '/dashboard' || pathname.startsWith('/dashboard/');
+  const isDashboardRoute =
+    pathname === '/dashboard' || pathname.startsWith('/dashboard/');
   const isAdminRoute = pathname === '/admin' || pathname.startsWith('/admin/');
   const isProtectedRoute = isDashboardRoute || isAdminRoute;
   const isApiRoute = pathname.startsWith('/api/');
@@ -41,7 +42,10 @@ export async function middleware(request: NextRequest) {
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  response.headers.set('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+  response.headers.set(
+    'Permissions-Policy',
+    'geolocation=(), microphone=(), camera=()',
+  );
 
   return response;
 }

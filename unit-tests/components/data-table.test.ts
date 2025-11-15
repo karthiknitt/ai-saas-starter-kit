@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest'
-import { schema } from '@/components/data-table'
+import { describe, expect, it } from 'vitest';
+import { schema } from '@/components/data-table';
 
 describe('data-table schema', () => {
   describe('schema validation', () => {
@@ -12,12 +12,12 @@ describe('data-table schema', () => {
         target: '100',
         limit: '50',
         reviewer: 'John Doe',
-      }
+      };
 
-      const result = schema.safeParse(validData)
-      expect(result.success).toBe(true)
-      expect(result.data).toEqual(validData)
-    })
+      const result = schema.safeParse(validData);
+      expect(result.success).toBe(true);
+      expect(result.data).toEqual(validData);
+    });
 
     it('should validate with different valid values', () => {
       const validData = {
@@ -28,12 +28,12 @@ describe('data-table schema', () => {
         target: '200',
         limit: '75',
         reviewer: 'Jane Smith',
-      }
+      };
 
-      const result = schema.safeParse(validData)
-      expect(result.success).toBe(true)
-      expect(result.data).toEqual(validData)
-    })
+      const result = schema.safeParse(validData);
+      expect(result.success).toBe(true);
+      expect(result.data).toEqual(validData);
+    });
 
     it('should reject invalid id (string instead of number)', () => {
       const invalidData = {
@@ -44,30 +44,30 @@ describe('data-table schema', () => {
         target: '100',
         limit: '50',
         reviewer: 'John Doe',
-      }
+      };
 
-      const result = schema.safeParse(invalidData)
-      expect(result.success).toBe(false)
+      const result = schema.safeParse(invalidData);
+      expect(result.success).toBe(false);
       expect(result.error?.issues).toContainEqual(
         expect.objectContaining({
           code: 'invalid_type',
           expected: 'number',
           path: ['id'],
-        })
-      )
-    })
+        }),
+      );
+    });
 
     it('should reject missing required fields', () => {
       const incompleteData = {
         id: 1,
         header: 'Test Header',
         // Missing type, status, target, limit, reviewer
-      }
+      };
 
-      const result = schema.safeParse(incompleteData)
-      expect(result.success).toBe(false)
-      expect(result.error?.issues.length).toBeGreaterThan(0)
-    })
+      const result = schema.safeParse(incompleteData);
+      expect(result.success).toBe(false);
+      expect(result.error?.issues.length).toBeGreaterThan(0);
+    });
 
     it('should reject invalid header (number instead of string)', () => {
       const invalidData = {
@@ -78,18 +78,18 @@ describe('data-table schema', () => {
         target: '100',
         limit: '50',
         reviewer: 'John Doe',
-      }
+      };
 
-      const result = schema.safeParse(invalidData)
-      expect(result.success).toBe(false)
+      const result = schema.safeParse(invalidData);
+      expect(result.success).toBe(false);
       expect(result.error?.issues).toContainEqual(
         expect.objectContaining({
           code: 'invalid_type',
           expected: 'string',
           path: ['header'],
-        })
-      )
-    })
+        }),
+      );
+    });
 
     it('should accept empty strings for string fields', () => {
       const dataWithEmptyStrings = {
@@ -100,12 +100,12 @@ describe('data-table schema', () => {
         target: '',
         limit: '',
         reviewer: '',
-      }
+      };
 
-      const result = schema.safeParse(dataWithEmptyStrings)
-      expect(result.success).toBe(true)
-      expect(result.data).toEqual(dataWithEmptyStrings)
-    })
+      const result = schema.safeParse(dataWithEmptyStrings);
+      expect(result.success).toBe(true);
+      expect(result.data).toEqual(dataWithEmptyStrings);
+    });
 
     it('should reject null values', () => {
       const dataWithNulls = {
@@ -116,12 +116,12 @@ describe('data-table schema', () => {
         target: null,
         limit: null,
         reviewer: null,
-      }
+      };
 
-      const result = schema.safeParse(dataWithNulls)
-      expect(result.success).toBe(false)
-      expect(result.error?.issues.length).toBe(7) // All fields should fail
-    })
+      const result = schema.safeParse(dataWithNulls);
+      expect(result.success).toBe(false);
+      expect(result.error?.issues.length).toBe(7); // All fields should fail
+    });
 
     it('should reject undefined values', () => {
       const dataWithUndefined = {
@@ -132,12 +132,12 @@ describe('data-table schema', () => {
         target: undefined,
         limit: undefined,
         reviewer: undefined,
-      }
+      };
 
-      const result = schema.safeParse(dataWithUndefined)
-      expect(result.success).toBe(false)
-      expect(result.error?.issues.length).toBe(7) // All fields should fail
-    })
+      const result = schema.safeParse(dataWithUndefined);
+      expect(result.success).toBe(false);
+      expect(result.error?.issues.length).toBe(7); // All fields should fail
+    });
 
     it('should handle decimal numbers for id', () => {
       const dataWithDecimal = {
@@ -148,12 +148,12 @@ describe('data-table schema', () => {
         target: '100',
         limit: '50',
         reviewer: 'John Doe',
-      }
+      };
 
-      const result = schema.safeParse(dataWithDecimal)
-      expect(result.success).toBe(true)
-      expect(result.data?.id).toBe(1.5)
-    })
+      const result = schema.safeParse(dataWithDecimal);
+      expect(result.success).toBe(true);
+      expect(result.data?.id).toBe(1.5);
+    });
 
     it('should handle negative numbers for id', () => {
       const dataWithNegative = {
@@ -164,12 +164,12 @@ describe('data-table schema', () => {
         target: '100',
         limit: '50',
         reviewer: 'John Doe',
-      }
+      };
 
-      const result = schema.safeParse(dataWithNegative)
-      expect(result.success).toBe(true)
-      expect(result.data?.id).toBe(-1)
-    })
+      const result = schema.safeParse(dataWithNegative);
+      expect(result.success).toBe(true);
+      expect(result.data?.id).toBe(-1);
+    });
 
     it('should handle zero for id', () => {
       const dataWithZero = {
@@ -180,12 +180,12 @@ describe('data-table schema', () => {
         target: '100',
         limit: '50',
         reviewer: 'John Doe',
-      }
+      };
 
-      const result = schema.safeParse(dataWithZero)
-      expect(result.success).toBe(true)
-      expect(result.data?.id).toBe(0)
-    })
+      const result = schema.safeParse(dataWithZero);
+      expect(result.success).toBe(true);
+      expect(result.data?.id).toBe(0);
+    });
 
     it('should handle special characters in strings', () => {
       const dataWithSpecialChars = {
@@ -196,15 +196,15 @@ describe('data-table schema', () => {
         target: 'Target with spaces',
         limit: 'Limit with - and _',
         reviewer: 'Reviewer with . and ,',
-      }
+      };
 
-      const result = schema.safeParse(dataWithSpecialChars)
-      expect(result.success).toBe(true)
-      expect(result.data).toEqual(dataWithSpecialChars)
-    })
+      const result = schema.safeParse(dataWithSpecialChars);
+      expect(result.success).toBe(true);
+      expect(result.data).toEqual(dataWithSpecialChars);
+    });
 
     it('should handle very long strings', () => {
-      const longString = 'A'.repeat(10000)
+      const longString = 'A'.repeat(10000);
       const dataWithLongStrings = {
         id: 1,
         header: longString,
@@ -213,12 +213,11 @@ describe('data-table schema', () => {
         target: longString,
         limit: longString,
         reviewer: longString,
-      }
+      };
 
-      const result = schema.safeParse(dataWithLongStrings)
-      expect(result.success).toBe(true)
-      expect(result.data?.header).toBe(longString)
-    })
-  })
-
-})
+      const result = schema.safeParse(dataWithLongStrings);
+      expect(result.success).toBe(true);
+      expect(result.data?.header).toBe(longString);
+    });
+  });
+});

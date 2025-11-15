@@ -1,21 +1,20 @@
-import React from 'react'
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render } from '@testing-library/react'
-import { PerformanceMonitor } from '@/components/performance-monitor'
+import { render } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { PerformanceMonitor } from '@/components/performance-monitor';
 
 // Mock the usePerformance hook
-const mockUsePerformance = vi.fn()
+const mockUsePerformance = vi.fn();
 vi.mock('@/hooks/use-performance', () => ({
-  usePerformance: () => mockUsePerformance()
-}))
+  usePerformance: () => mockUsePerformance(),
+}));
 
 // Mock console.log to capture logs
-const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
 describe('PerformanceMonitor', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-  })
+    vi.clearAllMocks();
+  });
 
   it('should render without crashing', () => {
     mockUsePerformance.mockReturnValue({
@@ -23,40 +22,40 @@ describe('PerformanceMonitor', () => {
       isLoading: false,
       getLCPRating: () => 'good',
       getFCPRating: () => 'good',
-      getTTFBRating: () => 'good'
-    })
+      getTTFBRating: () => 'good',
+    });
 
-    render(<PerformanceMonitor />)
+    render(<PerformanceMonitor />);
 
     // Component should render without errors (it renders null)
-    expect(document.body).toBeInTheDocument()
-  })
+    expect(document.body).toBeInTheDocument();
+  });
 
   it('should log performance metrics when LCP is available and not loading', () => {
     const mockMetrics = {
       lcp: 1500,
       fcp: 800,
       ttfb: 100,
-      loadTime: 2000
-    }
+      loadTime: 2000,
+    };
 
     mockUsePerformance.mockReturnValue({
       metrics: mockMetrics,
       isLoading: false,
       getLCPRating: () => 'good',
       getFCPRating: () => 'good',
-      getTTFBRating: () => 'good'
-    })
+      getTTFBRating: () => 'good',
+    });
 
-    render(<PerformanceMonitor />)
+    render(<PerformanceMonitor />);
 
     expect(consoleSpy).toHaveBeenCalledWith('🚀 Performance Metrics:', {
       LCP: '1500.00ms (good)',
       FCP: '800.00ms (good)',
       TTFB: '100.00ms (good)',
-      LoadTime: '2000.00ms'
-    })
-  })
+      LoadTime: '2000.00ms',
+    });
+  });
 
   it('should not log when still loading', () => {
     mockUsePerformance.mockReturnValue({
@@ -64,13 +63,13 @@ describe('PerformanceMonitor', () => {
       isLoading: true,
       getLCPRating: () => 'good',
       getFCPRating: () => 'good',
-      getTTFBRating: () => 'good'
-    })
+      getTTFBRating: () => 'good',
+    });
 
-    render(<PerformanceMonitor />)
+    render(<PerformanceMonitor />);
 
-    expect(consoleSpy).not.toHaveBeenCalled()
-  })
+    expect(consoleSpy).not.toHaveBeenCalled();
+  });
 
   it('should not log when LCP is not available', () => {
     mockUsePerformance.mockReturnValue({
@@ -78,13 +77,13 @@ describe('PerformanceMonitor', () => {
       isLoading: false,
       getLCPRating: () => 'good',
       getFCPRating: () => 'good',
-      getTTFBRating: () => 'good'
-    })
+      getTTFBRating: () => 'good',
+    });
 
-    render(<PerformanceMonitor />)
+    render(<PerformanceMonitor />);
 
-    expect(consoleSpy).not.toHaveBeenCalled()
-  })
+    expect(consoleSpy).not.toHaveBeenCalled();
+  });
 
   it('should handle missing optional metrics', () => {
     mockUsePerformance.mockReturnValue({
@@ -92,18 +91,18 @@ describe('PerformanceMonitor', () => {
       isLoading: false,
       getLCPRating: () => 'good',
       getFCPRating: () => 'good',
-      getTTFBRating: () => 'good'
-    })
+      getTTFBRating: () => 'good',
+    });
 
-    render(<PerformanceMonitor />)
+    render(<PerformanceMonitor />);
 
     expect(consoleSpy).toHaveBeenCalledWith('🚀 Performance Metrics:', {
       LCP: '1500.00ms (good)',
       FCP: 'Not available',
       TTFB: 'Not available',
-      LoadTime: 'Not available'
-    })
-  })
+      LoadTime: 'Not available',
+    });
+  });
 
   it('should handle zero values correctly', () => {
     mockUsePerformance.mockReturnValue({
@@ -111,14 +110,14 @@ describe('PerformanceMonitor', () => {
       isLoading: false,
       getLCPRating: () => 'good',
       getFCPRating: () => 'good',
-      getTTFBRating: () => 'good'
-    })
+      getTTFBRating: () => 'good',
+    });
 
-    render(<PerformanceMonitor />)
+    render(<PerformanceMonitor />);
 
     // When LCP is 0, the condition `!isLoading && metrics.lcp` is false, so no logging occurs
-    expect(consoleSpy).not.toHaveBeenCalled()
-  })
+    expect(consoleSpy).not.toHaveBeenCalled();
+  });
 
   it('should handle different rating values', () => {
     mockUsePerformance.mockReturnValue({
@@ -126,16 +125,16 @@ describe('PerformanceMonitor', () => {
       isLoading: false,
       getLCPRating: () => 'poor',
       getFCPRating: () => 'needs-improvement',
-      getTTFBRating: () => 'poor'
-    })
+      getTTFBRating: () => 'poor',
+    });
 
-    render(<PerformanceMonitor />)
+    render(<PerformanceMonitor />);
 
     expect(consoleSpy).toHaveBeenCalledWith('🚀 Performance Metrics:', {
       LCP: '5000.00ms (poor)',
       FCP: '3000.00ms (needs-improvement)',
       TTFB: '800.00ms (poor)',
-      LoadTime: 'Not available'
-    })
-  })
-})
+      LoadTime: 'Not available',
+    });
+  });
+});

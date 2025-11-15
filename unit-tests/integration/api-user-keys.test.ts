@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { GET, POST } from '../../src/app/api/user/api-keys/route';
 
 // Mock external dependencies
@@ -8,11 +8,11 @@ vi.mock('@/lib/crypto');
 vi.mock('@/lib/arcjet');
 vi.mock('@/lib/logger');
 
+import { db } from '../../src/db/drizzle';
+import { aj } from '../../src/lib/arcjet';
 // Import after mocking
 import { auth } from '../../src/lib/auth';
-import { db } from '../../src/db/drizzle';
-import { encrypt, decrypt } from '../../src/lib/crypto';
-import { aj } from '../../src/lib/arcjet';
+import { decrypt, encrypt } from '../../src/lib/crypto';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mockAuth = vi.mocked(auth) as any;
@@ -51,16 +51,18 @@ describe('/api/user/api-keys', () => {
       id: 'test-id',
       ttl: 60,
       results: [],
-      ip: '127.0.0.1'
+      ip: '127.0.0.1',
     } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
-    mockAuth.api.getSession.mockResolvedValue(mockSession as { user: { id: string }; session: { id: string } });
+    mockAuth.api.getSession.mockResolvedValue(
+      mockSession as { user: { id: string }; session: { id: string } },
+    );
 
     // Mock database query chain
     const mockQuery = {
       from: vi.fn().mockReturnThis(),
       where: vi.fn().mockReturnThis(),
-      limit: vi.fn().mockResolvedValue([mockUser])
+      limit: vi.fn().mockResolvedValue([mockUser]),
     };
     mockDb.select.mockReturnValue(mockQuery as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
@@ -83,7 +85,7 @@ describe('/api/user/api-keys', () => {
       const mockQuery = {
         from: vi.fn().mockReturnThis(),
         where: vi.fn().mockReturnThis(),
-        limit: vi.fn().mockResolvedValue([])
+        limit: vi.fn().mockResolvedValue([]),
       };
       mockDb.select.mockReturnValue(mockQuery as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
@@ -126,7 +128,7 @@ describe('/api/user/api-keys', () => {
         id: 'test-id',
         ttl: 60,
         results: [],
-        ip: '127.0.0.1'
+        ip: '127.0.0.1',
       } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
       const request = new Request('http://localhost:3000/api/user/api-keys');
@@ -143,7 +145,7 @@ describe('/api/user/api-keys', () => {
       // Mock database update chain
       const mockUpdateQuery = {
         set: vi.fn().mockReturnThis(),
-        where: vi.fn().mockResolvedValue({ rowCount: 1 })
+        where: vi.fn().mockResolvedValue({ rowCount: 1 }),
       };
       mockDb.update.mockReturnValue(mockUpdateQuery as any); // eslint-disable-line @typescript-eslint/no-explicit-any
     });
@@ -197,7 +199,7 @@ describe('/api/user/api-keys', () => {
         method: 'POST',
         body: JSON.stringify({
           provider: 'invalid-provider',
-          apiKey: 'test-key-12345678901234567890'
+          apiKey: 'test-key-12345678901234567890',
         }),
       });
 
@@ -205,7 +207,9 @@ describe('/api/user/api-keys', () => {
       expect(response.status).toBe(400);
 
       const data = await response.json();
-      expect(data.error).toBe('Invalid provider. Must be "openai" or "openrouter"');
+      expect(data.error).toBe(
+        'Invalid provider. Must be "openai" or "openrouter"',
+      );
     });
 
     it('should return 400 for invalid API key format', async () => {
@@ -213,7 +217,7 @@ describe('/api/user/api-keys', () => {
         method: 'POST',
         body: JSON.stringify({
           provider: 'openai',
-          apiKey: 'short' // Too short
+          apiKey: 'short', // Too short
         }),
       });
 
@@ -231,7 +235,7 @@ describe('/api/user/api-keys', () => {
         method: 'POST',
         body: JSON.stringify({
           provider: 'openai',
-          apiKey: 'test-key-12345678901234567890'
+          apiKey: 'test-key-12345678901234567890',
         }),
       });
 
@@ -252,7 +256,7 @@ describe('/api/user/api-keys', () => {
         id: 'test-id',
         ttl: 60,
         results: [],
-        ip: '127.0.0.1'
+        ip: '127.0.0.1',
       } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
       const request = new Request('http://localhost:3000/api/user/api-keys', {
