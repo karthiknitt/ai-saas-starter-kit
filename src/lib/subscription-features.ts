@@ -2,8 +2,6 @@ import { eq } from 'drizzle-orm';
 import { db } from '@/db/drizzle';
 import { subscription as subscriptionTable } from '@/db/schema';
 
-// Test commit to verify lefthook migration to pnpm
-
 /**
  * Plan feature definitions
  * Defines limits and capabilities for each subscription tier
