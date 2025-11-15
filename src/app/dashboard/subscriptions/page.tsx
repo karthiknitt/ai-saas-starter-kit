@@ -38,17 +38,41 @@ export default function SubscriptionsPage() {
 
     try {
       console.log('Starting checkout for plan:', planName);
-      // Use the slug directly as configured in server
       const slug = planName.toLowerCase();
-      if (!['free', 'pro', 'startup'].includes(slug)) {
+
+      // Free plan doesn't require checkout
+      if (slug === 'free') {
+        alert('You are already on the free plan');
+        return;
+      }
+
+      if (!['pro', 'startup'].includes(slug)) {
         console.error('Invalid plan name:', planName);
         return;
       }
 
-      // TODO: Implement checkout when polar is properly configured
-      console.log('Checkout not yet implemented for plan:', planName);
-      alert(`Checkout not yet implemented for ${planName} plan`);
-      return;
+      // Call checkout API
+      const response = await fetch('/api/billing/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ plan: slug }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.details || error.error || 'Checkout failed');
+      }
+
+      const { url } = await response.json();
+
+      // Redirect to Polar checkout
+      if (url) {
+        window.location.href = url;
+      } else {
+        throw new Error('No checkout URL received');
+      }
     } catch (error) {
       console.error('Checkout failed:', error);
       // Show user-friendly error message

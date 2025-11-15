@@ -1,3 +1,5 @@
+// Polar Better Auth plugin has type incompatibilities with better-auth 1.3.9+
+// Using manual Polar SDK integration instead (see src/lib/polar-client.ts)
 // import { checkout, polar, webhooks } from '@polar-sh/better-auth';
 
 import { betterAuth } from 'better-auth';
@@ -63,34 +65,9 @@ export const auth = betterAuth({
   }),
   plugins: [
     nextCookies(),
-    // TODO: Fix polar plugin version compatibility with better-auth 1.3.34
-    // polar({
-    //   client: polarClient,
-    //   createCustomerOnSignUp: true,
-    //   use: [
-    //     checkout({
-    //       products: [
-    //         {
-    //           slug: 'Free',
-    //           productId: process.env.POLAR_PRODUCT_FREE as string,
-    //         },
-    //         {
-    //           slug: 'Pro',
-    //           productId: process.env.POLAR_PRODUCT_PRO as string,
-    //         },
-    //         {
-    //           slug: 'Startup',
-    //           productId: process.env.POLAR_PRODUCT_STARTUP as string,
-    //         },
-    //       ],
-    //       successUrl: process.env.POLAR_SUCCESS_URL!,
-    //       authenticatedUsersOnly: true,
-    //     }),
-    //     webhooks({
-    //       secret: process.env.POLAR_WEBHOOK_SECRET!,
-    //     }),
-    //   ],
-    // }),
+    // Polar plugin disabled due to type incompatibility - using manual SDK integration
+    // Manual checkout flow implemented in: src/lib/polar-client.ts
+    // Webhooks handled in: src/app/api/webhooks/polar/route.ts
   ],
 });
 
