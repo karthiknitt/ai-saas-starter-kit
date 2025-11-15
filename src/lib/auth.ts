@@ -1,5 +1,5 @@
-import { checkout, polar, webhooks } from '@polar-sh/better-auth';
-import { Polar } from '@polar-sh/sdk';
+// import { checkout, polar, webhooks } from '@polar-sh/better-auth';
+
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { nextCookies } from 'better-auth/next-js';
@@ -10,11 +10,6 @@ import { db } from '@/db/drizzle';
 import { schema } from '@/db/schema';
 
 const resend = new Resend(process.env.RESEND_API_KEY as string);
-
-const polarClient = new Polar({
-  accessToken: process.env.POLAR_ACCESS_TOKEN!,
-  server: process.env.NODE_ENV === 'production' ? 'production' : 'sandbox',
-});
 
 export const auth = betterAuth({
   user: {
@@ -98,11 +93,6 @@ export const auth = betterAuth({
     // }),
   ],
 });
-
-// Polar client configuration
-export const polarClientConfig = {
-  accessToken: process.env.POLAR_ACCESS_TOKEN!,
-};
 
 // Export properly typed session and user interfaces
 export type TypedUser = {

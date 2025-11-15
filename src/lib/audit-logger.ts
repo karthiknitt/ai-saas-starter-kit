@@ -1,7 +1,7 @@
+import { and, desc, eq, gte } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
 import { db } from '@/db/drizzle';
 import { auditLog } from '@/db/schema';
-import { eq, and, desc, gte } from 'drizzle-orm';
 
 export type AuditAction =
   | 'user.role_changed'
@@ -166,11 +166,7 @@ export async function logAdminAccess(
 /**
  * Get audit logs for a user
  */
-export async function getUserAuditLogs(
-  userId: string,
-  limit = 50,
-  offset = 0,
-) {
+export async function getUserAuditLogs(userId: string, limit = 50, offset = 0) {
   const logs = await db.query.auditLog.findMany({
     where: eq(auditLog.userId, userId),
     orderBy: desc(auditLog.timestamp),

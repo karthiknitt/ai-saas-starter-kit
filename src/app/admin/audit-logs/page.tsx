@@ -1,7 +1,7 @@
-import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
-import { auth, type TypedSession } from '@/lib/auth';
+import { redirect } from 'next/navigation';
 import { AuditLogsClient } from '@/components/audit-logs-client';
+import { auth, type TypedSession } from '@/lib/auth';
 
 export default async function AuditLogsPage() {
   const session = (await auth.api.getSession({

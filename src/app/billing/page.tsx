@@ -1,11 +1,17 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { AlertCircle, CheckCircle2, Clock } from 'lucide-react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { CheckCircle2, Clock, AlertCircle } from 'lucide-react';
 
 interface SubscriptionData {
   plan: string;
@@ -23,7 +29,9 @@ interface UsageData {
 }
 
 export default function BillingPage() {
-  const [subscription, setSubscription] = useState<SubscriptionData | null>(null);
+  const [subscription, setSubscription] = useState<SubscriptionData | null>(
+    null,
+  );
   const [usage, setUsage] = useState<UsageData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -58,7 +66,9 @@ export default function BillingPage() {
     return (
       <div className="container mx-auto p-6">
         <div className="flex items-center justify-center py-12">
-          <p className="text-muted-foreground">Loading billing information...</p>
+          <p className="text-muted-foreground">
+            Loading billing information...
+          </p>
         </div>
       </div>
     );
@@ -71,12 +81,27 @@ export default function BillingPage() {
 
   const getStatusBadge = () => {
     if (isCanceled) {
-      return <Badge variant="destructive"><AlertCircle className="mr-1 h-3 w-3" />Canceled</Badge>;
+      return (
+        <Badge variant="destructive">
+          <AlertCircle className="mr-1 h-3 w-3" />
+          Canceled
+        </Badge>
+      );
     }
     if (isActive) {
-      return <Badge variant="default" className="bg-green-600"><CheckCircle2 className="mr-1 h-3 w-3" />Active</Badge>;
+      return (
+        <Badge variant="default" className="bg-green-600">
+          <CheckCircle2 className="mr-1 h-3 w-3" />
+          Active
+        </Badge>
+      );
     }
-    return <Badge variant="secondary"><Clock className="mr-1 h-3 w-3" />{status}</Badge>;
+    return (
+      <Badge variant="secondary">
+        <Clock className="mr-1 h-3 w-3" />
+        {status}
+      </Badge>
+    );
   };
 
   const formatDate = (dateString: string | null) => {
@@ -116,7 +141,9 @@ export default function BillingPage() {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle>Current Subscription</CardTitle>
-              <CardDescription>Your current plan and billing information</CardDescription>
+              <CardDescription>
+                Your current plan and billing information
+              </CardDescription>
             </div>
             {getStatusBadge()}
           </div>
@@ -135,8 +162,12 @@ export default function BillingPage() {
                 </div>
                 {subscription.currentPeriodStart && (
                   <div>
-                    <p className="text-sm text-muted-foreground">Current Period Start</p>
-                    <p className="text-lg font-medium">{formatDate(subscription.currentPeriodStart)}</p>
+                    <p className="text-sm text-muted-foreground">
+                      Current Period Start
+                    </p>
+                    <p className="text-lg font-medium">
+                      {formatDate(subscription.currentPeriodStart)}
+                    </p>
                   </div>
                 )}
                 {subscription.currentPeriodEnd && (
@@ -144,7 +175,9 @@ export default function BillingPage() {
                     <p className="text-sm text-muted-foreground">
                       {isCanceled ? 'Cancels On' : 'Renews On'}
                     </p>
-                    <p className="text-lg font-medium">{formatDate(subscription.currentPeriodEnd)}</p>
+                    <p className="text-lg font-medium">
+                      {formatDate(subscription.currentPeriodEnd)}
+                    </p>
                   </div>
                 )}
               </>
@@ -179,7 +212,9 @@ export default function BillingPage() {
             {usage.unlimited ? (
               <div className="text-center py-6">
                 <p className="text-lg font-semibold">Unlimited AI Requests</p>
-                <p className="text-muted-foreground text-sm">Your plan includes unlimited AI requests</p>
+                <p className="text-muted-foreground text-sm">
+                  Your plan includes unlimited AI requests
+                </p>
               </div>
             ) : (
               <>
@@ -212,8 +247,8 @@ export default function BillingPage() {
                     <CardContent className="pt-6">
                       <p className="text-sm font-medium">
                         {getUsagePercentage() >= 90
-                          ? '⚠️ You\'re almost out of AI requests!'
-                          : '⚠️ You\'re approaching your AI request limit'}
+                          ? "⚠️ You're almost out of AI requests!"
+                          : "⚠️ You're approaching your AI request limit"}
                       </p>
                       <p className="text-sm text-muted-foreground mt-1">
                         Consider upgrading your plan to avoid interruptions.

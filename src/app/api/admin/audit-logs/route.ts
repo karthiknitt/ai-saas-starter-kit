@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
-import { auth, type TypedSession } from '@/lib/auth';
+import { type NextRequest, NextResponse } from 'next/server';
+import type { AuditAction } from '@/lib/audit-logger';
 import { getAllAuditLogs } from '@/lib/audit-logger';
+import { auth, type TypedSession } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
@@ -27,7 +28,7 @@ export async function GET(request: NextRequest) {
 
     // Fetch audit logs
     const logs = await getAllAuditLogs(limit, offset, {
-      action: action as any,
+      action: action as AuditAction | undefined,
       userId,
     });
 

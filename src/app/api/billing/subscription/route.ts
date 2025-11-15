@@ -1,8 +1,8 @@
-import { NextResponse } from 'next/server';
+import { eq } from 'drizzle-orm';
 import { headers } from 'next/headers';
+import { NextResponse } from 'next/server';
 import { db } from '@/db/drizzle';
 import { subscription as subscriptionTable } from '@/db/schema';
-import { eq } from 'drizzle-orm';
 import { auth, type TypedSession } from '@/lib/auth';
 
 export async function GET() {

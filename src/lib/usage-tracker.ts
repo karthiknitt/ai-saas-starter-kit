@@ -187,7 +187,6 @@ export async function getUserUsageStats(userId: string, days = 30) {
   });
 
   // Get current quota
-  const quota = await getOrCreateQuota(userId);
   const quotaStatus = await checkAiRequestQuota(userId);
 
   // Calculate stats by resource type

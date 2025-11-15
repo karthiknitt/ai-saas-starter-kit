@@ -1,8 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useCallback, useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   Table,
   TableBody,
@@ -11,14 +19,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 
 interface AuditLog {
   id: string;
@@ -44,11 +44,7 @@ export function AuditLogsClient() {
   const [filter, setFilter] = useState<string>('all');
   const limit = 20;
 
-  useEffect(() => {
-    fetchLogs();
-  }, [page, filter]);
-
-  async function fetchLogs() {
+  const fetchLogs = useCallback(async () => {
     setLoading(true);
     try {
       const offset = (page - 1) * limit;
@@ -71,7 +67,11 @@ export function AuditLogsClient() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [page, filter]);
+
+  useEffect(() => {
+    fetchLogs();
+  }, [fetchLogs]);
 
   const formatDate = (timestamp: string) => {
     return new Date(timestamp).toLocaleString('en-US', {
@@ -106,7 +106,9 @@ export function AuditLogsClient() {
     return (
       <Card>
         <CardContent className="pt-6">
-          <p className="text-center text-muted-foreground">Loading audit logs...</p>
+          <p className="text-center text-muted-foreground">
+            Loading audit logs...
+          </p>
         </CardContent>
       </Card>
     );
@@ -128,9 +130,15 @@ export function AuditLogsClient() {
                 <SelectItem value="user.role_changed">Role Changes</SelectItem>
                 <SelectItem value="user.created">User Created</SelectItem>
                 <SelectItem value="user.deleted">User Deleted</SelectItem>
-                <SelectItem value="subscription.created">Subscription Created</SelectItem>
-                <SelectItem value="subscription.updated">Subscription Updated</SelectItem>
-                <SelectItem value="subscription.canceled">Subscription Canceled</SelectItem>
+                <SelectItem value="subscription.created">
+                  Subscription Created
+                </SelectItem>
+                <SelectItem value="subscription.updated">
+                  Subscription Updated
+                </SelectItem>
+                <SelectItem value="subscription.canceled">
+                  Subscription Canceled
+                </SelectItem>
                 <SelectItem value="api_key.created">API Key Created</SelectItem>
                 <SelectItem value="api_key.updated">API Key Updated</SelectItem>
                 <SelectItem value="auth.login">Login</SelectItem>
@@ -148,7 +156,9 @@ export function AuditLogsClient() {
         </CardHeader>
         <CardContent>
           {logs.length === 0 ? (
-            <p className="text-center text-muted-foreground py-8">No audit logs found</p>
+            <p className="text-center text-muted-foreground py-8">
+              No audit logs found
+            </p>
           ) : (
             <div className="rounded-md border">
               <Table>
@@ -173,7 +183,9 @@ export function AuditLogsClient() {
                         {log.user ? (
                           <div>
                             <p className="font-medium">{log.user.name}</p>
-                            <p className="text-xs text-muted-foreground">{log.user.email}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {log.user.email}
+                            </p>
                           </div>
                         ) : (
                           <span className="text-muted-foreground">System</span>
@@ -194,7 +206,9 @@ export function AuditLogsClient() {
                       <TableCell>
                         {log.changes && (
                           <details className="text-xs">
-                            <summary className="cursor-pointer text-primary">View changes</summary>
+                            <summary className="cursor-pointer text-primary">
+                              View changes
+                            </summary>
                             <pre className="mt-2 p-2 bg-secondary rounded text-xs overflow-x-auto">
                               {JSON.stringify(log.changes, null, 2)}
                             </pre>

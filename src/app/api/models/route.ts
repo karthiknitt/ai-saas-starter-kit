@@ -123,7 +123,11 @@ export async function GET(request: NextRequest) {
             model.pricing && parseFloat(model.pricing.prompt) > 0;
           return isAvailable;
         })
-        .filter((model) => hasAllAccess || allowedModels.some(allowed => model.id.includes(allowed)))
+        .filter(
+          (model) =>
+            hasAllAccess ||
+            allowedModels.some((allowed) => model.id.includes(allowed)),
+        )
         .sort((a, b) => {
           // Sort by popularity/creation date
           return b.created - a.created;
@@ -134,7 +138,9 @@ export async function GET(request: NextRequest) {
           provider: 'openrouter',
           contextLength: model.context_length,
           description: model.description,
-          locked: !hasAllAccess && !allowedModels.some(allowed => model.id.includes(allowed)),
+          locked:
+            !hasAllAccess &&
+            !allowedModels.some((allowed) => model.id.includes(allowed)),
         }));
 
       return NextResponse.json({ models, planModels: allowedModels });

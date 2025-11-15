@@ -12,8 +12,8 @@ import { aj } from '@/lib/arcjet';
 import { auth } from '@/lib/auth';
 import { decrypt } from '@/lib/crypto';
 import { logApiRequest, logError } from '@/lib/logger';
-import { trackAndCheckAiRequest } from '@/lib/usage-tracker';
 import { hasModelAccess } from '@/lib/subscription-features';
+import { trackAndCheckAiRequest } from '@/lib/usage-tracker';
 
 // Zod schema for validating chat requests
 const chatRequestSchema = z.object({
@@ -99,7 +99,8 @@ export async function POST(request: Request) {
             used: quotaCheck.quota.used,
             limit: quotaCheck.quota.limit,
             remaining: quotaCheck.quota.remaining,
-            message: 'You have reached your monthly AI request limit. Please upgrade your plan to continue.',
+            message:
+              'You have reached your monthly AI request limit. Please upgrade your plan to continue.',
           },
         },
         { status: 429 },
@@ -163,7 +164,8 @@ export async function POST(request: Request) {
           error: 'Model not available',
           details: {
             model: modelToUse,
-            message: 'This model is not available on your current plan. Please upgrade to access it.',
+            message:
+              'This model is not available on your current plan. Please upgrade to access it.',
           },
         },
         { status: 403 },
