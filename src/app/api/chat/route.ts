@@ -1,16 +1,17 @@
-import { auth } from '@/lib/auth';
-import { db } from '@/db/drizzle';
-import { user } from '@/db/schema';
-import { eq } from 'drizzle-orm';
-import { decrypt } from '@/lib/crypto';
-import { streamText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
-import { NextResponse } from 'next/server';
+import type { LanguageModel } from 'ai';
+import { streamText } from 'ai';
+import { eq } from 'drizzle-orm';
 import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { logApiRequest, logError } from '@/lib/logger';
+import { db } from '@/db/drizzle';
+import { user } from '@/db/schema';
 import { aj } from '@/lib/arcjet';
+import { auth } from '@/lib/auth';
+import { decrypt } from '@/lib/crypto';
+import { logApiRequest, logError } from '@/lib/logger';
 
 // Zod schema for validating chat requests
 const chatRequestSchema = z.object({
@@ -23,7 +24,7 @@ const chatRequestSchema = z.object({
           text: z.string().trim().min(1).max(50000).optional(),
         })
         .refine(
-          data =>
+          (data) =>
             (data.content && data.content.trim().length > 0) ||
             (data.text && data.text.trim().length > 0),
           {
@@ -97,7 +98,7 @@ export async function POST(request: Request) {
       );
     }
 
-    let requestBody;
+    let requestBody: unknown;
     try {
       requestBody = await request.json();
     } catch {
@@ -113,7 +114,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           error: 'Invalid request format',
-          details: validationResult.error.issues.map(issue => ({
+          details: validationResult.error.issues.map((issue) => ({
             field: issue.path.join('.'),
             message: issue.message,
           })),
@@ -135,7 +136,7 @@ export async function POST(request: Request) {
         u.provider === 'openai' ? 'gpt-4o' : 'anthropic/claude-3.5-sonnet';
     }
 
-    let aiModel;
+    let aiModel: LanguageModel;
     if (u.provider === 'openai') {
       const openaiClient = createOpenAI({ apiKey });
       aiModel = openaiClient(modelToUse);

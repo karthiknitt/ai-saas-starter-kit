@@ -1,11 +1,11 @@
-import { auth } from '@/lib/auth';
+import { eq } from 'drizzle-orm';
+import { NextResponse } from 'next/server';
 import { db } from '@/db/drizzle';
 import { user } from '@/db/schema';
-import { eq } from 'drizzle-orm';
-import { encrypt, decrypt } from '@/lib/crypto';
-import { NextResponse } from 'next/server';
-import { logApiRequest, logError } from '@/lib/logger';
 import { aj } from '@/lib/arcjet';
+import { auth } from '@/lib/auth';
+import { decrypt, encrypt } from '@/lib/crypto';
+import { logApiRequest, logError } from '@/lib/logger';
 
 /**
  * Retrieve the authenticated user's API provider and decrypted API key.

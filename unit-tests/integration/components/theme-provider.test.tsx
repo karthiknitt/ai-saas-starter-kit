@@ -1,10 +1,16 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, act } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ThemeProvider } from '@/components/theme-provider';
 
 // Mock next-themes
 vi.mock('next-themes', () => ({
-  ThemeProvider: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
+  ThemeProvider: ({
+    children,
+    ...props
+  }: {
+    children: React.ReactNode;
+    [key: string]: unknown;
+  }) => (
     <div data-testid="theme-provider" {...props}>
       {children}
     </div>
@@ -15,7 +21,10 @@ describe('ThemeProvider Integration Tests', () => {
   const TestComponent = () => (
     <div>
       <span data-testid="theme-text">Current theme content</span>
-      <button onClick={() => document.documentElement.classList.toggle('dark')}>
+      <button
+        type="button"
+        onClick={() => document.documentElement.classList.toggle('dark')}
+      >
         Toggle Theme
       </button>
     </div>
@@ -32,7 +41,7 @@ describe('ThemeProvider Integration Tests', () => {
       render(
         <ThemeProvider>
           <TestComponent />
-        </ThemeProvider>
+        </ThemeProvider>,
       );
 
       expect(screen.getByTestId('theme-provider')).toBeInTheDocument();
@@ -44,7 +53,7 @@ describe('ThemeProvider Integration Tests', () => {
       render(
         <ThemeProvider>
           <TestComponent />
-        </ThemeProvider>
+        </ThemeProvider>,
       );
 
       const provider = screen.getByTestId('theme-provider');
@@ -55,7 +64,7 @@ describe('ThemeProvider Integration Tests', () => {
       render(
         <ThemeProvider>
           <TestComponent />
-        </ThemeProvider>
+        </ThemeProvider>,
       );
 
       const toggleButton = screen.getByText('Toggle Theme');
@@ -74,7 +83,7 @@ describe('ThemeProvider Integration Tests', () => {
       const { rerender } = render(
         <ThemeProvider>
           <TestComponent />
-        </ThemeProvider>
+        </ThemeProvider>,
       );
 
       const toggleButton = screen.getByText('Toggle Theme');
@@ -90,7 +99,7 @@ describe('ThemeProvider Integration Tests', () => {
       rerender(
         <ThemeProvider>
           <TestComponent />
-        </ThemeProvider>
+        </ThemeProvider>,
       );
 
       // Theme should still be applied
@@ -108,14 +117,16 @@ describe('ThemeProvider Integration Tests', () => {
 
     it('should handle theme provider errors', () => {
       // Mock console.error to avoid noise in tests
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
 
       // This should not throw even if there are internal errors
       expect(() => {
         render(
           <ThemeProvider>
             <TestComponent />
-          </ThemeProvider>
+          </ThemeProvider>,
         );
       }).not.toThrow();
 

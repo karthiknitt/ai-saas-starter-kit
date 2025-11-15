@@ -1,16 +1,15 @@
 'use client';
 
-import * as React from 'react';
 import {
   closestCenter,
   DndContext,
+  type DragEndEvent,
   KeyboardSensor,
   MouseSensor,
   TouchSensor,
+  type UniqueIdentifier,
   useSensor,
   useSensors,
-  type DragEndEvent,
-  type UniqueIdentifier,
 } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import {
@@ -35,8 +34,8 @@ import {
   IconTrendingUp,
 } from '@tabler/icons-react';
 import {
-  ColumnDef,
-  ColumnFiltersState,
+  type ColumnDef,
+  type ColumnFiltersState,
   flexRender,
   getCoreRowModel,
   getFacetedRowModel,
@@ -44,20 +43,19 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  Row,
-  SortingState,
+  type Row,
+  type SortingState,
   useReactTable,
-  VisibilityState,
+  type VisibilityState,
 } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
+import * as React from 'react';
 import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts';
 import { toast } from 'sonner';
 import { z } from 'zod';
-
-import { useIsMobile } from '@/hooks/use-mobile';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ChartConfig, ChartContainer } from '@/components/ui/chart';
+import { type ChartConfig, ChartContainer } from '@/components/ui/chart';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   Drawer,
@@ -96,6 +94,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export const schema = z.object({
   id: z.number(),
@@ -152,7 +151,7 @@ function DraggableRow({
         ...style,
       }}
     >
-      {row.getVisibleCells().map(cell => (
+      {row.getVisibleCells().map((cell) => (
         <TableCell key={cell.id}>
           {flexRender(cell.column.columnDef.cell, cell.getContext())}
         </TableCell>
@@ -209,7 +208,7 @@ export function DataTable({
                 table.getIsAllPageRowsSelected() ||
                 (table.getIsSomePageRowsSelected() && 'indeterminate')
               }
-              onCheckedChange={value =>
+              onCheckedChange={(value) =>
                 table.toggleAllPageRowsSelected(!!value)
               }
               aria-label="Select all"
@@ -220,7 +219,7 @@ export function DataTable({
           <div className="flex items-center justify-center">
             <Checkbox
               checked={row.getIsSelected()}
-              onCheckedChange={value => row.toggleSelected(!!value)}
+              onCheckedChange={(value) => row.toggleSelected(!!value)}
               aria-label="Select row"
             />
           </div>
@@ -271,13 +270,16 @@ export function DataTable({
         header: () => <div className="w-full text-right">Target</div>,
         cell: ({ row }) => (
           <form
-            onSubmit={e => {
+            onSubmit={(e) => {
               e.preventDefault();
-              toast.promise(new Promise(resolve => setTimeout(resolve, 1000)), {
-                loading: `Saving ${row.original.header}`,
-                success: 'Done',
-                error: 'Error',
-              });
+              toast.promise(
+                new Promise((resolve) => setTimeout(resolve, 1000)),
+                {
+                  loading: `Saving ${row.original.header}`,
+                  success: 'Done',
+                  error: 'Error',
+                },
+              );
             }}
           >
             <Label htmlFor={`${row.original.id}-target`} className="sr-only">
@@ -296,13 +298,16 @@ export function DataTable({
         header: () => <div className="w-full text-right">Limit</div>,
         cell: ({ row }) => (
           <form
-            onSubmit={e => {
+            onSubmit={(e) => {
               e.preventDefault();
-              toast.promise(new Promise(resolve => setTimeout(resolve, 1000)), {
-                loading: `Saving ${row.original.header}`,
-                success: 'Done',
-                error: 'Error',
-              });
+              toast.promise(
+                new Promise((resolve) => setTimeout(resolve, 1000)),
+                {
+                  loading: `Saving ${row.original.header}`,
+                  success: 'Done',
+                  error: 'Error',
+                },
+              );
             }}
           >
             <Label htmlFor={`${row.original.id}-limit`} className="sr-only">
@@ -391,7 +396,7 @@ export function DataTable({
       columnFilters,
       pagination: useVirtualization ? undefined : pagination,
     },
-    getRowId: row => row.id.toString(),
+    getRowId: (row) => row.id.toString(),
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
@@ -420,7 +425,7 @@ export function DataTable({
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
     if (active && over && active.id !== over.id) {
-      setData(data => {
+      setData((data) => {
         const oldIndex = dataIds.indexOf(active.id);
         const newIndex = dataIds.indexOf(over.id);
         return arrayMove(data, oldIndex, newIndex);
@@ -476,17 +481,17 @@ export function DataTable({
               {table
                 .getAllColumns()
                 .filter(
-                  column =>
+                  (column) =>
                     typeof column.accessorFn !== 'undefined' &&
                     column.getCanHide(),
                 )
-                .map(column => {
+                .map((column) => {
                   return (
                     <DropdownMenuCheckboxItem
                       key={column.id}
                       className="capitalize"
                       checked={column.getIsVisible()}
-                      onCheckedChange={value =>
+                      onCheckedChange={(value) =>
                         column.toggleVisibility(!!value)
                       }
                     >
@@ -522,9 +527,9 @@ export function DataTable({
               >
                 <Table>
                   <TableHeader className="bg-muted sticky top-0 z-10">
-                    {table.getHeaderGroups().map(headerGroup => (
+                    {table.getHeaderGroups().map((headerGroup) => (
                       <TableRow key={headerGroup.id}>
-                        {headerGroup.headers.map(header => {
+                        {headerGroup.headers.map((header) => {
                           return (
                             <TableHead key={header.id} colSpan={header.colSpan}>
                               {header.isPlaceholder
@@ -545,7 +550,7 @@ export function DataTable({
                         items={dataIds}
                         strategy={verticalListSortingStrategy}
                       >
-                        {virtualizer.getVirtualItems().map(virtualRow => {
+                        {virtualizer.getVirtualItems().map((virtualRow) => {
                           const row =
                             table.getRowModel().rows[virtualRow.index];
                           return (
@@ -587,9 +592,9 @@ export function DataTable({
             >
               <Table>
                 <TableHeader className="bg-muted sticky top-0 z-10">
-                  {table.getHeaderGroups().map(headerGroup => (
+                  {table.getHeaderGroups().map((headerGroup) => (
                     <TableRow key={headerGroup.id}>
-                      {headerGroup.headers.map(header => {
+                      {headerGroup.headers.map((header) => {
                         return (
                           <TableHead key={header.id} colSpan={header.colSpan}>
                             {header.isPlaceholder
@@ -610,7 +615,7 @@ export function DataTable({
                       items={dataIds}
                       strategy={verticalListSortingStrategy}
                     >
-                      {table.getRowModel().rows.map(row => (
+                      {table.getRowModel().rows.map((row) => (
                         <DraggableRow key={row.id} row={row} />
                       ))}
                     </SortableContext>
@@ -642,7 +647,7 @@ export function DataTable({
                 </Label>
                 <Select
                   value={`${table.getState().pagination.pageSize}`}
-                  onValueChange={value => {
+                  onValueChange={(value) => {
                     table.setPageSize(Number(value));
                   }}
                 >
@@ -652,7 +657,7 @@ export function DataTable({
                     />
                   </SelectTrigger>
                   <SelectContent side="top">
-                    {[10, 20, 30, 40, 50].map(pageSize => (
+                    {[10, 20, 30, 40, 50].map((pageSize) => (
                       <SelectItem key={pageSize} value={`${pageSize}`}>
                         {pageSize}
                       </SelectItem>
@@ -787,7 +792,7 @@ const TableCellViewer = React.memo(function TableCellViewer({
                     tickLine={false}
                     axisLine={false}
                     tickMargin={8}
-                    tickFormatter={value => value.slice(0, 3)}
+                    tickFormatter={(value) => value.slice(0, 3)}
                     hide
                   />
                   <Area

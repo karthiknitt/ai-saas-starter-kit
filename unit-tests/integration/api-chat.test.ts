@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi, Mock } from 'vitest';
+import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
 import { POST } from '../../src/app/api/chat/route';
 
 // Mock external dependencies
@@ -12,11 +12,11 @@ vi.mock('@ai-sdk/openai');
 vi.mock('@openrouter/ai-sdk-provider');
 vi.mock('next/headers');
 
+import { db } from '../../src/db/drizzle';
+import { aj } from '../../src/lib/arcjet';
 // Import after mocking to get the mocked versions
 import { auth } from '../../src/lib/auth';
-import { db } from '../../src/db/drizzle';
 import { decrypt } from '../../src/lib/crypto';
-import { aj } from '../../src/lib/arcjet';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mockAuth = vi.mocked(auth) as any;
@@ -65,7 +65,7 @@ describe('/api/chat', () => {
     session: { id: 'session-123' },
   };
 
-  let limitMock: Mock<() => Promise<typeof mockUser[]>>;
+  let limitMock: Mock<() => Promise<(typeof mockUser)[]>>;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -77,17 +77,19 @@ describe('/api/chat', () => {
       id: 'test-id',
       ttl: 60,
       results: [],
-      ip: '127.0.0.1'
+      ip: '127.0.0.1',
     } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
-    mockAuth.api.getSession.mockResolvedValue(mockSession as { user: { id: string }; session: { id: string } });
+    mockAuth.api.getSession.mockResolvedValue(
+      mockSession as { user: { id: string }; session: { id: string } },
+    );
     // Create a mockable limit function
     limitMock = vi.fn().mockResolvedValue([mockUser]);
     mockDb.select.mockReturnValue({
       from: vi.fn().mockReturnValue({
         where: vi.fn().mockReturnValue({
-          limit: limitMock
-        })
-      })
+          limit: limitMock,
+        }),
+      }),
     } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
     mockDecrypt.mockReturnValue('decrypted-api-key');
   });
@@ -98,7 +100,9 @@ describe('/api/chat', () => {
 
       const request = new Request('http://localhost:3000/api/chat', {
         method: 'POST',
-        body: JSON.stringify({ messages: [{ role: 'user', content: 'Hello' }] }),
+        body: JSON.stringify({
+          messages: [{ role: 'user', content: 'Hello' }],
+        }),
       });
 
       const response = await POST(request);
@@ -113,7 +117,9 @@ describe('/api/chat', () => {
 
       const request = new Request('http://localhost:3000/api/chat', {
         method: 'POST',
-        body: JSON.stringify({ messages: [{ role: 'user', content: 'Hello' }] }),
+        body: JSON.stringify({
+          messages: [{ role: 'user', content: 'Hello' }],
+        }),
       });
 
       const response = await POST(request);
@@ -126,16 +132,20 @@ describe('/api/chat', () => {
 
   describe('API Key Validation', () => {
     it('should return 400 for missing API keys', async () => {
-      limitMock.mockResolvedValue([{
-        ...mockUser,
-        apiKeys: null,
-        provider: null,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      }] as any);
+      limitMock.mockResolvedValue([
+        {
+          ...mockUser,
+          apiKeys: null,
+          provider: null,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        },
+      ] as any);
 
       const request = new Request('http://localhost:3000/api/chat', {
         method: 'POST',
-        body: JSON.stringify({ messages: [{ role: 'user', content: 'Hello' }] }),
+        body: JSON.stringify({
+          messages: [{ role: 'user', content: 'Hello' }],
+        }),
       });
 
       const response = await POST(request);
@@ -152,7 +162,9 @@ describe('/api/chat', () => {
 
       const request = new Request('http://localhost:3000/api/chat', {
         method: 'POST',
-        body: JSON.stringify({ messages: [{ role: 'user', content: 'Hello' }] }),
+        body: JSON.stringify({
+          messages: [{ role: 'user', content: 'Hello' }],
+        }),
       });
 
       const response = await POST(request);
@@ -229,11 +241,13 @@ describe('/api/chat', () => {
     });
 
     it('should handle OpenRouter provider correctly', async () => {
-      limitMock.mockResolvedValue([{
-        ...mockUser,
-        provider: 'openrouter',
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      }] as any);
+      limitMock.mockResolvedValue([
+        {
+          ...mockUser,
+          provider: 'openrouter',
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        },
+      ] as any);
 
       const request = new Request('http://localhost:3000/api/chat', {
         method: 'POST',
@@ -247,11 +261,13 @@ describe('/api/chat', () => {
     });
 
     it('should return 400 for unsupported provider', async () => {
-      limitMock.mockResolvedValue([{
-        ...mockUser,
-        provider: 'unsupported',
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      }] as any);
+      limitMock.mockResolvedValue([
+        {
+          ...mockUser,
+          provider: 'unsupported',
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        },
+      ] as any);
 
       const request = new Request('http://localhost:3000/api/chat', {
         method: 'POST',
@@ -297,11 +313,19 @@ describe('/api/chat', () => {
 
   describe('Arcjet Protection', () => {
     it('should return 403 for denied requests', async () => {
-      mockAj.protect.mockResolvedValue({ isDenied: () => true, id: 'test-id', ttl: 60, results: [], ip: '127.0.0.1' } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
+      mockAj.protect.mockResolvedValue({
+        isDenied: () => true,
+        id: 'test-id',
+        ttl: 60,
+        results: [],
+        ip: '127.0.0.1',
+      } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
       const request = new Request('http://localhost:3000/api/chat', {
         method: 'POST',
-        body: JSON.stringify({ messages: [{ role: 'user', content: 'Hello' }] }),
+        body: JSON.stringify({
+          messages: [{ role: 'user', content: 'Hello' }],
+        }),
       });
 
       const response = await POST(request);
@@ -320,14 +344,18 @@ describe('/api/chat', () => {
 
       const request = new Request('http://localhost:3000/api/chat', {
         method: 'POST',
-        body: JSON.stringify({ messages: [{ role: 'user', content: 'Hello' }] }),
+        body: JSON.stringify({
+          messages: [{ role: 'user', content: 'Hello' }],
+        }),
       });
 
       const response = await POST(request);
       expect(response.status).toBe(500);
 
       const data = await response.json();
-      expect(data.error).toBe('An error occurred while processing your request');
+      expect(data.error).toBe(
+        'An error occurred while processing your request',
+      );
       expect(data.code).toBe('INTERNAL_ERROR');
     });
   });

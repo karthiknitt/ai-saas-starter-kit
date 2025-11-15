@@ -1,7 +1,7 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 
 export default function SuccessPage() {
@@ -64,6 +64,7 @@ export default function SuccessPage() {
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >
+                <title>Success</title>
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -102,6 +103,7 @@ export default function SuccessPage() {
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >
+                <title>Error</title>
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"

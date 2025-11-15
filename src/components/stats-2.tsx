@@ -1,7 +1,7 @@
 'use client';
 
+import { Boxes, Star, TrendingUp } from 'lucide-react';
 import { motion } from 'motion/react';
-import { Star, TrendingUp, Boxes } from 'lucide-react';
 
 /**
  * Renders a responsive "Tailark in numbers" stats section with three animated metric cards.

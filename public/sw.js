@@ -15,7 +15,7 @@ self.addEventListener('install', (event) => {
     caches.open(CACHE_NAME).then((cache) => {
       console.log('Service Worker: Caching static assets');
       return cache.addAll(STATIC_ASSETS);
-    })
+    }),
   );
 });
 
@@ -29,9 +29,10 @@ self.addEventListener('activate', (event) => {
             console.log('Service Worker: Deleting old cache', cacheName);
             return caches.delete(cacheName);
           }
-        })
+          return Promise.resolve();
+        }),
       );
-    })
+    }),
   );
 });
 
@@ -66,6 +67,6 @@ self.addEventListener('fetch', (event) => {
 
         return response;
       });
-    })
+    }),
   );
 });

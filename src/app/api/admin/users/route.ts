@@ -1,10 +1,10 @@
-import { NextResponse } from 'next/server';
+import { eq } from 'drizzle-orm';
 import { headers } from 'next/headers';
+import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { auth, TypedSession } from '@/lib/auth';
 import { db } from '@/db/drizzle';
 import { user as userTable } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { auth, type TypedSession } from '@/lib/auth';
 
 async function requireAdmin() {
   const session = (await auth.api.getSession({

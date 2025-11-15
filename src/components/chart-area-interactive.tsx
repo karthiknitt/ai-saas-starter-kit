@@ -2,8 +2,6 @@
 
 import * as React from 'react';
 import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts';
-
-import { useIsMobile } from '@/hooks/use-mobile';
 import {
   Card,
   CardAction,
@@ -12,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { ChartConfig, ChartContainer } from '@/components/ui/chart';
+import { type ChartConfig, ChartContainer } from '@/components/ui/chart';
 import {
   Select,
   SelectContent,
@@ -21,6 +19,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export const description = 'An interactive area chart';
 
@@ -142,7 +141,7 @@ export function ChartAreaInteractive() {
     }
   }, [isMobile]);
 
-  const filteredData = chartData.filter(item => {
+  const filteredData = chartData.filter((item) => {
     const date = new Date(item.date);
     const referenceDate = new Date('2024-06-30');
     let daysToSubtract = 90;
@@ -241,7 +240,7 @@ export function ChartAreaInteractive() {
               axisLine={false}
               tickMargin={8}
               minTickGap={32}
-              tickFormatter={value => {
+              tickFormatter={(value) => {
                 const date = new Date(value);
                 return date.toLocaleDateString('en-US', {
                   month: 'short',

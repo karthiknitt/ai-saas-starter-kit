@@ -54,7 +54,7 @@ class SecureLogger {
         ) as Record<string, unknown>;
       } else if (typeof value === 'string' && value.length > 1000) {
         // Truncate very long strings
-        sanitized[key] = value.substring(0, 1000) + '...[TRUNCATED]';
+        sanitized[key] = `${value.substring(0, 1000)}...[TRUNCATED]`;
       } else {
         sanitized[key] = value;
       }
@@ -69,7 +69,7 @@ class SecureLogger {
     if (Array.isArray(obj)) {
       return obj
         .slice(0, 10)
-        .map(item =>
+        .map((item) =>
           typeof item === 'object'
             ? this.sanitizeNestedObject(item, depth - 1)
             : item,
@@ -112,7 +112,7 @@ class SecureLogger {
       'encryption_key',
     ];
 
-    return sensitiveFields.some(field =>
+    return sensitiveFields.some((field) =>
       key.toLowerCase().includes(field.toLowerCase()),
     );
   }

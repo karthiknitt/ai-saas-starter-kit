@@ -1,12 +1,24 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { AppSidebar } from '@/components/app-sidebar';
-import { SiteHeader } from '@/components/site-header';
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
-import { authClient } from '@/lib/auth-client';
 import { useChat } from '@ai-sdk/react';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { DefaultChatTransport } from 'ai';
+import {
+  Bot,
+  CheckCheck,
+  Copy,
+  ExternalLink,
+  Key,
+  MessageSquare,
+  Shield,
+  Zap,
+} from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { toast } from 'sonner';
+import * as z from 'zod';
 import {
   Conversation,
   ConversationContent,
@@ -15,28 +27,22 @@ import {
 } from '@/components/ai-elements/conversation';
 import {
   Message,
-  MessageContent,
   MessageAvatar,
+  MessageContent,
 } from '@/components/ai-elements/message';
-import { Response } from '@/components/ai-elements/response';
 import {
   PromptInput,
   PromptInputBody,
+  PromptInputModelSelect,
+  PromptInputSubmit,
   PromptInputTextarea,
   PromptInputToolbar,
   PromptInputTools,
-  PromptInputSubmit,
-  PromptInputModelSelect,
 } from '@/components/ai-elements/prompt-input';
+import { Response } from '@/components/ai-elements/response';
+import { AppSidebar } from '@/components/app-sidebar';
+import { SiteHeader } from '@/components/site-header';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import {
   Card,
   CardContent,
@@ -53,22 +59,16 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { toast } from 'sonner';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+import { Input } from '@/components/ui/input';
 import {
-  Key,
-  Zap,
-  Shield,
-  ExternalLink,
-  Copy,
-  CheckCheck,
-  MessageSquare,
-  Bot,
-} from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import { authClient } from '@/lib/auth-client';
 
 const setupFormSchema = z
   .object({
@@ -76,7 +76,7 @@ const setupFormSchema = z
     apiKey: z.string().min(1, 'API key is required'),
   })
   .refine(
-    data => {
+    (data) => {
       if (data.provider === 'openai') {
         return /^sk(?:-proj|-svcacct)?-[a-zA-Z0-9_-]{20,}$/.test(data.apiKey);
       } else if (data.provider === 'openrouter') {
@@ -144,11 +144,12 @@ export default function AichatPage() {
       prepareSendMessagesRequest: ({ messages }) => {
         // Convert messages to the format expected by the API
         const payload = {
-          messages: messages.map(msg => ({
+          messages: messages.map((msg) => ({
             role: msg.role,
             content:
-              msg.parts?.map(p => (p.type === 'text' ? p.text : '')).join('') ||
-              '',
+              msg.parts
+                ?.map((p) => (p.type === 'text' ? p.text : ''))
+                .join('') || '',
           })),
           model: selectedModel,
         };
@@ -160,6 +161,46 @@ export default function AichatPage() {
       },
     }),
   });
+
+  const fetchModels = useCallback(async () => {
+    try {
+      const res = await fetch('/api/models');
+      if (res.ok) {
+        const data = await res.json();
+        setModels(data.models || []);
+
+        // Set default model if none selected
+        if (!selectedModel && data.models.length > 0) {
+          setSelectedModel(data.models[0].id);
+        }
+      } else {
+        toast.error('Failed to load models');
+      }
+    } catch (_error) {
+      console.error('Failed to fetch models:', _error);
+      toast.error('Failed to load models');
+    }
+  }, [selectedModel]);
+
+  const fetchApiConfig = useCallback(async () => {
+    try {
+      const res = await fetch('/api/user/api-keys');
+      if (res.ok) {
+        const data = await res.json();
+        setApiConfig(data);
+        setShowSetup(!data.apiKey);
+        if (data.apiKey) {
+          // Fetch available models
+          await fetchModels();
+        }
+      } else {
+        setShowSetup(true);
+      }
+    } catch (_error) {
+      console.error('Failed to fetch API config:', _error);
+      setShowSetup(true);
+    }
+  }, [fetchModels]);
 
   useEffect(() => {
     const checkSession = async () => {
@@ -185,7 +226,7 @@ export default function AichatPage() {
     if (user) {
       fetchApiConfig();
     }
-  }, [user]);
+  }, [user, fetchApiConfig]);
 
   useEffect(() => {
     if (selectedModel) {
@@ -203,46 +244,6 @@ export default function AichatPage() {
       toast.dismiss('ai-responding');
     }
   }, [status]);
-
-  const fetchModels = async () => {
-    try {
-      const res = await fetch('/api/models');
-      if (res.ok) {
-        const data = await res.json();
-        setModels(data.models || []);
-
-        // Set default model if none selected
-        if (!selectedModel && data.models.length > 0) {
-          setSelectedModel(data.models[0].id);
-        }
-      } else {
-        toast.error('Failed to load models');
-      }
-    } catch (_error) {
-      console.error('Failed to fetch models:', _error);
-      toast.error('Failed to load models');
-    }
-  };
-
-  const fetchApiConfig = async () => {
-    try {
-      const res = await fetch('/api/user/api-keys');
-      if (res.ok) {
-        const data = await res.json();
-        setApiConfig(data);
-        setShowSetup(!data.apiKey);
-        if (data.apiKey) {
-          // Fetch available models
-          await fetchModels();
-        }
-      } else {
-        setShowSetup(true);
-      }
-    } catch (_error) {
-      console.error('Failed to fetch API config:', _error);
-      setShowSetup(true);
-    }
-  };
 
   const handleSetupSubmit = async (values: SetupFormValues) => {
     setIsSubmitting(true);
@@ -514,7 +515,7 @@ export default function AichatPage() {
                             description="Send a message to begin chatting with AI"
                           />
                         ) : (
-                          messages.map(message => {
+                          messages.map((message) => {
                             const content = message.parts?.length
                               ? message.parts
                                   .map(

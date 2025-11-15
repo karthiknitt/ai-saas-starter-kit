@@ -48,7 +48,7 @@ export function getPlanName(productId: string | undefined | null): string {
 
     // Try to match by partial ID or provide fallback
     const partialMatch = Object.keys(PRODUCT_MAP).find(
-      key => key.includes(productId) || productId.includes(key),
+      (key) => key.includes(productId) || productId.includes(key),
     );
 
     if (partialMatch) {

@@ -1,10 +1,10 @@
+import { sql } from 'drizzle-orm';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { auth, TypedSession } from '@/lib/auth';
+import { UsersClient } from '@/components/users-client';
 import { db } from '@/db/drizzle';
 import { user as userTable } from '@/db/schema';
-import { UsersClient } from '@/components/users-client';
-import { sql } from 'drizzle-orm';
+import { auth, type TypedSession } from '@/lib/auth';
 
 interface AdminUsersPageProps {
   searchParams: {

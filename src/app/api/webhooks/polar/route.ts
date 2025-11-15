@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import crypto from 'crypto';
+import crypto from 'node:crypto';
+import { eq } from 'drizzle-orm';
+import { type NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db/drizzle';
 import { subscription } from '@/db/schema';
 import { getPlanName } from '@/lib/plan-map';
-import { eq } from 'drizzle-orm';
 
 // TypeScript interfaces for webhook data
 interface PolarSubscription {

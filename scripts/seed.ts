@@ -29,7 +29,9 @@ if (!targetDbUrl) {
   process.exit(1);
 }
 
-console.log(`Seeding database schema to: ${targetDbUrl.replace(/:\/\/.*@/, '://***:***@')}`);
+console.log(
+  `Seeding database schema to: ${targetDbUrl.replace(/:\/\/.*@/, '://***:***@')}`,
+);
 
 async function seedDatabase() {
   try {
@@ -37,7 +39,7 @@ async function seedDatabase() {
     console.log('Creating tables...');
 
     // Use drizzle-kit push with environment variable override
-    const { execSync } = await import('child_process');
+    const { execSync } = await import('node:child_process');
 
     try {
       // Set the DATABASE_URL environment variable for drizzle-kit
@@ -47,7 +49,7 @@ async function seedDatabase() {
       execSync('npx drizzle-kit push', {
         stdio: 'inherit',
         env,
-        cwd: process.cwd()
+        cwd: process.cwd(),
       });
 
       console.log('✅ Database schema seeded successfully!');
@@ -55,7 +57,6 @@ async function seedDatabase() {
       console.error(`❌ Failed to seed database schema:`, error);
       throw error;
     }
-
   } catch (error) {
     console.error('❌ Error seeding database:', error);
     throw error;

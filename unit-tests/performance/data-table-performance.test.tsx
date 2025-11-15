@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { DataTable } from '../../src/components/data-table';
 
 // Mock data for performance testing
@@ -21,108 +21,99 @@ describe('DataTable Performance Tests', () => {
   });
 
   describe('Large Dataset Rendering', () => {
-    it('should render 1000 rows within performance budget', { timeout: 15000 }, () => {
-      const startTime = performance.now();
+    it(
+      'should render 1000 rows within performance budget',
+      { timeout: 15000 },
+      () => {
+        const startTime = performance.now();
 
-      const mockData = generateMockData(1000);
+        const mockData = generateMockData(1000);
 
-      render(
-        <DataTable
-          data={mockData}
+        render(<DataTable data={mockData} />);
 
-        />
-      );
+        const endTime = performance.now();
+        const renderTime = endTime - startTime;
 
-      const endTime = performance.now();
-      const renderTime = endTime - startTime;
+        // Performance budget: should render within reasonable time for test environment
+        expect(renderTime).toBeLessThan(15000);
+        // With pagination, only first 10 items are visible
+        expect(screen.getByText('Item 0')).toBeInTheDocument();
+        expect(screen.getByText('Item 9')).toBeInTheDocument();
+      },
+    );
 
-      // Performance budget: should render within reasonable time for test environment
-      expect(renderTime).toBeLessThan(15000);
-      // With pagination, only first 10 items are visible
-      expect(screen.getByText('Item 0')).toBeInTheDocument();
-      expect(screen.getByText('Item 9')).toBeInTheDocument();
-    });
+    it(
+      'should render 5000 rows within performance budget',
+      { timeout: 15000 },
+      () => {
+        const startTime = performance.now();
 
-    it('should render 5000 rows within performance budget', { timeout: 15000 }, () => {
-      const startTime = performance.now();
+        const mockData = generateMockData(5000);
 
-      const mockData = generateMockData(5000);
+        render(<DataTable data={mockData} />);
 
-      render(
-        <DataTable
-          data={mockData}
+        const endTime = performance.now();
+        const renderTime = endTime - startTime;
 
-        />
-      );
+        // Performance budget: should render within reasonable time for test environment
+        expect(renderTime).toBeLessThan(15000);
+        expect(screen.getByText('Item 0')).toBeInTheDocument();
+        // Note: Only first 10 items are visible due to pagination
+        expect(screen.getByText('Item 9')).toBeInTheDocument();
+      },
+    );
 
-      const endTime = performance.now();
-      const renderTime = endTime - startTime;
+    it(
+      'should handle 10000 rows with virtualization',
+      { timeout: 15000 },
+      () => {
+        const startTime = performance.now();
 
-      // Performance budget: should render within reasonable time for test environment
-      expect(renderTime).toBeLessThan(15000);
-      expect(screen.getByText('Item 0')).toBeInTheDocument();
-      // Note: Only first 10 items are visible due to pagination
-      expect(screen.getByText('Item 9')).toBeInTheDocument();
-    });
+        const mockData = generateMockData(10000);
 
-    it('should handle 10000 rows with virtualization', { timeout: 15000 }, () => {
-      const startTime = performance.now();
+        render(<DataTable data={mockData} />);
 
-      const mockData = generateMockData(10000);
+        const endTime = performance.now();
+        const renderTime = endTime - startTime;
 
-      render(
-        <DataTable
-          data={mockData}
-
-        />
-      );
-
-      const endTime = performance.now();
-      const renderTime = endTime - startTime;
-
-      // Performance budget: should render within reasonable time for test environment
-      expect(renderTime).toBeLessThan(15000);
-      // With virtualization, items may not be immediately visible, just check that component renders
-      expect(screen.getByText('Header')).toBeInTheDocument();
-    });
+        // Performance budget: should render within reasonable time for test environment
+        expect(renderTime).toBeLessThan(15000);
+        // With virtualization, items may not be immediately visible, just check that component renders
+        expect(screen.getByText('Header')).toBeInTheDocument();
+      },
+    );
   });
 
   describe('Memory Usage', () => {
-    it('should not leak memory with frequent re-renders', { timeout: 20000 }, () => {
-      const mockData = generateMockData(100);
-      // const mockColumns = [
-      //   { accessorKey: 'name', header: 'Name' },
-      //   { accessorKey: 'email', header: 'Email' },
-      // ];
+    it(
+      'should not leak memory with frequent re-renders',
+      { timeout: 20000 },
+      () => {
+        const mockData = generateMockData(100);
+        // const mockColumns = [
+        //   { accessorKey: 'name', header: 'Name' },
+        //   { accessorKey: 'email', header: 'Email' },
+        // ];
 
-      // Perform multiple re-renders with smaller dataset
-      for (let i = 0; i < 3; i++) {
-        const { unmount } = render(
-          <DataTable
-            data={mockData}
+        // Perform multiple re-renders with smaller dataset
+        for (let i = 0; i < 3; i++) {
+          const { unmount } = render(<DataTable data={mockData} />);
 
-          />
-        );
+          // Force re-render by updating data reference
+          unmount();
+        }
 
-        // Force re-render by updating data reference
-        unmount();
-      }
-
-      // If we get here without memory issues, the test passes
-      expect(true).toBe(true);
-    });
+        // If we get here without memory issues, the test passes
+        expect(true).toBe(true);
+      },
+    );
 
     it('should handle large column counts efficiently', () => {
       const startTime = performance.now();
 
       const mockData = generateMockData(100);
 
-      render(
-        <DataTable
-          data={mockData}
-
-        />
-      );
+      render(<DataTable data={mockData} />);
 
       const endTime = performance.now();
       const renderTime = endTime - startTime;
@@ -195,12 +186,7 @@ describe('DataTable Performance Tests', () => {
 
       const startTime = performance.now();
 
-      render(
-        <DataTable
-          data={mockData}
-
-        />
-      );
+      render(<DataTable data={mockData} />);
 
       const endTime = performance.now();
       const renderTime = endTime - startTime;
@@ -211,28 +197,27 @@ describe('DataTable Performance Tests', () => {
   });
 
   describe('Pagination Performance', () => {
-    it('should handle paginated large datasets efficiently', { timeout: 15000 }, () => {
-      const mockData = generateMockData(10000);
-      // const mockColumns = [
-      //   { accessorKey: 'name', header: 'Name' },
-      //   { accessorKey: 'email', header: 'Email' },
-      // ];
+    it(
+      'should handle paginated large datasets efficiently',
+      { timeout: 15000 },
+      () => {
+        const mockData = generateMockData(10000);
+        // const mockColumns = [
+        //   { accessorKey: 'name', header: 'Name' },
+        //   { accessorKey: 'email', header: 'Email' },
+        // ];
 
-      const startTime = performance.now();
+        const startTime = performance.now();
 
-      render(
-        <DataTable
-          data={mockData}
+        render(<DataTable data={mockData} />);
 
-        />
-      );
+        const endTime = performance.now();
+        const renderTime = endTime - startTime;
 
-      const endTime = performance.now();
-      const renderTime = endTime - startTime;
-
-      // Pagination should help performance with large datasets in test environment
-      expect(renderTime).toBeLessThan(12000);
-    });
+        // Pagination should help performance with large datasets in test environment
+        expect(renderTime).toBeLessThan(12000);
+      },
+    );
 
     it('should handle page size changes quickly', () => {
       const mockData = generateMockData(5000);
@@ -243,12 +228,7 @@ describe('DataTable Performance Tests', () => {
 
       const startTime = performance.now();
 
-      render(
-        <DataTable
-          data={mockData}
-
-        />
-      );
+      render(<DataTable data={mockData} />);
 
       const endTime = performance.now();
       const renderTime = endTime - startTime;
@@ -268,12 +248,7 @@ describe('DataTable Performance Tests', () => {
 
       const startTime = performance.now();
 
-      render(
-        <DataTable
-          data={mockData}
-
-        />
-      );
+      render(<DataTable data={mockData} />);
 
       const endTime = performance.now();
       const renderTime = endTime - startTime;
@@ -291,12 +266,7 @@ describe('DataTable Performance Tests', () => {
 
       const startTime = performance.now();
 
-      render(
-        <DataTable
-          data={mockData}
-
-        />
-      );
+      render(<DataTable data={mockData} />);
 
       const endTime = performance.now();
       const renderTime = endTime - startTime;
@@ -317,12 +287,7 @@ describe('DataTable Performance Tests', () => {
 
       const startTime = performance.now();
 
-      render(
-        <DataTable
-          data={mockData}
-
-        />
-      );
+      render(<DataTable data={mockData} />);
 
       const endTime = performance.now();
       const renderTime = endTime - startTime;
@@ -336,12 +301,7 @@ describe('DataTable Performance Tests', () => {
 
       const startTime = performance.now();
 
-      render(
-        <DataTable
-          data={mockData}
-
-        />
-      );
+      render(<DataTable data={mockData} />);
 
       const endTime = performance.now();
       const renderTime = endTime - startTime;

@@ -1,7 +1,7 @@
 'use client';
 
-import { usePerformance } from '@/hooks/use-performance';
 import { useEffect } from 'react';
+import { usePerformance } from '@/hooks/use-performance';
 
 /**
  * Client React component that logs structured performance metrics to the console once metrics are loaded and LCP is available.

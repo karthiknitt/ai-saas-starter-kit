@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Performance testing utilities
 const measurePerformance = (operation: () => void): number => {
@@ -31,12 +31,12 @@ describe('General Performance Tests', () => {
 
       const operation = () => {
         // Test filtering performance
-        const filtered = dataset.filter(item => item.value > 500);
+        const filtered = dataset.filter((item) => item.value > 500);
 
         // Test mapping performance
-        const mapped = filtered.map(item => ({
+        const mapped = filtered.map((item) => ({
           ...item,
-          displayName: `${item.name} (${item.category})`
+          displayName: `${item.name} (${item.category})`,
         }));
 
         // Test sorting performance
@@ -53,7 +53,7 @@ describe('General Performance Tests', () => {
       const dataset = generateLargeDataset(5000);
 
       const operation = () => {
-        const result = dataset.map(item => ({
+        const result = dataset.map((item) => ({
           id: item.id,
           name: item.name,
           category: item.category,
@@ -71,7 +71,7 @@ describe('General Performance Tests', () => {
       const dataset = generateLargeDataset(2000);
 
       const operation = () => {
-        const result = dataset.map(item => {
+        const result = dataset.map((item) => {
           const upperName = item.name.toUpperCase();
           const category = item.category.toLowerCase();
           const combined = `${upperName}_${category}_${item.id}`;
@@ -93,16 +93,20 @@ describe('General Performance Tests', () => {
 
   describe('Memory Management', () => {
     it('should not cause memory leaks with repeated operations', () => {
-      const initialMemory = (performance as { memory?: { usedJSHeapSize: number } }).memory?.usedJSHeapSize || 0;
+      const initialMemory =
+        (performance as { memory?: { usedJSHeapSize: number } }).memory
+          ?.usedJSHeapSize || 0;
 
       // Perform repeated operations
       for (let i = 0; i < 100; i++) {
         const dataset = generateLargeDataset(1000);
-        const filtered = dataset.filter(item => item.value > 500);
+        const filtered = dataset.filter((item) => item.value > 500);
         filtered.sort((a, b) => a.name.localeCompare(b.name));
       }
 
-      const finalMemory = (performance as { memory?: { usedJSHeapSize: number } }).memory?.usedJSHeapSize || 0;
+      const finalMemory =
+        (performance as { memory?: { usedJSHeapSize: number } }).memory
+          ?.usedJSHeapSize || 0;
       const memoryIncrease = finalMemory - initialMemory;
 
       // Memory increase should be reasonable (less than 50MB)
@@ -121,14 +125,14 @@ describe('General Performance Tests', () => {
             settings: {
               theme: 'dark',
               language: 'en',
-              features: Array.from({ length: 100 }, (_, i) => `feature_${i}`)
-            }
+              features: Array.from({ length: 100 }, (_, i) => `feature_${i}`),
+            },
           },
           computed: {
             totalItems: 5000,
             categories: 10,
             averageValue: 500,
-          }
+          },
         };
 
         return largeObject;
@@ -165,9 +169,13 @@ describe('General Performance Tests', () => {
 
       const operation = () => {
         // Test different sorting approaches
-        const sortByName = [...dataset].sort((a, b) => a.name.localeCompare(b.name));
+        const sortByName = [...dataset].sort((a, b) =>
+          a.name.localeCompare(b.name),
+        );
         const sortByValue = [...dataset].sort((a, b) => b.value - a.value);
-        const sortByDate = [...dataset].sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+        const sortByDate = [...dataset].sort(
+          (a, b) => a.timestamp.getTime() - b.timestamp.getTime(),
+        );
 
         return { sortByName, sortByValue, sortByDate };
       };
@@ -180,14 +188,17 @@ describe('General Performance Tests', () => {
       const dataset = generateLargeDataset(3000);
 
       const operation = () => {
-        const grouped = dataset.reduce((acc, item) => {
-          const category = item.category;
-          if (!acc[category]) {
-            acc[category] = [];
-          }
-          acc[category].push(item);
-          return acc;
-        }, {} as Record<string, typeof dataset>);
+        const grouped = dataset.reduce(
+          (acc, item) => {
+            const category = item.category;
+            if (!acc[category]) {
+              acc[category] = [];
+            }
+            acc[category].push(item);
+            return acc;
+          },
+          {} as Record<string, typeof dataset>,
+        );
 
         return grouped;
       };
@@ -199,13 +210,15 @@ describe('General Performance Tests', () => {
 
   describe('Async Operations Performance', () => {
     it('should handle concurrent operations efficiently', async () => {
-      const datasets = Array.from({ length: 5 }, () => generateLargeDataset(1000));
+      const datasets = Array.from({ length: 5 }, () =>
+        generateLargeDataset(1000),
+      );
 
       const operation = async () => {
         const promises = datasets.map(async (dataset) => {
-          return new Promise(resolve => {
+          return new Promise((resolve) => {
             setTimeout(() => {
-              const filtered = dataset.filter(item => item.value > 500);
+              const filtered = dataset.filter((item) => item.value > 500);
               resolve(filtered.length);
             }, 10);
           });
@@ -227,9 +240,9 @@ describe('General Performance Tests', () => {
         const results = [];
 
         for (let i = 0; i < 10; i++) {
-          await new Promise(resolve => setTimeout(resolve, 5));
+          await new Promise((resolve) => setTimeout(resolve, 5));
           const dataset = generateLargeDataset(500);
-          const filtered = dataset.filter(item => item.value > 250);
+          const filtered = dataset.filter((item) => item.value > 250);
           results.push(filtered.length);
         }
 
@@ -265,12 +278,12 @@ describe('General Performance Tests', () => {
     it('should handle large scale data transformations', () => {
       const operation = () => {
         const matrix = Array.from({ length: 100 }, () =>
-          Array.from({ length: 100 }, () => Math.floor(Math.random() * 100))
+          Array.from({ length: 100 }, () => Math.floor(Math.random() * 100)),
         );
 
         // Matrix operations
         const transposed = matrix[0].map((_, colIndex) =>
-          matrix.map(row => row[colIndex])
+          matrix.map((row) => row[colIndex]),
         );
 
         const flattened = matrix.flat();
@@ -326,16 +339,18 @@ describe('General Performance Tests', () => {
       const dataset = generateLargeDataset(2000);
 
       const operations = [
-        () => dataset.filter(item => item.value > 500),
-        () => dataset.map(item => item.name.toUpperCase()),
+        () => dataset.filter((item) => item.value > 500),
+        () => dataset.map((item) => item.name.toUpperCase()),
         () => dataset.sort((a, b) => a.name.localeCompare(b.name)),
         () => dataset.reduce((acc, item) => acc + item.value, 0),
       ];
 
-      const results = operations.map(operation => measurePerformance(operation));
+      const results = operations.map((operation) =>
+        measurePerformance(operation),
+      );
 
       // All operations should be fast
-      results.forEach(executionTime => {
+      results.forEach((executionTime) => {
         expect(executionTime).toBeLessThan(100);
       });
     });

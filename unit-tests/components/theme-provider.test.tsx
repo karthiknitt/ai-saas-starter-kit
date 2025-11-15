@@ -1,7 +1,6 @@
-import React from 'react'
-import { describe, it, expect } from 'vitest'
-import { render, screen } from '@testing-library/react'
-import { ThemeProvider } from '@/components/theme-provider'
+import { render, screen } from '@testing-library/react';
+import { describe, expect, it } from 'vitest';
+import { ThemeProvider } from '@/components/theme-provider';
 
 // Mock matchMedia
 
@@ -10,12 +9,12 @@ describe('ThemeProvider', () => {
     render(
       <ThemeProvider>
         <div data-testid="child">Test Child</div>
-      </ThemeProvider>
-    )
+      </ThemeProvider>,
+    );
 
-    expect(screen.getByTestId('child')).toBeInTheDocument()
-    expect(screen.getByText('Test Child')).toBeInTheDocument()
-  })
+    expect(screen.getByTestId('child')).toBeInTheDocument();
+    expect(screen.getByText('Test Child')).toBeInTheDocument();
+  });
 
   it('should pass through props to NextThemesProvider', () => {
     render(
@@ -26,19 +25,19 @@ describe('ThemeProvider', () => {
         disableTransitionOnChange
       >
         <div>Test</div>
-      </ThemeProvider>
-    )
+      </ThemeProvider>,
+    );
 
     // The component should render without errors when props are passed
-    expect(screen.getByText('Test')).toBeInTheDocument()
-  })
+    expect(screen.getByText('Test')).toBeInTheDocument();
+  });
 
   it('should handle empty children', () => {
-    render(<ThemeProvider></ThemeProvider>)
+    render(<ThemeProvider></ThemeProvider>);
 
     // Should render without errors even with no children
-    expect(document.body).toBeInTheDocument()
-  })
+    expect(document.body).toBeInTheDocument();
+  });
 
   it('should handle multiple children', () => {
     render(
@@ -46,11 +45,11 @@ describe('ThemeProvider', () => {
         <div>First Child</div>
         <div>Second Child</div>
         <span>Third Child</span>
-      </ThemeProvider>
-    )
+      </ThemeProvider>,
+    );
 
-    expect(screen.getByText('First Child')).toBeInTheDocument()
-    expect(screen.getByText('Second Child')).toBeInTheDocument()
-    expect(screen.getByText('Third Child')).toBeInTheDocument()
-  })
-})
+    expect(screen.getByText('First Child')).toBeInTheDocument();
+    expect(screen.getByText('Second Child')).toBeInTheDocument();
+    expect(screen.getByText('Third Child')).toBeInTheDocument();
+  });
+});

@@ -1,13 +1,13 @@
 'use client';
 
-import Link from 'next/link';
 import {
+  type Icon,
   IconDots,
   IconFolder,
   IconShare3,
   IconTrash,
-  type Icon,
 } from '@tabler/icons-react';
+import Link from 'next/link';
 
 import {
   DropdownMenu,
@@ -49,7 +49,7 @@ export function NavDocuments({
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Documents</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map(item => (
+        {items.map((item) => (
           <SidebarMenuItem key={item.name}>
             {item.url !== '#' ? (
               <SidebarMenuButton asChild>

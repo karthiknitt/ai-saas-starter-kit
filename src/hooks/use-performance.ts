@@ -50,7 +50,7 @@ export function usePerformance() {
       }
 
       // First Contentful Paint
-      const fcp = paint.find(p => p.name === 'first-contentful-paint');
+      const fcp = paint.find((p) => p.name === 'first-contentful-paint');
       if (fcp) {
         newMetrics.fcp = fcp.startTime;
       }

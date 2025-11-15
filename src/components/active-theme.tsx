@@ -1,8 +1,8 @@
 'use client';
 
 import {
-  ReactNode,
   createContext,
+  type ReactNode,
   useContext,
   useEffect,
   useState,
@@ -41,8 +41,8 @@ export function ActiveThemeProvider({
     setThemeCookie(activeTheme);
 
     Array.from(document.body.classList)
-      .filter(className => className.startsWith('theme-'))
-      .forEach(className => {
+      .filter((className) => className.startsWith('theme-'))
+      .forEach((className) => {
         document.body.classList.remove(className);
       });
     document.body.classList.add(`theme-${activeTheme}`);
