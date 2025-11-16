@@ -1,6 +1,6 @@
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { cookies } from 'next/headers';
 import { ActiveThemeProvider } from '@/components/active-theme';
@@ -10,13 +10,91 @@ import { Toaster } from '@/components/ui/sonner';
 import { cn } from '@/lib/utils';
 
 export const metadata: Metadata = {
-  title: 'NextJS Starter Kit',
-  description: 'Starter AI Saas Template',
+  metadataBase: new URL(
+    process.env.BETTER_AUTH_URL || 'http://localhost:3000',
+  ),
+  title: {
+    default: 'NextJS Starter Kit - AI SaaS Template',
+    template: '%s | NextJS Starter Kit',
+  },
+  description:
+    'Production-ready AI SaaS starter kit built with Next.js 16, featuring authentication, billing, admin dashboard, and AI chat capabilities.',
+  keywords: [
+    'nextjs',
+    'ai saas',
+    'starter kit',
+    'template',
+    'authentication',
+    'billing',
+    'dashboard',
+    'ai chat',
+  ],
+  authors: [{ name: 'NextJS Starter Kit' }],
+  creator: 'NextJS Starter Kit',
+  publisher: 'NextJS Starter Kit',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: '/',
+    siteName: 'NextJS Starter Kit',
+    title: 'NextJS Starter Kit - AI SaaS Template',
+    description:
+      'Production-ready AI SaaS starter kit built with Next.js 16, featuring authentication, billing, admin dashboard, and AI chat capabilities.',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'NextJS Starter Kit',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'NextJS Starter Kit - AI SaaS Template',
+    description:
+      'Production-ready AI SaaS starter kit built with Next.js 16, featuring authentication, billing, admin dashboard, and AI chat capabilities.',
+    images: ['/og-image.png'],
+    creator: '@nextjsstarter',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/favicon.ico',
+  },
+  manifest: '/manifest.json',
   // Preload critical fonts
   other: {
     'font-preload':
       'https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-sans/Geist-Sans.woff2',
   },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#000000' },
+  ],
 };
 
 /**
