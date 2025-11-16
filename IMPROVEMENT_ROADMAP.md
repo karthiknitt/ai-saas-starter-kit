@@ -133,7 +133,7 @@ Testing:
 
 DevOps:
 ├── Biome (formatter + linter)
-├── Husky (git hooks)
+├── Lefthook (git hooks)
 ├── Commitizen (conventional commits)
 └── Vercel Analytics
 ```
@@ -222,7 +222,7 @@ DevOps:
 - [x] Two-factor role system (member, admin)
 - [x] Admin dashboard with user management
 - [x] Server-side role verification
-- [x] CLI admin promotion script (`npm run make-admin`)
+- [x] CLI admin promotion script (`pnpm make-admin`)
 
 #### 2. AI Chat Capabilities
 - [x] Real-time streaming responses
@@ -577,7 +577,7 @@ CREATE TABLE role_permission (
 
 **Priority:** P0 (Blocker)
 **Status:** ✅ Completed
-**Completion Date:** 2025-11-15
+**Completion Date:** November 2024
 
 **Completed Tasks:**
 1. ✅ Created manual Polar SDK integration
@@ -610,7 +610,7 @@ CREATE TABLE role_permission (
 
 **Priority:** P0 (Blocker)
 **Status:** ✅ Completed
-**Completion Date:** 2025-11-15
+**Completion Date:** November 2024
 
 **Completed Tasks:**
 1. ✅ Defined feature limits per plan (Free: 10, Pro: 1000, Startup: unlimited)
@@ -640,7 +640,7 @@ CREATE TABLE role_permission (
 
 **Priority:** P0 (Blocker)
 **Status:** ✅ Completed
-**Completion Date:** 2025-11-15
+**Completion Date:** November 2024
 
 **Completed Tasks:**
 1. ✅ Created usage_log and usage_quota tables with indexes
@@ -672,7 +672,7 @@ CREATE TABLE role_permission (
 
 **Priority:** P1 (High)
 **Status:** ✅ Completed
-**Completion Date:** 2025-11-15
+**Completion Date:** November 2024
 
 **Completed Tasks:**
 1. ✅ Created audit_log table with comprehensive indexes
@@ -1022,7 +1022,7 @@ CREATE TABLE workspace_member (
 
 ## Detailed Implementation Roadmap
 
-### ✅ Phase 1: MVP Launch (COMPLETED - 2025-11-15)
+### ✅ Phase 1: MVP Launch (COMPLETED - November 2024)
 
 **Goal:** Get payment system working and enforce plan limits ✅ **ACHIEVED**
 
@@ -1362,8 +1362,8 @@ volumes:
 **Usage:**
 ```bash
 docker-compose up -d
-npm run db:migrate
-npm run dev
+pnpm db:migrate
+pnpm dev
 ```
 
 #### Environment Variable Validation
@@ -1391,22 +1391,37 @@ Call in `src/app/layout.tsx` or `next.config.ts`
 
 ### 2. Developer Scripts
 
-**Add to `package.json`:**
+**Current `package.json` scripts (already implemented):**
 ```json
 {
   "scripts": {
     "dev": "next dev --turbopack",
-    "dev:clean": "rm -rf .next && npm run dev",
-    "db:reset": "npm run db:push && npm run db:seed",
-    "db:studio": "drizzle-kit studio",
-    "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
-    "lint:fix": "biome check --write",
+    "build": "next build --turbopack",
+    "start": "next start",
+    "lint": "biome check --write",
     "format": "biome format --write",
     "type-check": "tsc --noEmit",
-    "validate": "npm run type-check && npm run lint && npm run test:run",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "db:studio": "drizzle-kit studio",
+    "db:push": "drizzle-kit push",
+    "db:migrate": "drizzle-kit migrate",
+    "db:seed": "npx tsx scripts/seed.ts",
+    "make-admin": "npx tsx scripts/make-admin.ts",
+    "analyze": "npx vite-bundle-analyzer .next/static"
+  }
+}
+```
+
+**Additional scripts to consider:**
+```json
+{
+  "scripts": {
+    "dev:clean": "rm -rf .next && pnpm dev",
+    "db:reset": "pnpm db:push && pnpm db:seed",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
     "logs": "tail -f logs/combined.log",
     "logs:error": "tail -f logs/error.log"
   }
@@ -1450,34 +1465,41 @@ Call in `src/app/layout.tsx` or `next.config.ts`
 
 ### 4. Git Hooks Enhancement
 
-**Current:** Husky installed but minimal hooks
-**Proposed:** Pre-commit and pre-push validation
+**Current:** Lefthook installed and configured
+**Status:** ✅ Already implemented
 
-**Update:** `.husky/pre-commit`
-```bash
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
+The project uses Lefthook for git hooks with lint-staged integration:
 
-# Run linting and formatting
-npm run lint:fix
-
-# Run type checking
-npm run type-check
-
-# Run tests (fast unit tests only)
-npm run test:run -- --changed
+**`.lefthook.yml` (already configured):**
+```yaml
+pre-commit:
+  parallel: true
+  commands:
+    lint-staged:
+      run: pnpm lint-staged
 ```
 
-**Create:** `.husky/pre-push`
-```bash
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
+**`lint-staged` configuration in `package.json`:**
+```json
+{
+  "lint-staged": {
+    "src/**/*.{js,jsx,ts,tsx}": [
+      "pnpm run format",
+      "pnpm run lint",
+      "bash -c tsc --noEmit"
+    ]
+  }
+}
+```
 
-# Run full test suite before push
-npm run test:run
-
-# Run build to catch production issues
-npm run build
+**Additional hooks to consider:**
+```yaml
+pre-push:
+  commands:
+    test:
+      run: pnpm test:run
+    build:
+      run: pnpm build
 ```
 
 ### 5. Database Seeding Improvements
@@ -1493,7 +1515,7 @@ Add realistic seed data:
 
 **Usage:**
 ```bash
-npm run db:seed -- --users=100 --with-subscriptions
+pnpm db:seed -- --users=100 --with-subscriptions
 ```
 
 ### 6. Code Snippets
@@ -1538,9 +1560,9 @@ npm run db:seed -- --users=100 --with-subscriptions
 - [x] XSS prevention
 - [x] CSRF protection
 - [x] API key encryption
-- [ ] Webhook signature verification (partial)
-- [ ] Audit logging (not implemented)
-- [ ] Two-factor authentication (not implemented)
+- [x] Webhook signature verification (Polar webhooks)
+- [x] Audit logging (comprehensive system implemented)
+- [ ] Two-factor authentication (2FA) (not implemented)
 - [ ] Security headers testing
 - [ ] Penetration testing
 - [ ] OWASP Top 10 compliance check
@@ -1609,26 +1631,27 @@ npm run db:seed -- --users=100 --with-subscriptions
 
 ### Compliance
 
-- [ ] GDPR compliance
+- [x] Audit logging (comprehensive system for admin actions and subscription events)
+- [ ] GDPR compliance (data handling implemented, legal docs needed)
 - [ ] Privacy policy
 - [ ] Terms of service
 - [ ] Cookie consent
 - [ ] Data retention policy
-- [ ] Data export functionality
-- [ ] Data deletion functionality
-- [ ] Audit logging
+- [ ] Data export functionality (user data export)
+- [ ] Data deletion functionality (account deletion)
 - [ ] SOC 2 compliance (if required)
 
 ### Billing & Payments
 
-- [ ] Payment integration (Polar)
-- [ ] Webhook processing
+- [x] Payment integration (Polar - manual SDK)
+- [x] Webhook processing (subscription events)
+- [x] Subscription management (create, cancel, view)
+- [x] Usage-based billing (quota enforcement)
 - [ ] Invoice generation
+- [ ] Invoice download functionality
 - [ ] Tax calculation
 - [ ] Refund handling
 - [ ] Failed payment recovery
-- [ ] Subscription management
-- [ ] Usage-based billing
 - [ ] Dunning management
 
 ### User Experience
