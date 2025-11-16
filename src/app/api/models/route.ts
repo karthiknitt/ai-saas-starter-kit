@@ -1,5 +1,4 @@
 import { cache } from 'react';
-import { unstable_cacheLife as cacheLife } from 'next/cache';
 import { eq } from 'drizzle-orm';
 import { type NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db/drizzle';
@@ -8,6 +7,8 @@ import { aj } from '@/lib/arcjet';
 import { auth } from '@/lib/auth';
 import { decrypt } from '@/lib/crypto';
 import { getAllowedModels } from '@/lib/subscription-features';
+
+export const dynamic = 'force-dynamic';
 
 interface OpenAIModel {
   id: string;
@@ -41,16 +42,14 @@ interface OpenRouterModel {
 
 /**
  * Cached function to fetch OpenAI models
- * Reduces external API calls by caching for 1 hour
+ * Reduces external API calls by caching
  */
 const fetchOpenAIModels = cache(async (apiKey: string) => {
-  'use cache';
-  cacheLife('long'); // Cache for 1 day, revalidate every hour
-
   const response = await fetch('https://api.openai.com/v1/models', {
     headers: {
       Authorization: `Bearer ${apiKey}`,
     },
+    next: { revalidate: 3600 }, // Cache for 1 hour
   });
 
   if (!response.ok) {
@@ -62,19 +61,17 @@ const fetchOpenAIModels = cache(async (apiKey: string) => {
 
 /**
  * Cached function to fetch OpenRouter models
- * Reduces external API calls by caching for 1 hour
+ * Reduces external API calls by caching
  */
 const fetchOpenRouterModels = cache(
   async (apiKey: string, referer: string) => {
-    'use cache';
-    cacheLife('long'); // Cache for 1 day, revalidate every hour
-
     const response = await fetch('https://openrouter.ai/api/v1/models', {
       headers: {
         Authorization: `Bearer ${apiKey}`,
         'HTTP-Referer': referer || '',
         'X-Title': 'AI Chat',
       },
+      next: { revalidate: 3600 }, // Cache for 1 hour
     });
 
     if (!response.ok) {

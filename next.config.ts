@@ -33,35 +33,8 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizeCss: true,
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
-    cacheComponents: true,
-
-    // Next.js 16 Cache Components - Explicit caching configuration
-    cacheLife: {
-      // Default cache profile - for user profiles, dashboards
-      default: {
-        stale: 3600, // 1 hour - serve stale content for this duration
-        revalidate: 900, // 15 minutes - revalidate in background
-        expire: 86400, // 1 day - hard expiration
-      },
-      // Short cache - for analytics, frequently changing data
-      short: {
-        stale: 60, // 1 minute
-        revalidate: 30, // 30 seconds
-        expire: 300, // 5 minutes
-      },
-      // Long cache - for blog posts, product catalogs
-      long: {
-        stale: 86400, // 1 day
-        revalidate: 3600, // 1 hour
-        expire: 604800, // 1 week
-      },
-      // Forever cache - for static content, configuration
-      forever: {
-        stale: Number.POSITIVE_INFINITY,
-        revalidate: 604800, // 1 week
-        expire: Number.POSITIVE_INFINITY,
-      },
-    },
+    // cacheComponents disabled due to incompatibility with API routes and system pages
+    // cacheComponents: true,
   },
 
   // Comprehensive security headers
