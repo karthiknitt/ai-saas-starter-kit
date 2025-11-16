@@ -1,0 +1,18 @@
+{
+  "recommendations": [
+    "biomejs.biome",
+    "bradlc.vscode-tailwindcss",
+    "dbaeumer.vscode-eslint",
+    "unifiedjs.vscode-mdx",
+    "ms-azuretools.vscode-docker",
+    "rangav.vscode-thunder-client",
+    "streetsidesoftware.code-spell-checker",
+    "usernamehw.errorlens",
+    "christian-kohler.path-intellisense",
+    "ms-vscode.vscode-typescript-next"
+  ],
+  "unwantedRecommendations": [
+    "esbenp.prettier-vscode",
+    "dbaeumer.jshint"
+  ]
+}

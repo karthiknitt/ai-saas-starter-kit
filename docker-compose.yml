@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  # PostgreSQL database for local development
+  postgres:
+    image: postgres:16-alpine
+    container_name: ai-saas-postgres
+    environment:
+      POSTGRES_DB: ai_saas_dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis for caching (optional, for future use)
+  redis:
+    image: redis:7-alpine
+    container_name: ai-saas-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # Mailhog for email testing (catches all emails sent during development)
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: ai-saas-mailhog
+    ports:
+      - "1025:1025" # SMTP server
+      - "8025:8025" # Web UI
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8025/"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local

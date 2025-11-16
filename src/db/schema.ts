@@ -25,6 +25,7 @@
 import {
   boolean,
   index,
+  integer,
   pgEnum,
   pgTable,
   text,
@@ -296,6 +297,9 @@ export const usageQuota = pgTable('usage_quota', {
   aiRequestsUsed: text('ai_requests_used').default('0').notNull(), // Text to store numbers
   aiRequestsLimit: text('ai_requests_limit').notNull(),
   resetAt: timestamp('reset_at').notNull(),
+  warning80Sent: boolean('warning_80_sent').default(false).notNull(), // 80% quota warning sent
+  warning90Sent: boolean('warning_90_sent').default(false).notNull(), // 90% quota warning sent
+  warning100Sent: boolean('warning_100_sent').default(false).notNull(), // 100% quota warning sent
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at')
     .defaultNow()
@@ -347,6 +351,48 @@ export const auditLog = pgTable(
 );
 
 /**
+ * Webhook event table - Webhook processing and retry management.
+ *
+ * Records all incoming webhook events for reliability and debugging.
+ * Supports automatic retry with exponential backoff and dead letter queue.
+ *
+ * @property {string} id - Unique webhook event identifier
+ * @property {string} source - Webhook source ('polar', 'stripe', etc.)
+ * @property {string} eventType - Event type from webhook payload
+ * @property {string} payload - Complete webhook payload as JSON string
+ * @property {string} status - Processing status ('pending', 'processing', 'success', 'failed')
+ * @property {number} retryCount - Number of retry attempts (default: 0)
+ * @property {string | null} lastError - Last error message if processing failed
+ * @property {Date | null} processedAt - Timestamp when successfully processed
+ * @property {Date} createdAt - Webhook receipt timestamp
+ *
+ * Indexes:
+ * - idx_webhook_status: For filtering by status and date
+ *
+ * @see {@link /lib/webhook-processor Webhook Processor}
+ */
+export const webhookEvent = pgTable(
+  'webhook_event',
+  {
+    id: text('id').primaryKey(),
+    source: text('source').notNull(), // 'polar', 'stripe', etc.
+    eventType: text('event_type').notNull(),
+    payload: text('payload').notNull(), // JSON string
+    status: text('status').notNull(), // 'pending', 'processing', 'success', 'failed'
+    retryCount: integer('retry_count').default(0).notNull(),
+    lastError: text('last_error'),
+    processedAt: timestamp('processed_at'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => ({
+    idxWebhookStatus: index('idx_webhook_status').on(
+      table.status,
+      table.createdAt,
+    ),
+  }),
+);
+
+/**
  * Complete database schema export.
  *
  * This object aggregates all table definitions for use with Drizzle ORM.
@@ -369,5 +415,6 @@ export const schema = {
   usageLog,
   usageQuota,
   auditLog,
+  webhookEvent,
   userRole,
 };
