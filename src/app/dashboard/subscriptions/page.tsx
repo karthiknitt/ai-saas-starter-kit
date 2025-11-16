@@ -1,6 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import {
+  PageErrorBoundary,
+  SectionErrorBoundary,
+} from '@/components/error-boundary';
+import { CardLoader, PageLoader } from '@/components/loading-states';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { authClient } from '@/lib/auth-client';
@@ -117,72 +122,80 @@ export default function SubscriptionsPage() {
   ];
 
   if (loading) {
-    return <div className="p-10 text-center">Loading...</div>;
+    return <PageLoader />;
   }
 
   return (
-    <div className="container mx-auto space-y-8 px-6 py-8">
-      <div>
-        <h1 className="text-3xl font-bold">Subscription Management</h1>
-        <p className="mt-2 text-gray-600">
-          Manage your subscription, upgrade or downgrade plans.
-        </p>
-      </div>
+    <PageErrorBoundary>
+      <div className="container mx-auto space-y-8 px-6 py-8">
+        <div>
+          <h1 className="text-3xl font-bold">Subscription Management</h1>
+          <p className="mt-2 text-gray-600">
+            Manage your subscription, upgrade or downgrade plans.
+          </p>
+        </div>
 
-      {/* Current Subscription */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Current Subscription</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p>Subscription status will be displayed here.</p>
-        </CardContent>
-      </Card>
-
-      {/* Plans */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        {plans.map((plan) => (
-          <Card
-            key={plan.name}
-            className={plan.name === 'Pro' ? 'border-purple-500' : ''}
-          >
+        {/* Current Subscription */}
+        <SectionErrorBoundary title="Current Subscription">
+          <Card>
             <CardHeader>
-              <CardTitle>{plan.name}</CardTitle>
-              <p className="text-2xl font-semibold">{plan.price}</p>
+              <CardTitle>Current Subscription</CardTitle>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-2">
-                {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-center gap-2">
-                    <span>✓</span> {feature}
-                  </li>
-                ))}
-              </ul>
-              <Button
-                className="mt-4 w-full"
-                onClick={() => handlePlanSelection(plan.name)}
-                disabled={plan.name !== 'Free' && !isAuthenticated}
-              >
-                {plan.name === 'Free'
-                  ? 'Current Plan'
-                  : isAuthenticated
-                    ? 'Upgrade'
-                    : 'Sign in to purchase'}
-              </Button>
+              <p>Subscription status will be displayed here.</p>
             </CardContent>
           </Card>
-        ))}
-      </div>
+        </SectionErrorBoundary>
 
-      {/* Payment History */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Payment History</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p>No payment history available.</p>
-        </CardContent>
-      </Card>
-    </div>
+        {/* Plans */}
+        <SectionErrorBoundary title="Subscription Plans">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            {plans.map((plan) => (
+              <Card
+                key={plan.name}
+                className={plan.name === 'Pro' ? 'border-purple-500' : ''}
+              >
+                <CardHeader>
+                  <CardTitle>{plan.name}</CardTitle>
+                  <p className="text-2xl font-semibold">{plan.price}</p>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-2">
+                    {plan.features.map((feature) => (
+                      <li key={feature} className="flex items-center gap-2">
+                        <span>✓</span> {feature}
+                      </li>
+                    ))}
+                  </ul>
+                  <Button
+                    className="mt-4 w-full"
+                    onClick={() => handlePlanSelection(plan.name)}
+                    disabled={plan.name !== 'Free' && !isAuthenticated}
+                  >
+                    {plan.name === 'Free'
+                      ? 'Current Plan'
+                      : isAuthenticated
+                        ? 'Upgrade'
+                        : 'Sign in to purchase'}
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </SectionErrorBoundary>
+
+        {/* Payment History */}
+        <SectionErrorBoundary title="Payment History">
+          <Card>
+            <CardHeader>
+              <CardTitle>Payment History</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>No payment history available.</p>
+            </CardContent>
+          </Card>
+        </SectionErrorBoundary>
+      </div>
+    </PageErrorBoundary>
   );
 }

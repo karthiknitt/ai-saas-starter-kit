@@ -2,6 +2,8 @@
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { PageErrorBoundary } from '@/components/error-boundary';
+import { PageLoader } from '@/components/loading-states';
 import { Button } from '@/components/ui/button';
 
 export default function SuccessPage() {
@@ -42,18 +44,12 @@ export default function SuccessPage() {
   }, [checkoutId]);
 
   if (status === 'loading') {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600"></div>
-          <p>Processing your subscription...</p>
-        </div>
-      </div>
-    );
+    return <PageLoader />;
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
+    <PageErrorBoundary>
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
       <div className="w-full max-w-md rounded-lg bg-white p-8 text-center shadow-lg">
         {status === 'success' ? (
           <>
@@ -123,5 +119,6 @@ export default function SuccessPage() {
         )}
       </div>
     </div>
+    </PageErrorBoundary>
   );
 }

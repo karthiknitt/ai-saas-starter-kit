@@ -9,7 +9,9 @@
 
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
 import { AnalyticsClient } from '@/components/analytics-client';
+import { DashboardLoader } from '@/components/loading-states';
 import { auth, type TypedSession } from '@/lib/auth';
 
 export const metadata = {
@@ -35,7 +37,9 @@ export default async function AnalyticsPage() {
         </p>
       </div>
 
-      <AnalyticsClient userId={session.user.id} />
+      <Suspense fallback={<DashboardLoader />}>
+        <AnalyticsClient userId={session.user.id} />
+      </Suspense>
     </div>
   );
 }

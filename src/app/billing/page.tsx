@@ -2,6 +2,11 @@
 import { AlertCircle, CheckCircle2, Clock } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import {
+  PageErrorBoundary,
+  SectionErrorBoundary,
+} from '@/components/error-boundary';
+import { CardLoader, PageLoader } from '@/components/loading-states';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -63,15 +68,7 @@ export default function BillingPage() {
   }, []);
 
   if (loading) {
-    return (
-      <div className="container mx-auto p-6">
-        <div className="flex items-center justify-center py-12">
-          <p className="text-muted-foreground">
-            Loading billing information...
-          </p>
-        </div>
-      </div>
-    );
+    return <PageLoader />;
   }
 
   const plan = subscription?.plan || 'Free';
@@ -119,24 +116,26 @@ export default function BillingPage() {
   };
 
   return (
-    <div className="container mx-auto space-y-6 p-6">
-      <div>
-        <h1 className="text-3xl font-bold">Billing & Subscription</h1>
-        <p className="text-muted-foreground mt-2">
-          Manage your subscription and view your usage
-        </p>
-      </div>
+    <PageErrorBoundary>
+      <div className="container mx-auto space-y-6 p-6">
+        <div>
+          <h1 className="text-3xl font-bold">Billing & Subscription</h1>
+          <p className="text-muted-foreground mt-2">
+            Manage your subscription and view your usage
+          </p>
+        </div>
 
-      {error && (
-        <Card className="border-destructive">
-          <CardContent className="pt-6">
-            <p className="text-destructive">{error}</p>
-          </CardContent>
-        </Card>
-      )}
+        {error && (
+          <Card className="border-destructive">
+            <CardContent className="pt-6">
+              <p className="text-destructive">{error}</p>
+            </CardContent>
+          </Card>
+        )}
 
-      {/* Current Subscription */}
-      <Card>
+        {/* Current Subscription */}
+        <SectionErrorBoundary title="Current Subscription">
+          <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
@@ -200,10 +199,12 @@ export default function BillingPage() {
           </div>
         </CardContent>
       </Card>
+        </SectionErrorBoundary>
 
       {/* Usage Information */}
       {usage && (
-        <Card>
+        <SectionErrorBoundary title="Usage Information">
+          <Card>
           <CardHeader>
             <CardTitle>Usage This Month</CardTitle>
             <CardDescription>Track your AI request usage</CardDescription>
@@ -265,10 +266,12 @@ export default function BillingPage() {
             )}
           </CardContent>
         </Card>
+        </SectionErrorBoundary>
       )}
 
       {/* Plan Features */}
-      <Card>
+      <SectionErrorBoundary title="Plan Features">
+        <Card>
         <CardHeader>
           <CardTitle>Plan Features</CardTitle>
           <CardDescription>What's included in your {plan} plan</CardDescription>
@@ -334,6 +337,8 @@ export default function BillingPage() {
           </ul>
         </CardContent>
       </Card>
+      </SectionErrorBoundary>
     </div>
+    </PageErrorBoundary>
   );
 }
