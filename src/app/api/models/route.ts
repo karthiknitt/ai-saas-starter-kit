@@ -1,3 +1,5 @@
+import { cache } from 'react';
+import { unstable_cacheLife as cacheLife } from 'next/cache';
 import { eq } from 'drizzle-orm';
 import { type NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db/drizzle';
@@ -37,6 +39,52 @@ interface OpenRouterModel {
   };
 }
 
+/**
+ * Cached function to fetch OpenAI models
+ * Reduces external API calls by caching for 1 hour
+ */
+const fetchOpenAIModels = cache(async (apiKey: string) => {
+  'use cache';
+  cacheLife('long'); // Cache for 1 day, revalidate every hour
+
+  const response = await fetch('https://api.openai.com/v1/models', {
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch OpenAI models');
+  }
+
+  return response.json();
+});
+
+/**
+ * Cached function to fetch OpenRouter models
+ * Reduces external API calls by caching for 1 hour
+ */
+const fetchOpenRouterModels = cache(
+  async (apiKey: string, referer: string) => {
+    'use cache';
+    cacheLife('long'); // Cache for 1 day, revalidate every hour
+
+    const response = await fetch('https://openrouter.ai/api/v1/models', {
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'HTTP-Referer': referer || '',
+        'X-Title': 'AI Chat',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch OpenRouter models');
+    }
+
+    return response.json();
+  },
+);
+
 export async function GET(request: NextRequest) {
   try {
     // Apply Arcjet protection to models API requests
@@ -74,18 +122,8 @@ export async function GET(request: NextRequest) {
     const hasAllAccess = allowedModels.includes('*');
 
     if (userData.provider === 'openai') {
-      // Fetch OpenAI models
-      const response = await fetch('https://api.openai.com/v1/models', {
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch OpenAI models');
-      }
-
-      const data = await response.json();
+      // Fetch OpenAI models with caching
+      const data = await fetchOpenAIModels(apiKey);
       const models = (data.data as OpenAIModel[])
         .filter((model) => model.id.includes('gpt'))
         .filter((model) => hasAllAccess || allowedModels.includes(model.id))
@@ -102,20 +140,11 @@ export async function GET(request: NextRequest) {
 
       return NextResponse.json({ models, planModels: allowedModels });
     } else if (userData.provider === 'openrouter') {
-      // Fetch OpenRouter models
-      const response = await fetch('https://openrouter.ai/api/v1/models', {
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          'HTTP-Referer': request.headers.get('referer') || '',
-          'X-Title': 'AI Chat',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch OpenRouter models');
-      }
-
-      const data = await response.json();
+      // Fetch OpenRouter models with caching
+      const data = await fetchOpenRouterModels(
+        apiKey,
+        request.headers.get('referer') || '',
+      );
       const models = (data.data as OpenRouterModel[])
         .filter((model) => {
           // Filter out models that are unavailable or have issues

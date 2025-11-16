@@ -12,6 +12,7 @@ This document defines the coding standards for this project. All code contributi
 - [TypeScript Standards](#typescript-standards)
 - [React Standards](#react-standards)
 - [Next.js App Router Standards](#nextjs-app-router-standards)
+  - [Next.js 16 Caching with "use cache"](#nextjs-16-caching-with-use-cache)
 - [Tailwind CSS Standards](#tailwind-css-standards)
 - [JavaScript Standards](#javascript-standards)
 - [Code Organization](#code-organization)
@@ -377,6 +378,569 @@ export function LoginForm() {
 ---
 
 ## Next.js App Router Standards
+
+### Next.js 16 Caching with "use cache"
+
+**Next.js 16 introduces Cache Components** - A revolutionary new caching system that makes caching explicit, flexible, and opt-in through the `"use cache"` directive.
+
+#### Enabling Cache Components
+
+First, enable the feature in your `next.config.ts`:
+
+```typescript
+// next.config.ts
+import type { NextConfig } from 'next';
+
+const config: NextConfig = {
+  experimental: {
+    // Enable Cache Components
+    cacheLife: {
+      // Define custom cache profiles
+      default: {
+        stale: 3600, // 1 hour
+        revalidate: 900, // 15 minutes
+        expire: 86400, // 1 day
+      },
+      // Cache profile for frequently changing data
+      short: {
+        stale: 60, // 1 minute
+        revalidate: 30, // 30 seconds
+        expire: 300, // 5 minutes
+      },
+      // Cache profile for rarely changing data
+      long: {
+        stale: 86400, // 1 day
+        revalidate: 3600, // 1 hour
+        expire: 604800, // 1 week
+      },
+      // Cache profile for static content
+      forever: {
+        stale: Number.POSITIVE_INFINITY,
+        revalidate: 604800, // 1 week
+        expire: Number.POSITIVE_INFINITY,
+      },
+    },
+  },
+};
+
+export default config;
+```
+
+#### Using "use cache" Directive
+
+The `"use cache"` directive can be used at three levels:
+
+**1. Function-Level Caching (Recommended for most cases)**
+
+```typescript
+// lib/data-fetchers.ts
+import 'server-only';
+import { unstable_cacheLife as cacheLife } from 'next/cache';
+
+// Cache a single function
+export async function getUser(userId: string) {
+  'use cache';
+  cacheLife('long'); // Use the 'long' cache profile
+
+  const user = await db.query.user.findFirst({
+    where: eq(userTable.id, userId),
+  });
+
+  return user;
+}
+
+// Cache expensive computations
+export async function calculateAnalytics(userId: string, period: string) {
+  'use cache';
+  cacheLife('short'); // Analytics change frequently
+
+  const logs = await db.query.usageLog.findMany({
+    where: eq(usageLog.userId, userId),
+  });
+
+  // Expensive aggregation
+  return logs.reduce((acc, log) => {
+    // Complex calculations
+    return acc;
+  }, {});
+}
+
+// Cache API responses
+export async function getAvailableModels(plan: string) {
+  'use cache';
+  cacheLife('forever'); // Models rarely change
+
+  return PLAN_FEATURES[plan]?.allowedModels || [];
+}
+```
+
+**2. Component-Level Caching**
+
+```typescript
+// components/user-profile.tsx
+import { unstable_cacheLife as cacheLife } from 'next/cache';
+
+export async function UserProfile({ userId }: { userId: string }) {
+  'use cache';
+  cacheLife('default');
+
+  const user = await getUser(userId);
+  const stats = await getUserStats(userId);
+
+  return (
+    <div>
+      <h1>{user.name}</h1>
+      <p>Total usage: {stats.totalUsage}</p>
+    </div>
+  );
+}
+```
+
+**3. File-Level Caching**
+
+```typescript
+// app/blog/[slug]/page.tsx
+'use cache';
+
+import { unstable_cacheLife as cacheLife } from 'next/cache';
+
+// All exports in this file are cached
+export default async function BlogPost({ params }: { params: Promise<{ slug: string }> }) {
+  cacheLife('long');
+
+  const { slug } = await params;
+  const post = await getPost(slug);
+
+  return <article>{post.content}</article>;
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  cacheLife('long');
+
+  const { slug } = await params;
+  const post = await getPost(slug);
+
+  return {
+    title: post.title,
+    description: post.excerpt,
+  };
+}
+```
+
+#### Cache Key Generation
+
+Next.js automatically generates cache keys based on:
+
+1. **Function arguments** - All serializable parameters
+2. **Props** - For cached components
+3. **Closure variables** - Values read from parent scope
+
+```typescript
+// ✅ Cache key includes userId and role
+export async function getUserPermissions(userId: string, role: string) {
+  'use cache';
+
+  return await db.query.permissions.findMany({
+    where: and(
+      eq(permissions.userId, userId),
+      eq(permissions.role, role)
+    ),
+  });
+}
+
+// ✅ Cache key includes props
+export async function PricingCard({ tier }: { tier: string }) {
+  'use cache';
+
+  const features = await getPlanFeatures(tier);
+  return <Card>{/* ... */}</Card>;
+}
+
+// ⚠️ Non-serializable values won't be part of cache key
+export async function processData(callback: () => void) {
+  'use cache';
+  // ⚠️ 'callback' is not serializable, won't be in cache key
+
+  const data = await fetchData();
+  callback(); // This may cause issues
+  return data;
+}
+```
+
+#### When to Use "use cache"
+
+**✅ DO use "use cache" for:**
+
+1. **Expensive database queries**
+   ```typescript
+   export async function getTopUsers() {
+     'use cache';
+     cacheLife('short');
+
+     return db.query.user.findMany({
+       orderBy: desc(user.totalUsage),
+       limit: 100,
+     });
+   }
+   ```
+
+2. **Complex computations**
+   ```typescript
+   export async function aggregateUsageMetrics(userId: string) {
+     'use cache';
+     cacheLife('default');
+
+     // Heavy aggregation logic
+     const metrics = await calculateMetrics(userId);
+     return processMetrics(metrics);
+   }
+   ```
+
+3. **External API calls**
+   ```typescript
+   export async function getExternalModels() {
+     'use cache';
+     cacheLife('long');
+
+     const [openaiModels, openrouterModels] = await Promise.all([
+       fetch('https://api.openai.com/v1/models').then(r => r.json()),
+       fetch('https://openrouter.ai/api/v1/models').then(r => r.json()),
+     ]);
+
+     return [...openaiModels, ...openrouterModels];
+   }
+   ```
+
+4. **Static or rarely-changing data**
+   ```typescript
+   export async function getPlanFeatures(plan: string) {
+     'use cache';
+     cacheLife('forever');
+
+     return PLAN_FEATURES[plan];
+   }
+   ```
+
+5. **Rendered components with stable data**
+   ```typescript
+   export async function Sidebar({ userId }: { userId: string }) {
+     'use cache';
+     cacheLife('default');
+
+     const navigation = await getUserNavigation(userId);
+     return <nav>{/* render navigation */}</nav>;
+   }
+   ```
+
+**❌ DON'T use "use cache" for:**
+
+1. **Highly dynamic, user-specific data**
+   ```typescript
+   // ❌ Session data changes constantly
+   export async function getCurrentSession(token: string) {
+     // Don't cache - always fetch fresh
+     return await validateSession(token);
+   }
+   ```
+
+2. **Mutations or operations with side effects**
+   ```typescript
+   // ❌ NEVER cache mutations
+   export async function createUser(data: UserInput) {
+     // Don't cache - this modifies data
+     return await db.insert(userTable).values(data);
+   }
+   ```
+
+3. **Real-time data**
+   ```typescript
+   // ❌ Chat messages need to be real-time
+   export async function getLatestMessages(chatId: string) {
+     // Don't cache - users expect instant updates
+     return await db.query.messages.findMany({
+       where: eq(messages.chatId, chatId),
+       orderBy: desc(messages.createdAt),
+     });
+   }
+   ```
+
+4. **Functions with non-serializable arguments**
+   ```typescript
+   // ❌ Functions, Promises, Symbols can't be serialized
+   export async function processWithCallback(id: string, callback: () => void) {
+     'use cache'; // ❌ Won't work correctly
+     // callback won't be part of cache key
+   }
+   ```
+
+5. **Authentication/Authorization checks**
+   ```typescript
+   // ❌ Security checks should always run
+   export async function checkPermission(userId: string, action: string) {
+     // Don't cache - security must be checked every time
+     return await hasPermission(userId, action);
+   }
+   ```
+
+#### Cache Revalidation Strategies
+
+**Time-Based Revalidation:**
+```typescript
+export async function getProducts() {
+  'use cache';
+  cacheLife('default'); // Revalidates based on profile settings
+
+  return await db.query.products.findMany();
+}
+```
+
+**On-Demand Revalidation:**
+```typescript
+// In your mutation
+import { revalidateTag } from 'next/cache';
+
+export async function updateProduct(id: string, data: ProductInput) {
+  await db.update(products).set(data).where(eq(products.id, id));
+
+  // Invalidate specific caches
+  revalidateTag(`product-${id}`);
+  revalidateTag('products-list');
+}
+
+// In your cached function
+export async function getProduct(id: string) {
+  'use cache';
+  cacheTag(`product-${id}`); // Tag this cache
+
+  return await db.query.products.findFirst({
+    where: eq(products.id, id),
+  });
+}
+```
+
+#### Advanced Patterns
+
+**Conditional Caching:**
+```typescript
+export async function getData(useCache: boolean, userId: string) {
+  if (useCache) {
+    'use cache';
+    cacheLife('short');
+  }
+
+  return await db.query.user.findFirst({
+    where: eq(user.id, userId),
+  });
+}
+```
+
+**Parallel Cached Functions:**
+```typescript
+export async function getDashboardData(userId: string) {
+  'use cache';
+  cacheLife('short');
+
+  // All of these are cached independently
+  const [user, stats, activity] = await Promise.all([
+    getUser(userId),          // Has its own cache
+    getUserStats(userId),     // Has its own cache
+    getUserActivity(userId),  // Has its own cache
+  ]);
+
+  return { user, stats, activity };
+}
+```
+
+**Cache with Fallback:**
+```typescript
+export async function getUserWithFallback(userId: string) {
+  'use cache';
+  cacheLife('default');
+
+  try {
+    const user = await db.query.user.findFirst({
+      where: eq(user.id, userId),
+    });
+    return user || DEFAULT_USER;
+  } catch (error) {
+    console.error('Failed to fetch user:', error);
+    return DEFAULT_USER;
+  }
+}
+```
+
+#### Best Practices
+
+1. **Use appropriate cache profiles**
+   - `forever`: Static content, configuration
+   - `long`: Blog posts, product catalogs
+   - `default`: User profiles, dashboards
+   - `short`: Analytics, leaderboards
+
+2. **Keep cached functions pure**
+   ```typescript
+   // ✅ Pure function - same input = same output
+   export async function calculatePrice(productId: string, quantity: number) {
+     'use cache';
+     const product = await getProduct(productId);
+     return product.price * quantity;
+   }
+
+   // ❌ Impure - depends on current time
+   export async function getActivePromotions() {
+     'use cache'; // ❌ Result changes based on Date.now()
+     return promotions.filter(p => p.endDate > Date.now());
+   }
+   ```
+
+3. **Cache at the right level**
+   - Function-level: Reusable data fetching
+   - Component-level: Self-contained UI sections
+   - Page-level: Entire pages with stable content
+
+4. **Monitor cache hit rates**
+   ```typescript
+   // Add logging to track cache effectiveness
+   export async function getUser(userId: string) {
+     'use cache';
+     cacheLife('default');
+
+     console.log(`Cache miss: fetching user ${userId}`);
+     return await db.query.user.findFirst({
+       where: eq(user.id, userId),
+     });
+   }
+   ```
+
+5. **Use cache tags for targeted invalidation**
+   ```typescript
+   import { unstable_cacheTag as cacheTag } from 'next/cache';
+
+   export async function getUserPosts(userId: string) {
+     'use cache';
+     cacheTag(`user-${userId}-posts`);
+     cacheTag('all-posts');
+
+     return await db.query.posts.findMany({
+       where: eq(posts.userId, userId),
+     });
+   }
+   ```
+
+#### Common Pitfalls
+
+**❌ AVOID:**
+
+1. **Caching with side effects**
+   ```typescript
+   // ❌ BAD - logging is a side effect
+   export async function getUser(userId: string) {
+     'use cache';
+
+     await logAccess(userId); // ❌ Side effect won't run on cache hit
+     return db.query.user.findFirst({ where: eq(user.id, userId) });
+   }
+   ```
+
+2. **Over-caching**
+   ```typescript
+   // ❌ BAD - caching everything
+   export async function getCurrentUser(sessionToken: string) {
+     'use cache'; // ❌ Session data is too dynamic
+     cacheLife('long');
+
+     return validateSession(sessionToken);
+   }
+   ```
+
+3. **Incorrect cache keys**
+   ```typescript
+   // ❌ BAD - using mutable objects
+   export async function processData(config: { userId: string; options: any }) {
+     'use cache'; // ❌ 'any' type makes caching unreliable
+     // ...
+   }
+   ```
+
+4. **Forgetting to invalidate**
+   ```typescript
+   // ❌ BAD - updating data without invalidating cache
+   export async function updateUsername(userId: string, newName: string) {
+     await db.update(user).set({ name: newName }).where(eq(user.id, userId));
+     // ❌ Forgot to revalidateTag(`user-${userId}`)
+   }
+   ```
+
+#### Migration from Legacy Caching
+
+**Before (Next.js 14/15):**
+```typescript
+export const revalidate = 3600; // Page-level
+
+export async function GET() {
+  return fetch('https://api.example.com', {
+    next: { revalidate: 3600 }, // Fetch-level
+  });
+}
+```
+
+**After (Next.js 16 with "use cache"):**
+```typescript
+export async function getData() {
+  'use cache';
+  cacheLife('default'); // More granular control
+
+  return fetch('https://api.example.com');
+}
+```
+
+#### Performance Tips
+
+1. **Cache at multiple levels**
+   ```typescript
+   // Individual function cached
+   export async function getProduct(id: string) {
+     'use cache';
+     cacheLife('long');
+     return db.query.products.findFirst({ where: eq(products.id, id) });
+   }
+
+   // Component that uses cached function
+   export async function ProductList({ category }: { category: string }) {
+     'use cache'; // Also cache the rendered output
+     cacheLife('default');
+
+     const products = await Promise.all(
+       productIds.map(id => getProduct(id)) // Each product cached individually
+     );
+
+     return <div>{products.map(/* render */)}</div>;
+   }
+   ```
+
+2. **Deduplicate requests with React cache()**
+   ```typescript
+   import { cache } from 'react';
+
+   // Deduplicate within a single request
+   export const getUser = cache(async (userId: string) => {
+     'use cache'; // Persistent cache across requests
+     cacheLife('default');
+
+     return db.query.user.findFirst({ where: eq(user.id, userId) });
+   });
+   ```
+
+3. **Preload data**
+   ```typescript
+   // In parent component or layout
+   export async function Layout({ children }: { children: React.ReactNode }) {
+     // Preload data that child components will need
+     getUser('123'); // Triggers cache population
+
+     return <div>{children}</div>;
+   }
+   ```
 
 ### Server vs Client Components
 
