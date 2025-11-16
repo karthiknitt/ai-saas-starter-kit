@@ -28,6 +28,8 @@ A production-ready, full-stack AI SaaS application starter kit built with Next.j
 - **Code Quality**: Biome for linting and formatting
 - **Git Hooks**: Lefthook for pre-commit checks and conventional commits
 - **Hot Reload**: Turbopack for blazing-fast development
+- **React Compiler**: Automatic memoization for optimized performance
+- **MCP Integration**: Built-in Model Context Protocol for AI-assisted debugging (dev-only)
 
 ## Prerequisites
 
@@ -189,6 +191,53 @@ Follow the prompts to enter your email address.
 ### Utilities
 - `pnpm make-admin` - Make a user an admin
 - `pnpm analyze` - Analyze bundle size
+
+## Advanced Development Features
+
+### React Compiler
+
+This project uses the React Compiler for automatic memoization and performance optimization. The compiler is enabled in `next.config.ts`:
+
+```typescript
+reactCompiler: true
+```
+
+**Benefits:**
+- Automatic memoization of components
+- Reduced unnecessary re-renders
+- Zero manual optimization code required
+- Built-in optimization without `useMemo` or `useCallback`
+
+**Note:** Build times may be slightly higher with the React Compiler enabled, but runtime performance is significantly improved.
+
+### Model Context Protocol (MCP)
+
+Next.js 16 includes built-in MCP support for AI-assisted debugging. The MCP server is **automatically enabled in development mode only** at:
+
+```
+http://localhost:3000/_next/mcp
+```
+
+**Security:**
+- MCP endpoint is only available during development (`pnpm dev`)
+- Automatically disabled in production builds
+- No authentication required for local development
+- Never exposed in production without explicit configuration
+
+**Using MCP with AI Assistants:**
+
+To connect AI coding assistants to your Next.js dev server:
+
+1. Install the MCP client: `npx -y next-devtools-mcp@latest`
+2. Configure your AI assistant's MCP settings to point to the dev server
+3. Access real-time error detection, build status, and runtime diagnostics
+
+**Available Capabilities:**
+- Real-time error detection and diagnostics
+- Build error monitoring
+- Runtime error tracking
+- Type error analysis
+- Live application state queries
 
 ## Project Structure
 

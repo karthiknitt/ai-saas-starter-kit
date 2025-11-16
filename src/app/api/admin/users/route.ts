@@ -34,7 +34,7 @@ export async function GET() {
 
 const UpdateRoleSchema = z.object({
   userId: z.string().min(1),
-  role: z.enum(['member', 'admin']),
+  role: z.enum(['viewer', 'member', 'editor', 'moderator', 'admin']),
 });
 
 export async function PATCH(request: Request) {
