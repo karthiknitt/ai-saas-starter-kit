@@ -136,209 +136,214 @@ export default function BillingPage() {
         {/* Current Subscription */}
         <SectionErrorBoundary title="Current Subscription">
           <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>Current Subscription</CardTitle>
-              <CardDescription>
-                Your current plan and billing information
-              </CardDescription>
-            </div>
-            {getStatusBadge()}
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <p className="text-sm text-muted-foreground">Plan</p>
-              <p className="text-2xl font-bold">{plan}</p>
-            </div>
-            {subscription && (
-              <>
+            <CardHeader>
+              <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Status</p>
-                  <p className="text-lg font-medium capitalize">{status}</p>
+                  <CardTitle>Current Subscription</CardTitle>
+                  <CardDescription>
+                    Your current plan and billing information
+                  </CardDescription>
                 </div>
-                {subscription.currentPeriodStart && (
-                  <div>
-                    <p className="text-sm text-muted-foreground">
-                      Current Period Start
-                    </p>
-                    <p className="text-lg font-medium">
-                      {formatDate(subscription.currentPeriodStart)}
-                    </p>
-                  </div>
-                )}
-                {subscription.currentPeriodEnd && (
-                  <div>
-                    <p className="text-sm text-muted-foreground">
-                      {isCanceled ? 'Cancels On' : 'Renews On'}
-                    </p>
-                    <p className="text-lg font-medium">
-                      {formatDate(subscription.currentPeriodEnd)}
-                    </p>
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-
-          <Separator />
-
-          <div className="flex gap-4">
-            <Link href="/dashboard/subscriptions">
-              <Button>
-                {plan === 'Free' ? 'Upgrade Plan' : 'Change Plan'}
-              </Button>
-            </Link>
-            {subscription && isActive && !isCanceled && plan !== 'Free' && (
-              <Button variant="outline" disabled>
-                Cancel Subscription
-              </Button>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-        </SectionErrorBoundary>
-
-      {/* Usage Information */}
-      {usage && (
-        <SectionErrorBoundary title="Usage Information">
-          <Card>
-          <CardHeader>
-            <CardTitle>Usage This Month</CardTitle>
-            <CardDescription>Track your AI request usage</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {usage.unlimited ? (
-              <div className="text-center py-6">
-                <p className="text-lg font-semibold">Unlimited AI Requests</p>
-                <p className="text-muted-foreground text-sm">
-                  Your plan includes unlimited AI requests
-                </p>
+                {getStatusBadge()}
               </div>
-            ) : (
-              <>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between text-sm">
-                    <span>AI Requests</span>
-                    <span className="font-medium">
-                      {usage.used} / {usage.limit === -1 ? '∞' : usage.limit}
-                    </span>
-                  </div>
-                  <div className="h-2 w-full rounded-full bg-secondary">
-                    <div
-                      className={`h-full rounded-full transition-all ${
-                        getUsagePercentage() >= 90
-                          ? 'bg-destructive'
-                          : getUsagePercentage() >= 75
-                            ? 'bg-yellow-500'
-                            : 'bg-primary'
-                      }`}
-                      style={{ width: `${getUsagePercentage()}%` }}
-                    />
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    {usage.remaining} requests remaining
-                  </p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                  <p className="text-sm text-muted-foreground">Plan</p>
+                  <p className="text-2xl font-bold">{plan}</p>
                 </div>
-
-                {getUsagePercentage() >= 80 && (
-                  <Card className="border-yellow-500 bg-yellow-50 dark:bg-yellow-950">
-                    <CardContent className="pt-6">
-                      <p className="text-sm font-medium">
-                        {getUsagePercentage() >= 90
-                          ? "⚠️ You're almost out of AI requests!"
-                          : "⚠️ You're approaching your AI request limit"}
-                      </p>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Consider upgrading your plan to avoid interruptions.
-                      </p>
-                      <Link href="/dashboard/subscriptions">
-                        <Button size="sm" className="mt-3">
-                          Upgrade Plan
-                        </Button>
-                      </Link>
-                    </CardContent>
-                  </Card>
+                {subscription && (
+                  <>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Status</p>
+                      <p className="text-lg font-medium capitalize">{status}</p>
+                    </div>
+                    {subscription.currentPeriodStart && (
+                      <div>
+                        <p className="text-sm text-muted-foreground">
+                          Current Period Start
+                        </p>
+                        <p className="text-lg font-medium">
+                          {formatDate(subscription.currentPeriodStart)}
+                        </p>
+                      </div>
+                    )}
+                    {subscription.currentPeriodEnd && (
+                      <div>
+                        <p className="text-sm text-muted-foreground">
+                          {isCanceled ? 'Cancels On' : 'Renews On'}
+                        </p>
+                        <p className="text-lg font-medium">
+                          {formatDate(subscription.currentPeriodEnd)}
+                        </p>
+                      </div>
+                    )}
+                  </>
                 )}
-              </>
-            )}
-          </CardContent>
-        </Card>
-        </SectionErrorBoundary>
-      )}
+              </div>
 
-      {/* Plan Features */}
-      <SectionErrorBoundary title="Plan Features">
-        <Card>
-        <CardHeader>
-          <CardTitle>Plan Features</CardTitle>
-          <CardDescription>What's included in your {plan} plan</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ul className="space-y-2">
-            {plan === 'Free' && (
-              <>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-green-600" />
-                  <span>10 AI requests per month</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-green-600" />
-                  <span>Access to GPT-3.5 Turbo</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-green-600" />
-                  <span>1 API key</span>
-                </li>
-              </>
-            )}
-            {plan === 'Pro' && (
-              <>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-green-600" />
-                  <span>1,000 AI requests per month</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-green-600" />
-                  <span>Access to GPT-4, Claude 3.5 Sonnet, and more</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-green-600" />
-                  <span>Up to 5 API keys</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-green-600" />
-                  <span>Priority support</span>
-                </li>
-              </>
-            )}
-            {plan === 'Startup' && (
-              <>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-green-600" />
-                  <span>Unlimited AI requests</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-green-600" />
-                  <span>Access to all AI models</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-green-600" />
-                  <span>Unlimited API keys</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-green-600" />
-                  <span>Priority support & dedicated account manager</span>
-                </li>
-              </>
-            )}
-          </ul>
-        </CardContent>
-      </Card>
-      </SectionErrorBoundary>
-    </div>
+              <Separator />
+
+              <div className="flex gap-4">
+                <Link href="/dashboard/subscriptions">
+                  <Button>
+                    {plan === 'Free' ? 'Upgrade Plan' : 'Change Plan'}
+                  </Button>
+                </Link>
+                {subscription && isActive && !isCanceled && plan !== 'Free' && (
+                  <Button variant="outline" disabled>
+                    Cancel Subscription
+                  </Button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </SectionErrorBoundary>
+
+        {/* Usage Information */}
+        {usage && (
+          <SectionErrorBoundary title="Usage Information">
+            <Card>
+              <CardHeader>
+                <CardTitle>Usage This Month</CardTitle>
+                <CardDescription>Track your AI request usage</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {usage.unlimited ? (
+                  <div className="text-center py-6">
+                    <p className="text-lg font-semibold">
+                      Unlimited AI Requests
+                    </p>
+                    <p className="text-muted-foreground text-sm">
+                      Your plan includes unlimited AI requests
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-sm">
+                        <span>AI Requests</span>
+                        <span className="font-medium">
+                          {usage.used} /{' '}
+                          {usage.limit === -1 ? '∞' : usage.limit}
+                        </span>
+                      </div>
+                      <div className="h-2 w-full rounded-full bg-secondary">
+                        <div
+                          className={`h-full rounded-full transition-all ${
+                            getUsagePercentage() >= 90
+                              ? 'bg-destructive'
+                              : getUsagePercentage() >= 75
+                                ? 'bg-yellow-500'
+                                : 'bg-primary'
+                          }`}
+                          style={{ width: `${getUsagePercentage()}%` }}
+                        />
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        {usage.remaining} requests remaining
+                      </p>
+                    </div>
+
+                    {getUsagePercentage() >= 80 && (
+                      <Card className="border-yellow-500 bg-yellow-50 dark:bg-yellow-950">
+                        <CardContent className="pt-6">
+                          <p className="text-sm font-medium">
+                            {getUsagePercentage() >= 90
+                              ? "⚠️ You're almost out of AI requests!"
+                              : "⚠️ You're approaching your AI request limit"}
+                          </p>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            Consider upgrading your plan to avoid interruptions.
+                          </p>
+                          <Link href="/dashboard/subscriptions">
+                            <Button size="sm" className="mt-3">
+                              Upgrade Plan
+                            </Button>
+                          </Link>
+                        </CardContent>
+                      </Card>
+                    )}
+                  </>
+                )}
+              </CardContent>
+            </Card>
+          </SectionErrorBoundary>
+        )}
+
+        {/* Plan Features */}
+        <SectionErrorBoundary title="Plan Features">
+          <Card>
+            <CardHeader>
+              <CardTitle>Plan Features</CardTitle>
+              <CardDescription>
+                What's included in your {plan} plan
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-2">
+                {plan === 'Free' && (
+                  <>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      <span>10 AI requests per month</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      <span>Access to GPT-3.5 Turbo</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      <span>1 API key</span>
+                    </li>
+                  </>
+                )}
+                {plan === 'Pro' && (
+                  <>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      <span>1,000 AI requests per month</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      <span>Access to GPT-4, Claude 3.5 Sonnet, and more</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      <span>Up to 5 API keys</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      <span>Priority support</span>
+                    </li>
+                  </>
+                )}
+                {plan === 'Startup' && (
+                  <>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      <span>Unlimited AI requests</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      <span>Access to all AI models</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      <span>Unlimited API keys</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      <span>Priority support & dedicated account manager</span>
+                    </li>
+                  </>
+                )}
+              </ul>
+            </CardContent>
+          </Card>
+        </SectionErrorBoundary>
+      </div>
     </PageErrorBoundary>
   );
 }

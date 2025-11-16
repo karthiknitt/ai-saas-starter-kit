@@ -1,6 +1,6 @@
-import { cache } from 'react';
 import { eq } from 'drizzle-orm';
 import { type NextRequest, NextResponse } from 'next/server';
+import { cache } from 'react';
 import { db } from '@/db/drizzle';
 import { user } from '@/db/schema';
 import { aj } from '@/lib/arcjet';
@@ -63,24 +63,22 @@ const fetchOpenAIModels = cache(async (apiKey: string) => {
  * Cached function to fetch OpenRouter models
  * Reduces external API calls by caching
  */
-const fetchOpenRouterModels = cache(
-  async (apiKey: string, referer: string) => {
-    const response = await fetch('https://openrouter.ai/api/v1/models', {
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'HTTP-Referer': referer || '',
-        'X-Title': 'AI Chat',
-      },
-      next: { revalidate: 3600 }, // Cache for 1 hour
-    });
+const fetchOpenRouterModels = cache(async (apiKey: string, referer: string) => {
+  const response = await fetch('https://openrouter.ai/api/v1/models', {
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'HTTP-Referer': referer || '',
+      'X-Title': 'AI Chat',
+    },
+    next: { revalidate: 3600 }, // Cache for 1 hour
+  });
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch OpenRouter models');
-    }
+  if (!response.ok) {
+    throw new Error('Failed to fetch OpenRouter models');
+  }
 
-    return response.json();
-  },
-);
+  return response.json();
+});
 
 export async function GET(request: NextRequest) {
   try {
