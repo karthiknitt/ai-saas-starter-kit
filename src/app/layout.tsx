@@ -10,9 +10,7 @@ import { Toaster } from '@/components/ui/sonner';
 import { cn } from '@/lib/utils';
 
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.BETTER_AUTH_URL || 'http://localhost:3000',
-  ),
+  metadataBase: new URL(process.env.BETTER_AUTH_URL || 'http://localhost:3000'),
   title: {
     default: 'NextJS Starter Kit - AI SaaS Template',
     template: '%s | NextJS Starter Kit',

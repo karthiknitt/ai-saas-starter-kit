@@ -1,21 +1,20 @@
 'use client';
 
 import {
-  IconCamera,
-  IconChartBar,
+  IconApi,
+  IconCreditCard,
   IconDashboard,
   IconDatabase,
   IconFileAi,
-  IconFileDescription,
   IconFileWord,
   IconFolder,
   IconHelp,
   IconInnerShadowTop,
-  IconListDetails,
-  IconReport,
+  IconReportAnalytics,
   IconSearch,
   IconSettings,
-  IconUsers,
+  IconShieldLock,
+  IconUsersGroup,
 } from '@tabler/icons-react';
 import * as React from 'react';
 
@@ -33,6 +32,7 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { authClient } from '@/lib/auth-client';
+import { PERMISSIONS, roleHasPermission } from '@/lib/permissions';
 
 interface User {
   id: string;
@@ -51,131 +51,123 @@ const defaultUser = {
   avatar: '/avatars/guest.jpg',
 };
 
-const baseNavMain = [
+// Navigation items with permission requirements
+const ALL_NAV_ITEMS = [
   {
     title: 'Dashboard',
     url: '/dashboard',
     icon: IconDashboard,
+    requiredPermission: null, // Available to all authenticated users
+    items: [
+      {
+        title: 'Analytics',
+        url: '/dashboard/analytics',
+      },
+      {
+        title: 'Sessions',
+        url: '/dashboard/sessions',
+      },
+      {
+        title: 'Subscriptions',
+        url: '/dashboard/subscriptions',
+      },
+    ],
   },
   {
     title: 'AI Chat',
     url: '/aichat',
     icon: IconFileAi,
+    requiredPermission: null, // Available to all authenticated users
   },
   {
-    title: 'Lifecycle',
-    url: '#',
-    icon: IconListDetails,
+    title: 'Billing',
+    url: '/billing',
+    icon: IconCreditCard,
+    requiredPermission: PERMISSIONS.BILLING_READ,
   },
   {
-    title: 'Analytics',
-    url: '#',
-    icon: IconChartBar,
+    title: 'API Docs',
+    url: '/api-docs',
+    icon: IconApi,
+    requiredPermission: PERMISSIONS.API_KEYS_READ,
   },
   {
     title: 'Projects',
     url: '#',
     icon: IconFolder,
+    requiredPermission: null,
   },
   {
     title: 'Team',
     url: '#',
-    icon: IconUsers,
+    icon: IconUsersGroup,
+    requiredPermission: PERMISSIONS.USERS_READ,
+  },
+  {
+    title: 'Admin',
+    url: '/admin',
+    icon: IconShieldLock,
+    requiredPermission: PERMISSIONS.ADMIN_ACCESS,
+    items: [
+      {
+        title: 'Users',
+        url: '/admin/users',
+        requiredPermission: PERMISSIONS.USERS_READ,
+      },
+      {
+        title: 'Audit Logs',
+        url: '/admin/audit-logs',
+        requiredPermission: PERMISSIONS.AUDIT_VIEW,
+      },
+    ],
   },
 ];
 
-const data = {
-  navMain: baseNavMain,
-  navClouds: [
-    {
-      title: 'Capture',
-      icon: IconCamera,
-      isActive: true,
-      url: '#',
-      items: [
-        {
-          title: 'Active Proposals',
-          url: '#',
-        },
-        {
-          title: 'Archived',
-          url: '#',
-        },
-      ],
-    },
-    {
-      title: 'Proposal',
-      icon: IconFileDescription,
-      url: '#',
-      items: [
-        {
-          title: 'Active Proposals',
-          url: '#',
-        },
-        {
-          title: 'Archived',
-          url: '#',
-        },
-      ],
-    },
-    {
-      title: 'Prompts',
-      icon: IconFileAi,
-      url: '#',
-      items: [
-        {
-          title: 'Active Proposals',
-          url: '#',
-        },
-        {
-          title: 'Archived',
-          url: '#',
-        },
-      ],
-    },
-  ],
-  navSecondary: [
-    {
-      title: 'Settings',
-      url: '#',
-      icon: IconSettings,
-    },
-    {
-      title: 'Get Help',
-      url: '#',
-      icon: IconHelp,
-    },
-    {
-      title: 'Search',
-      url: '#',
-      icon: IconSearch,
-    },
-  ],
-  documents: [
-    {
-      name: 'Data Library',
-      url: '#',
-      icon: IconDatabase,
-    },
-    {
-      name: 'Reports',
-      url: '#',
-      icon: IconReport,
-    },
-    {
-      name: 'Word Assistant',
-      url: '#',
-      icon: IconFileWord,
-    },
-  ],
-};
+const navSecondaryItems = [
+  {
+    title: 'Settings',
+    url: '#',
+    icon: IconSettings,
+    requiredPermission: PERMISSIONS.SETTINGS_READ,
+  },
+  {
+    title: 'Get Help',
+    url: '#',
+    icon: IconHelp,
+    requiredPermission: null,
+  },
+  {
+    title: 'Search',
+    url: '#',
+    icon: IconSearch,
+    requiredPermission: null,
+  },
+];
+
+const documentItems = [
+  {
+    name: 'Data Library',
+    url: '#',
+    icon: IconDatabase,
+  },
+  {
+    name: 'Reports',
+    url: '#',
+    icon: IconReportAnalytics,
+  },
+  {
+    name: 'Word Assistant',
+    url: '#',
+    icon: IconFileWord,
+  },
+];
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   user?: User | null;
 }
 
 export function AppSidebar({ user, ...props }: AppSidebarProps) {
-  const [isAdmin, setIsAdmin] = React.useState<boolean | undefined>(undefined);
+  const [userRole, setUserRole] = React.useState<string | undefined>(undefined);
 
   React.useEffect(() => {
     let cancelled = false;
@@ -183,9 +175,9 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
       try {
         const session = await authClient.getSession();
         const role = (session.data?.user as User)?.role as string | undefined;
-        if (!cancelled) setIsAdmin(role === 'admin');
+        if (!cancelled) setUserRole(role || 'viewer');
       } catch {
-        if (!cancelled) setIsAdmin(false);
+        if (!cancelled) setUserRole('viewer');
       }
     })();
     return () => {
@@ -201,17 +193,41 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
       }
     : defaultUser;
 
-  const navItems = React.useMemo(() => {
-    const items = [...baseNavMain];
-    if (isAdmin === true) {
-      items.push({
-        title: 'Admin',
-        url: '/admin',
-        icon: IconSettings,
-      });
-    }
-    return items;
-  }, [isAdmin]);
+  // Filter navigation items based on user permissions
+  const filteredNavItems = React.useMemo(() => {
+    if (!userRole) return [];
+
+    return ALL_NAV_ITEMS.filter((item) => {
+      // If no permission required, show the item
+      if (!item.requiredPermission) return true;
+      // Check if user has the required permission
+      return roleHasPermission(userRole, item.requiredPermission);
+    }).map((item) => {
+      // If item has sub-items, filter them based on permissions
+      if (item.items) {
+        const filteredSubItems = item.items.filter((subItem) => {
+          if (!('requiredPermission' in subItem) || !subItem.requiredPermission)
+            return true;
+          return roleHasPermission(
+            userRole,
+            subItem.requiredPermission as string,
+          );
+        });
+        return { ...item, items: filteredSubItems };
+      }
+      return item;
+    });
+  }, [userRole]);
+
+  // Filter secondary navigation items based on permissions
+  const filteredSecondaryItems = React.useMemo(() => {
+    if (!userRole) return [];
+
+    return navSecondaryItems.filter((item) => {
+      if (!item.requiredPermission) return true;
+      return roleHasPermission(userRole, item.requiredPermission);
+    });
+  }, [userRole]);
 
   return (
     <Sidebar collapsible="offcanvas" {...props}>
@@ -231,9 +247,9 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={navItems} />
-        <NavDocuments items={data.documents} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        <NavMain items={filteredNavItems} />
+        <NavDocuments items={documentItems} />
+        <NavSecondary items={filteredSecondaryItems} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={currentUser} />
