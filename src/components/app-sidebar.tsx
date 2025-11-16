@@ -2,24 +2,18 @@
 
 import {
   IconApi,
-  IconCamera,
-  IconChartBar,
   IconCreditCard,
   IconDashboard,
   IconDatabase,
   IconFileAi,
-  IconFileDescription,
   IconFileWord,
   IconFolder,
   IconHelp,
   IconInnerShadowTop,
-  IconListDetails,
   IconReportAnalytics,
   IconSearch,
   IconSettings,
   IconShieldLock,
-  IconTimeline,
-  IconUsers,
   IconUsersGroup,
 } from '@tabler/icons-react';
 import * as React from 'react';
