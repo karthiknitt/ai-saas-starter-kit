@@ -1,0 +1,160 @@
+{
+  "API Route": {
+    "prefix": "api-route",
+    "body": [
+      "/**",
+      " * ${1:Description}",
+      " */",
+      "",
+      "import { NextRequest, NextResponse } from 'next/server';",
+      "import { auth } from '@/lib/auth';",
+      "import { headers } from 'next/headers';",
+      "",
+      "export async function ${2|GET,POST,PUT,PATCH,DELETE|}(request: NextRequest) {",
+      "  const session = await auth.api.getSession({ headers: await headers() });",
+      "",
+      "  if (!session) {",
+      "    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });",
+      "  }",
+      "",
+      "  try {",
+      "    $0",
+      "",
+      "    return NextResponse.json({ data: null });",
+      "  } catch (error) {",
+      "    return NextResponse.json(",
+      "      { error: 'Internal server error' },",
+      "      { status: 500 }",
+      "    );",
+      "  }",
+      "}"
+    ],
+    "description": "Create a new API route with authentication"
+  },
+  "Server Component": {
+    "prefix": "server-component",
+    "body": [
+      "/**",
+      " * ${1:Component description}",
+      " */",
+      "",
+      "interface ${2:ComponentName}Props {",
+      "  ${3:prop}: ${4:string};",
+      "}",
+      "",
+      "export default async function ${2:ComponentName}({ ${3:prop} }: ${2:ComponentName}Props) {",
+      "  $0",
+      "",
+      "  return (",
+      "    <div>",
+      "      <h1>{${3:prop}}</h1>",
+      "    </div>",
+      "  );",
+      "}"
+    ],
+    "description": "Create a new server component"
+  },
+  "Client Component": {
+    "prefix": "client-component",
+    "body": [
+      "'use client';",
+      "",
+      "/**",
+      " * ${1:Component description}",
+      " */",
+      "",
+      "import { useState } from 'react';",
+      "",
+      "interface ${2:ComponentName}Props {",
+      "  ${3:prop}: ${4:string};",
+      "}",
+      "",
+      "export function ${2:ComponentName}({ ${3:prop} }: ${2:ComponentName}Props) {",
+      "  const [${5:state}, set${5/(.*)/${1:/capitalize}/}] = useState${6:<${7:type}>}(${8:initialValue});",
+      "",
+      "  $0",
+      "",
+      "  return (",
+      "    <div>",
+      "      <h1>{${3:prop}}</h1>",
+      "    </div>",
+      "  );",
+      "}"
+    ],
+    "description": "Create a new client component"
+  },
+  "Database Query": {
+    "prefix": "db-query",
+    "body": [
+      "const ${1:result} = await db.query.${2:tableName}.findMany({",
+      "  where: eq(${2:tableName}.${3:column}, ${4:value}),",
+      "  ${5:limit: 10,}",
+      "});",
+      "$0"
+    ],
+    "description": "Create a database query"
+  },
+  "Usage Tracker": {
+    "prefix": "track-usage",
+    "body": [
+      "import { trackAndCheckAiRequest } from '@/lib/usage-tracker';",
+      "",
+      "const { allowed, quota } = await trackAndCheckAiRequest(userId, {",
+      "  model: '${1:model-name}',",
+      "  tokens: ${2:tokens},",
+      "  provider: '${3:provider}',",
+      "});",
+      "",
+      "if (!allowed) {",
+      "  return NextResponse.json(",
+      "    { error: 'Quota exceeded', quota },",
+      "    { status: 429 }",
+      "  );",
+      "}",
+      "$0"
+    ],
+    "description": "Track and check AI request quota"
+  },
+  "Audit Log": {
+    "prefix": "audit-log",
+    "body": [
+      "import { logAction } from '@/lib/audit-logger';",
+      "",
+      "await logAction(userId, '${1:action}', {",
+      "  resourceType: '${2:type}',",
+      "  resourceId: ${3:id},",
+      "  changes: { ${4:field}: ${5:value} },",
+      "});",
+      "$0"
+    ],
+    "description": "Create an audit log entry"
+  },
+  "Send Email": {
+    "prefix": "send-email",
+    "body": [
+      "import { emailService } from '@/lib/email-service';",
+      "",
+      "await emailService.${1|sendSubscriptionConfirmation,sendPaymentSuccess,sendPaymentFailure,sendQuotaWarning,sendSubscriptionCancelled|}({",
+      "  to: ${2:email},",
+      "  username: ${3:username},",
+      "  $0",
+      "});"
+    ],
+    "description": "Send an email using the email service"
+  },
+  "Test Case": {
+    "prefix": "test-case",
+    "body": [
+      "import { describe, it, expect } from 'vitest';",
+      "",
+      "describe('${1:ComponentName}', () => {",
+      "  it('${2:should do something}', async () => {",
+      "    $0",
+      "",
+      "    expect(${3:actual}).toBe(${4:expected});",
+      "  });",
+      "});"
+    ],
+    "description": "Create a test case"
+  }
+}

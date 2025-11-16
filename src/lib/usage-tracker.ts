@@ -1,11 +1,13 @@
 import { and, eq, gte, sql } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
 import { db } from '@/db/drizzle';
-import { usageLog, usageQuota } from '@/db/schema';
+import { user, usageLog, usageQuota } from '@/db/schema';
 import {
   getAiRequestLimit,
   hasUnlimitedAiRequests,
+  getUserPlan,
 } from './subscription-features';
+import { emailService } from './email-service';
 
 export type ResourceType = 'ai_request' | 'api_call' | 'storage';
 
@@ -103,9 +105,91 @@ export async function resetQuota(userId: string): Promise<void> {
       aiRequestsUsed: '0',
       aiRequestsLimit: limit.toString(),
       resetAt,
+      warning80Sent: false,
+      warning90Sent: false,
+      warning100Sent: false,
       updatedAt: new Date(),
     })
     .where(eq(usageQuota.userId, userId));
+}
+
+/**
+ * Send quota warning email if threshold is crossed
+ */
+async function checkAndSendQuotaWarning(userId: string): Promise<void> {
+  try {
+    const quota = await getOrCreateQuota(userId);
+    const used = Number.parseInt(quota.aiRequestsUsed, 10);
+    const limit = Number.parseInt(quota.aiRequestsLimit, 10);
+    const percentage = Math.min(100, Math.round((used / limit) * 100));
+
+    // Get user details
+    const userRecord = await db.query.user.findFirst({
+      where: eq(user.id, userId),
+    });
+
+    if (!userRecord) {
+      return;
+    }
+
+    const planName = await getUserPlan(userId);
+    const resetDate = new Date(quota.resetAt).toLocaleDateString();
+
+    // Check 100% threshold
+    if (percentage >= 100 && !quota.warning100Sent) {
+      await emailService.sendQuotaWarning({
+        to: userRecord.email,
+        username: userRecord.name || 'there',
+        planName,
+        usagePercentage: 100,
+        quotaUsed: used,
+        quotaLimit: limit,
+        resetDate,
+      });
+
+      await db
+        .update(usageQuota)
+        .set({ warning100Sent: true })
+        .where(eq(usageQuota.userId, userId));
+    }
+    // Check 90% threshold
+    else if (percentage >= 90 && !quota.warning90Sent) {
+      await emailService.sendQuotaWarning({
+        to: userRecord.email,
+        username: userRecord.name || 'there',
+        planName,
+        usagePercentage: 90,
+        quotaUsed: used,
+        quotaLimit: limit,
+        resetDate,
+      });
+
+      await db
+        .update(usageQuota)
+        .set({ warning90Sent: true })
+        .where(eq(usageQuota.userId, userId));
+    }
+    // Check 80% threshold
+    else if (percentage >= 80 && !quota.warning80Sent) {
+      await emailService.sendQuotaWarning({
+        to: userRecord.email,
+        username: userRecord.name || 'there',
+        planName,
+        usagePercentage: 80,
+        quotaUsed: used,
+        quotaLimit: limit,
+        resetDate,
+      });
+
+      await db
+        .update(usageQuota)
+        .set({ warning80Sent: true })
+        .where(eq(usageQuota.userId, userId));
+    }
+  } catch (error) {
+    console.error('Failed to send quota warning email:', error);
+    // Don't throw - email failure shouldn't break the request
+  }
 }
 
 /**
@@ -128,6 +212,9 @@ export async function incrementAiRequests(
       updatedAt: new Date(),
     })
     .where(eq(usageQuota.userId, userId));
+
+  // Check if we should send a quota warning email
+  await checkAndSendQuotaWarning(userId);
 }
 
 /**

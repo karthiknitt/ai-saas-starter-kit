@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "dev:clean": "rm -rf .next && pnpm dev",
     "build": "next build --turbopack",
     "build:analyze": "next build --turbopack && npx vite-bundle-analyzer dist",
     "start": "next start",
@@ -18,7 +19,14 @@
     "db:push": "drizzle-kit push",
     "db:migrate": "drizzle-kit migrate",
     "db:seed": "npx tsx scripts/seed.ts",
+    "db:reset": "pnpm db:push && pnpm db:seed",
+    "db:migrate:phase2": "npx tsx scripts/migrate-phase2.ts",
     "make-admin": "npx tsx scripts/make-admin.ts",
+    "test:email": "npx tsx scripts/test-email.ts",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "docker:reset": "docker-compose down -v && docker-compose up -d",
     "analyze": "npx vite-bundle-analyzer .next/static",
     "prepare": "lefthook install"
   },

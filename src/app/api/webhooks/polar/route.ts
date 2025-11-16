@@ -31,6 +31,7 @@ import { subscription, user } from '@/db/schema';
 import { logSubscriptionChange } from '@/lib/audit-logger';
 import { getPlanName } from '@/lib/plan-map';
 import { getOrCreateQuota } from '@/lib/usage-tracker';
+import { emailService } from '@/lib/email-service';
 
 /**
  * Polar subscription data structure from webhooks.
@@ -208,6 +209,18 @@ async function handleSubscriptionCreated(data: WebhookEventData) {
       subscriptionId: subscriptionData.id,
     });
 
+    // Send subscription confirmation email
+    await emailService.sendSubscriptionConfirmation({
+      to: userRecord.email,
+      username: userRecord.name || 'there',
+      planName: plan,
+      billingCycle: 'Monthly',
+      nextBillingDate: subscriptionData.current_period_end
+        ? new Date(subscriptionData.current_period_end).toLocaleDateString()
+        : 'N/A',
+      amount: plan === 'Pro' ? '$29/month' : '$99/month',
+    });
+
     console.log('Subscription created successfully');
   } catch (error) {
     console.error('Error handling subscription created:', error);
@@ -287,6 +300,28 @@ async function handleSubscriptionUpdated(data: WebhookEventData) {
           after: { plan, status: subscriptionData.status },
         },
       );
+
+      // Send payment success email if subscription was renewed
+      if (
+        subscriptionData.status === 'active' &&
+        subscriptionData.current_period_start
+      ) {
+        const userRecord = await db.query.user.findFirst({
+          where: eq(user.id, existing.userId),
+        });
+
+        if (userRecord) {
+          await emailService.sendPaymentSuccess({
+            to: userRecord.email,
+            username: userRecord.name || 'there',
+            planName: plan,
+            amount: plan === 'Pro' ? '$29' : '$99',
+            paymentDate: new Date(
+              subscriptionData.current_period_start,
+            ).toLocaleDateString(),
+          });
+        }
+      }
     }
 
     console.log('Subscription updated successfully');
@@ -340,6 +375,22 @@ async function handleSubscriptionCanceled(data: WebhookEventData) {
         status: 'canceled',
         subscriptionId: subscriptionData.id,
       });
+
+      // Send subscription cancelled email
+      const userRecord = await db.query.user.findFirst({
+        where: eq(user.id, existing.userId),
+      });
+
+      if (userRecord) {
+        await emailService.sendSubscriptionCancelled({
+          to: userRecord.email,
+          username: userRecord.name || 'there',
+          planName: existing.plan,
+          endDate: existing.currentPeriodEnd
+            ? existing.currentPeriodEnd.toLocaleDateString()
+            : 'End of current period',
+        });
+      }
     }
 
     console.log('Subscription canceled successfully');
