@@ -36,10 +36,19 @@ import {
  * User role enumeration for RBAC (Role-Based Access Control).
  *
  * Roles:
+ * - `viewer`: Read-only access to resources
  * - `member`: Standard user with default permissions
- * - `admin`: Administrator with elevated permissions
+ * - `editor`: Can create and edit content
+ * - `moderator`: Content moderation and user management capabilities
+ * - `admin`: Full administrator with all permissions
  */
-export const userRole = pgEnum('user_role', ['member', 'admin']);
+export const userRole = pgEnum('user_role', [
+  'viewer',
+  'member',
+  'editor',
+  'moderator',
+  'admin',
+]);
 
 /**
  * User table - Core user profiles with authentication and configuration.
@@ -393,6 +402,66 @@ export const webhookEvent = pgTable(
 );
 
 /**
+ * Permission table - Granular permissions for resource-level access control.
+ *
+ * Defines individual permissions that can be assigned to roles.
+ * Permissions follow the format: resource:action (e.g., 'users:read', 'admin:access').
+ *
+ * @property {string} id - Unique permission identifier
+ * @property {string} name - Unique permission name (e.g., 'users:read')
+ * @property {string | null} description - Human-readable description
+ * @property {string} resource - Resource type (e.g., 'users', 'billing', 'admin')
+ * @property {string} action - Action type (e.g., 'read', 'write', 'delete')
+ * @property {Date} createdAt - Permission creation timestamp
+ *
+ * Standard Permissions:
+ * - users:read, users:write, users:delete
+ * - billing:read, billing:manage
+ * - admin:access
+ * - audit:view
+ * - content:moderate
+ */
+export const permission = pgTable('permission', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull().unique(),
+  description: text('description'),
+  resource: text('resource').notNull(),
+  action: text('action').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+/**
+ * Role permission table - Maps permissions to roles.
+ *
+ * Defines which permissions are granted to each role.
+ * Composite primary key prevents duplicate permission assignments.
+ *
+ * @property {string} role - User role from userRole enum
+ * @property {string} permissionId - Associated permission ID (foreign key, cascade delete)
+ *
+ * Example Mappings:
+ * - viewer: users:read, billing:read
+ * - member: users:read, users:write, billing:read
+ * - editor: users:read, users:write, billing:read, content:moderate
+ * - moderator: users:read, users:write, users:delete, content:moderate
+ * - admin: all permissions
+ */
+export const rolePermission = pgTable(
+  'role_permission',
+  {
+    role: text('role').notNull(),
+    permissionId: text('permission_id')
+      .notNull()
+      .references(() => permission.id, { onDelete: 'cascade' }),
+  },
+  (table) => ({
+    pk: {
+      primaryKey: { columns: [table.role, table.permissionId] },
+    },
+  }),
+);
+
+/**
  * Complete database schema export.
  *
  * This object aggregates all table definitions for use with Drizzle ORM.
@@ -416,5 +485,7 @@ export const schema = {
   usageQuota,
   auditLog,
   webhookEvent,
+  permission,
+  rolePermission,
   userRole,
 };

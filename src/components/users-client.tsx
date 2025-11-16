@@ -2,11 +2,28 @@
 
 import React from 'react';
 
+const ROLE_COLORS = {
+  admin: 'bg-purple-600',
+  moderator: 'bg-blue-600',
+  editor: 'bg-green-600',
+  member: 'bg-gray-500',
+  viewer: 'bg-gray-400',
+} as const;
+
+const ROLE_LABELS = {
+  admin: 'Admin',
+  moderator: 'Moderator',
+  editor: 'Editor',
+  member: 'Member',
+  viewer: 'Viewer',
+} as const;
+
 function RoleBadge({ role }: { role: string }) {
-  const color = role === 'admin' ? 'bg-purple-600' : 'bg-gray-500';
+  const color = ROLE_COLORS[role as keyof typeof ROLE_COLORS] || 'bg-gray-500';
+  const label = ROLE_LABELS[role as keyof typeof ROLE_LABELS] || role;
   return (
     <span className={`rounded px-2 py-1 text-xs text-white ${color}`}>
-      {role}
+      {label}
     </span>
   );
 }
@@ -28,7 +45,10 @@ export function UsersClient({
   const [users, setUsers] = React.useState(initialUsers);
   const [saving, setSaving] = React.useState<string | null>(null);
 
-  async function updateRole(userId: string, role: 'member' | 'admin') {
+  async function updateRole(
+    userId: string,
+    role: 'viewer' | 'member' | 'editor' | 'moderator' | 'admin',
+  ) {
     try {
       setSaving(userId);
       const res = await fetch('/api/admin/users', {
@@ -77,23 +97,29 @@ export function UsersClient({
               <td className="p-2">
                 <RoleBadge role={u.role} />
               </td>
-              <td className="space-x-2 p-2">
-                <button
-                  type="button"
-                  className="rounded bg-gray-200 px-2 py-1 text-xs disabled:opacity-50"
-                  disabled={saving === u.id || u.role === 'member'}
-                  onClick={() => updateRole(u.id, 'member')}
+              <td className="p-2">
+                <select
+                  value={u.role}
+                  disabled={saving === u.id}
+                  onChange={(e) =>
+                    updateRole(
+                      u.id,
+                      e.target.value as
+                        | 'viewer'
+                        | 'member'
+                        | 'editor'
+                        | 'moderator'
+                        | 'admin',
+                    )
+                  }
+                  className="rounded border border-gray-300 bg-white px-2 py-1 text-xs disabled:opacity-50"
                 >
-                  Make Member
-                </button>
-                <button
-                  type="button"
-                  className="rounded bg-purple-600 px-2 py-1 text-xs text-white disabled:opacity-50"
-                  disabled={saving === u.id || u.role === 'admin'}
-                  onClick={() => updateRole(u.id, 'admin')}
-                >
-                  Make Admin
-                </button>
+                  <option value="viewer">Viewer</option>
+                  <option value="member">Member</option>
+                  <option value="editor">Editor</option>
+                  <option value="moderator">Moderator</option>
+                  <option value="admin">Admin</option>
+                </select>
               </td>
             </tr>
           ))}
