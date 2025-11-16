@@ -4,9 +4,6 @@ import { HeroHeader } from '@/components/header';
 import HeroSection from '@/components/hero-section';
 import { HomePageWrapper } from '@/components/home-page-wrapper';
 
-// Static generation with revalidation - improve Core Web Vitals
-export const revalidate = 86400; // Revalidate every 24 hours
-
 // SEO Metadata for better performance and discoverability
 export const metadata: Metadata = {
   title: 'AI SaaS Starter Kit - Build Your AI Application Fast',
