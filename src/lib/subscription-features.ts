@@ -1,6 +1,5 @@
 import 'server-only';
 import { cache } from 'react';
-import { unstable_cacheLife as cacheLife } from 'next/cache';
 import { eq } from 'drizzle-orm';
 import { db } from '@/db/drizzle';
 import { subscription as subscriptionTable } from '@/db/schema';
@@ -47,13 +46,9 @@ export type PlanFeatures = (typeof PLAN_FEATURES)[PlanName];
 /**
  * Get user's current subscription plan
  * Returns 'free' if no active subscription found
- * Cached with 'default' profile (1 hour stale, 15 min revalidate)
- * Combined with React cache for request deduplication
+ * Cached with React cache for request deduplication
  */
 export const getUserPlan = cache(async (userId: string): Promise<PlanName> => {
-  'use cache';
-  cacheLife('default');
-
   try {
     const subscription = await db.query.subscription.findFirst({
       where: eq(subscriptionTable.userId, userId),
@@ -83,9 +78,6 @@ export const getUserPlan = cache(async (userId: string): Promise<PlanName> => {
  */
 export const getUserPlanFeatures = cache(
   async (userId: string): Promise<PlanFeatures> => {
-    'use cache';
-    cacheLife('default');
-
     const plan = await getUserPlan(userId);
     return PLAN_FEATURES[plan];
   },
