@@ -402,6 +402,98 @@ export const webhookEvent = pgTable(
 );
 
 /**
+ * Workspace table - Multi-tenancy support for team workspaces.
+ *
+ * Enables B2B SaaS model where teams can collaborate within shared workspaces.
+ * Each workspace has its own billing, members, and usage quotas.
+ *
+ * @property {string} id - Unique workspace identifier
+ * @property {string} name - Workspace display name
+ * @property {string} slug - URL-friendly workspace identifier (unique)
+ * @property {string} ownerId - User ID of workspace owner (foreign key)
+ * @property {string} plan - Workspace subscription plan ('Free', 'Pro', 'Startup')
+ * @property {Date} createdAt - Workspace creation timestamp
+ * @property {Date} updatedAt - Last workspace update timestamp
+ *
+ * Indexes:
+ * - idx_workspace_owner: For owner-based workspace queries
+ */
+export const workspace = pgTable(
+  'workspace',
+  {
+    id: text('id').primaryKey(),
+    name: text('name').notNull(),
+    slug: text('slug').notNull().unique(),
+    ownerId: text('owner_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    plan: text('plan').notNull().default('Free'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => ({
+    idxWorkspaceOwner: index('idx_workspace_owner').on(table.ownerId),
+  }),
+);
+
+/**
+ * Workspace role enumeration for workspace-level access control.
+ *
+ * Roles:
+ * - `owner`: Workspace owner with full control
+ * - `admin`: Workspace administrator with most permissions
+ * - `member`: Standard workspace member
+ * - `viewer`: Read-only access to workspace
+ */
+export const workspaceRole = pgEnum('workspace_role', [
+  'owner',
+  'admin',
+  'member',
+  'viewer',
+]);
+
+/**
+ * Workspace member table - User membership in workspaces.
+ *
+ * Maps users to workspaces with role-based access control.
+ * Supports multiple users per workspace and multiple workspaces per user.
+ *
+ * @property {string} workspaceId - Associated workspace ID (foreign key, cascade delete)
+ * @property {string} userId - Associated user ID (foreign key, cascade delete)
+ * @property {string} role - Workspace role ('owner', 'admin', 'member', 'viewer')
+ * @property {Date} createdAt - Membership creation timestamp
+ *
+ * Indexes:
+ * - idx_workspace_member_user: For user-based workspace lookups
+ * - idx_workspace_member_workspace: For workspace-based member lookups
+ */
+export const workspaceMember = pgTable(
+  'workspace_member',
+  {
+    workspaceId: text('workspace_id')
+      .notNull()
+      .references(() => workspace.id, { onDelete: 'cascade' }),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    role: workspaceRole('role').notNull().default('member'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => ({
+    pk: {
+      primaryKey: { columns: [table.workspaceId, table.userId] },
+    },
+    idxWorkspaceMemberUser: index('idx_workspace_member_user').on(table.userId),
+    idxWorkspaceMemberWorkspace: index('idx_workspace_member_workspace').on(
+      table.workspaceId,
+    ),
+  }),
+);
+
+/**
  * Permission table - Granular permissions for resource-level access control.
  *
  * Defines individual permissions that can be assigned to roles.
@@ -485,7 +577,10 @@ export const schema = {
   usageQuota,
   auditLog,
   webhookEvent,
+  workspace,
+  workspaceMember,
   permission,
   rolePermission,
   userRole,
+  workspaceRole,
 };

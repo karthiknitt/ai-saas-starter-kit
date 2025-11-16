@@ -17,7 +17,13 @@ export type AuditAction =
   | 'auth.login'
   | 'auth.logout'
   | 'auth.password_reset'
-  | 'admin.access';
+  | 'admin.access'
+  | 'workspace.created'
+  | 'workspace.updated'
+  | 'workspace.deleted'
+  | 'workspace.member_added'
+  | 'workspace.member_removed'
+  | 'workspace.member_role_updated';
 
 interface AuditLogEntry {
   userId?: string | null;
