@@ -13,14 +13,15 @@ A production-ready, full-stack AI SaaS application starter kit built with Next.j
 - **UI Components**: 50+ customizable shadcn/ui components
 
 ### Advanced Features
-- **Role-Based Access Control (RBAC)**: Admin dashboard with user management
+- **Multi-Tenancy/Workspaces**: Team workspaces with role-based member management (backend)
+- **Role-Based Access Control (RBAC)**: Granular permission system with admin dashboard
 - **Usage Tracking**: Quota enforcement and feature gating by subscription tier
 - **Audit Logging**: Comprehensive activity tracking for compliance
 - **Encrypted API Key Management**: Secure storage for user API keys
 - **Rate Limiting**: Protection against abuse with Arcjet
 - **Security Headers**: Helmet integration for enhanced security
 - **Email Integration**: Resend for transactional emails
-- **Analytics**: Vercel Analytics and Speed Insights
+- **Analytics**: Vercel Analytics, Speed Insights, and PostHog integration
 
 ### Developer Experience
 - **Type Safety**: Strict TypeScript configuration
@@ -134,6 +135,25 @@ openssl rand -hex 32
 ```
 
 Get Arcjet key from [Arcjet](https://arcjet.com)
+
+#### Analytics (Optional but Recommended)
+```env
+NEXT_PUBLIC_POSTHOG_KEY=phc_xxx
+NEXT_PUBLIC_POSTHOG_HOST=https://app.posthog.com
+```
+
+Get your PostHog API key from [PostHog](https://posthog.com). PostHog provides:
+- Product analytics and user tracking
+- Session replay for debugging
+- Feature flags for gradual rollouts
+- A/B testing capabilities
+- Funnel analysis and retention metrics
+
+**Why PostHog?**
+- Self-hosted or cloud options
+- Privacy-friendly with GDPR compliance
+- Comprehensive analytics without vendor lock-in
+- Perfect for understanding workspace usage patterns
 
 ### 4. Database Setup
 
@@ -324,7 +344,8 @@ Ensure your hosting platform supports:
 - **AI SDK**: [Vercel AI SDK](https://sdk.vercel.ai)
 - **Email**: [Resend](https://resend.com)
 - **Security**: [Arcjet](https://arcjet.com)
-- **Testing**: [Vitest](https://vitest.dev)
+- **Analytics**: [PostHog](https://posthog.com)
+- **Testing**: [Vitest](https://vitest.dev) + [Playwright](https://playwright.dev)
 - **Code Quality**: [Biome](https://biomejs.dev)
 
 ## Contributing
