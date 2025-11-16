@@ -30,6 +30,14 @@ export interface ErrorContext {
   tags?: Record<string, string>;
   extra?: Record<string, unknown>;
   level?: ErrorSeverity;
+  [key: string]:
+    | string
+    | number
+    | boolean
+    | undefined
+    | null
+    | Record<string, unknown>
+    | { id: string; email?: string; username?: string };
 }
 
 /**
@@ -70,7 +78,9 @@ export function initMonitoring(): void {
 
     window.addEventListener('unhandledrejection', (event) => {
       captureException(
-        event.reason instanceof Error ? event.reason : new Error(String(event.reason)),
+        event.reason instanceof Error
+          ? event.reason
+          : new Error(String(event.reason)),
         {
           tags: { type: 'unhandledrejection' },
         },
@@ -115,7 +125,6 @@ export function captureException(error: Error, context?: ErrorContext): void {
   if (process.env.NODE_ENV === 'production' && typeof window !== 'undefined') {
     // If Sentry is configured, it will automatically capture via global handlers
     // You can also call Sentry.captureException(error) here if using @sentry/nextjs
-
     // Example with fetch to custom error tracking endpoint:
     // fetch('/api/errors', {
     //   method: 'POST',
@@ -183,7 +192,9 @@ export function captureMessage(message: string, context?: ErrorContext): void {
  * });
  * ```
  */
-export function setUser(user: { id: string; email?: string; username?: string } | null): void {
+export function setUser(
+  user: { id: string; email?: string; username?: string } | null,
+): void {
   if (process.env.NODE_ENV === 'production') {
     // Sentry.setUser(user);
   }
@@ -214,7 +225,7 @@ export function setUser(user: { id: string; email?: string; username?: string } 
 export function addBreadcrumb(
   message: string,
   category?: string,
-  level: ErrorSeverity = 'info',
+  _level: ErrorSeverity = 'info',
   data?: Record<string, unknown>,
 ): void {
   if (process.env.NODE_ENV === 'development') {
@@ -224,7 +235,7 @@ export function addBreadcrumb(
   // Sentry.addBreadcrumb({
   //   message,
   //   category,
-  //   level,
+  //   level: _level,
   //   data,
   // });
 }

@@ -10,9 +10,9 @@
  */
 
 import 'dotenv/config';
-import { drizzle } from 'drizzle-orm/neon-http';
 import { neon } from '@neondatabase/serverless';
 import { sql } from 'drizzle-orm';
+import { drizzle } from 'drizzle-orm/neon-http';
 
 const databaseUrl = process.env.DATABASE_URL;
 
@@ -109,7 +109,6 @@ async function migrate() {
     console.log('  2. Update environment variables (see .env.example)');
     console.log('  3. Test email notifications locally with Mailhog');
     console.log('  4. Deploy to production\n');
-
   } catch (error) {
     console.error('❌ Migration failed:', error);
     process.exit(1);

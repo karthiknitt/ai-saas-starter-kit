@@ -39,7 +39,9 @@ async function testEmails() {
       username: 'Test User',
       planName: 'Pro',
       billingCycle: 'Monthly',
-      nextBillingDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString(),
+      nextBillingDate: new Date(
+        Date.now() + 30 * 24 * 60 * 60 * 1000,
+      ).toLocaleDateString(),
       amount: '$29/month',
     });
 
@@ -73,7 +75,9 @@ async function testEmails() {
       planName: 'Pro',
       amount: '$29.00',
       failureReason: 'Insufficient funds',
-      retryDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toLocaleDateString(),
+      retryDate: new Date(
+        Date.now() + 3 * 24 * 60 * 60 * 1000,
+      ).toLocaleDateString(),
     });
 
     if (result3.success) {
@@ -91,7 +95,9 @@ async function testEmails() {
       usagePercentage: 80,
       quotaUsed: 8,
       quotaLimit: 10,
-      resetDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toLocaleDateString(),
+      resetDate: new Date(
+        Date.now() + 15 * 24 * 60 * 60 * 1000,
+      ).toLocaleDateString(),
     });
 
     if (result4.success) {
@@ -109,7 +115,9 @@ async function testEmails() {
       usagePercentage: 100,
       quotaUsed: 10,
       quotaLimit: 10,
-      resetDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toLocaleDateString(),
+      resetDate: new Date(
+        Date.now() + 15 * 24 * 60 * 60 * 1000,
+      ).toLocaleDateString(),
     });
 
     if (result5.success) {
@@ -124,7 +132,9 @@ async function testEmails() {
       to: testEmail,
       username: 'Test User',
       planName: 'Pro',
-      endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString(),
+      endDate: new Date(
+        Date.now() + 30 * 24 * 60 * 60 * 1000,
+      ).toLocaleDateString(),
     });
 
     if (result6.success) {
@@ -144,7 +154,6 @@ async function testEmails() {
     } else {
       console.log('  4. Check Resend dashboard for delivery status\n');
     }
-
   } catch (error) {
     console.error('❌ Error testing emails:', error);
     process.exit(1);

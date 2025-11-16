@@ -126,7 +126,9 @@ export async function getSubscription(subscriptionId: string) {
  */
 export async function cancelSubscription(subscriptionId: string) {
   try {
-    const subscription = await polar.subscriptions.revoke({ id: subscriptionId });
+    const subscription = await polar.subscriptions.revoke({
+      id: subscriptionId,
+    });
     return subscription;
   } catch (error) {
     console.error('Failed to cancel subscription:', error);

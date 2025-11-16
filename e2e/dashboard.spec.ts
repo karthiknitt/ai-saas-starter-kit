@@ -7,10 +7,15 @@
  * - Key widgets and features
  */
 
-import { test, expect } from '@playwright/test';
+import type { Page } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
-// Helper to create authenticated user
-async function loginAsUser(page: any, email = 'test@example.com', password = 'password123') {
+// Helper to create authenticated user (for future use)
+async function _loginAsUser(
+  page: Page,
+  email = 'test@example.com',
+  password = 'password123',
+) {
   await page.goto('/login');
   await page.fill('input[name="email"]', email);
   await page.fill('input[name="password"]', password);
@@ -21,7 +26,9 @@ async function loginAsUser(page: any, email = 'test@example.com', password = 'pa
 }
 
 test.describe('Dashboard - Unauthenticated', () => {
-  test('should show login page when accessing dashboard without auth', async ({ page }) => {
+  test('should show login page when accessing dashboard without auth', async ({
+    page,
+  }) => {
     await page.goto('/dashboard');
 
     // Should be redirected to login
@@ -99,7 +106,9 @@ test.describe('AI Chat', () => {
 
     // If on chat page, check for input
     if (page.url().includes('aichat')) {
-      const hasInput = await page.locator('textarea, input[type="text"]').count();
+      const hasInput = await page
+        .locator('textarea, input[type="text"]')
+        .count();
       expect(hasInput).toBeGreaterThan(0);
     }
   });

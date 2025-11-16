@@ -7,7 +7,7 @@
  * - Audit logs
  */
 
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 test.describe('Admin Access Control', () => {
   test('non-admin users should not access admin panel', async ({ page }) => {
@@ -88,7 +88,9 @@ test.describe('Audit Logs', () => {
     }
 
     // Look for filter controls
-    const hasFilters = await page.locator('input[type="search"], select, button:has-text("Filter")').count();
+    const hasFilters = await page
+      .locator('input[type="search"], select, button:has-text("Filter")')
+      .count();
     expect(hasFilters).toBeGreaterThanOrEqual(0);
   });
 });

@@ -1,13 +1,13 @@
 import { and, eq, gte, sql } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
 import { db } from '@/db/drizzle';
-import { user, usageLog, usageQuota } from '@/db/schema';
+import { usageLog, usageQuota, user } from '@/db/schema';
+import { emailService } from './email-service';
 import {
   getAiRequestLimit,
-  hasUnlimitedAiRequests,
   getUserPlan,
+  hasUnlimitedAiRequests,
 } from './subscription-features';
-import { emailService } from './email-service';
 
 export type ResourceType = 'ai_request' | 'api_call' | 'storage';
 

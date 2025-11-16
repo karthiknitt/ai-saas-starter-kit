@@ -22,7 +22,9 @@ import { z } from 'zod';
  */
 const envSchema = z.object({
   // Database
-  DATABASE_URL: z.string().url('DATABASE_URL must be a valid database connection URL'),
+  DATABASE_URL: z
+    .string()
+    .url('DATABASE_URL must be a valid database connection URL'),
 
   // Authentication (Better Auth)
   BETTER_AUTH_SECRET: z
@@ -43,7 +45,10 @@ const envSchema = z.object({
 
   // Email Service (Resend)
   RESEND_API_KEY: z.string().optional(),
-  RESEND_SENDER_EMAIL: z.string().email('RESEND_SENDER_EMAIL must be a valid email').optional(),
+  RESEND_SENDER_EMAIL: z
+    .string()
+    .email('RESEND_SENDER_EMAIL must be a valid email')
+    .optional(),
 
   // Security (Arcjet)
   ARCJET_KEY: z.string().optional(),
@@ -56,10 +61,15 @@ const envSchema = z.object({
   ENCRYPTION_KEY: z
     .string()
     .length(64, 'ENCRYPTION_KEY must be exactly 64 hexadecimal characters')
-    .regex(/^[0-9a-f]{64}$/i, 'ENCRYPTION_KEY must be a 64-character hex string'),
+    .regex(
+      /^[0-9a-f]{64}$/i,
+      'ENCRYPTION_KEY must be a 64-character hex string',
+    ),
 
   // Node Environment
-  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+  NODE_ENV: z
+    .enum(['development', 'production', 'test'])
+    .default('development'),
 });
 
 /**
@@ -119,7 +129,9 @@ export function validateEnv(env: NodeJS.ProcessEnv = process.env): Env {
  * @param env - Environment variables object
  * @returns Boolean indicating if production requirements are met
  */
-export function isProductionReady(env: NodeJS.ProcessEnv = process.env): boolean {
+export function isProductionReady(
+  env: NodeJS.ProcessEnv = process.env,
+): boolean {
   const productionRequired = [
     'DATABASE_URL',
     'BETTER_AUTH_SECRET',
@@ -136,7 +148,10 @@ export function isProductionReady(env: NodeJS.ProcessEnv = process.env): boolean
   const missing = productionRequired.filter((key) => !env[key]);
 
   if (missing.length > 0) {
-    console.warn('⚠️  Missing production environment variables:', missing.join(', '));
+    console.warn(
+      '⚠️  Missing production environment variables:',
+      missing.join(', '),
+    );
     return false;
   }
 

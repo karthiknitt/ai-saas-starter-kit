@@ -9,7 +9,7 @@
  * - Password reset
  */
 
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 test.describe('Authentication', () => {
   test.beforeEach(async ({ page }) => {
@@ -37,7 +37,9 @@ test.describe('Authentication', () => {
     await expect(page.locator('h1:has-text("Create")')).toBeVisible();
   });
 
-  test('should show validation errors on empty login form', async ({ page }) => {
+  test('should show validation errors on empty login form', async ({
+    page,
+  }) => {
     await page.goto('/login');
 
     // Click submit without filling form
@@ -58,7 +60,9 @@ test.describe('Authentication', () => {
     await page.click('button[type="submit"]');
 
     // Wait for error message
-    await expect(page.locator('text=/Invalid|incorrect/i')).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('text=/Invalid|incorrect/i')).toBeVisible({
+      timeout: 5000,
+    });
   });
 
   test('should navigate to forgot password page', async ({ page }) => {
@@ -80,7 +84,9 @@ test.describe('Authentication', () => {
     await page.click('button[type="submit"]');
 
     // Check for success message or redirect
-    await expect(page.locator('text=/sent|check|email/i')).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('text=/sent|check|email/i')).toBeVisible({
+      timeout: 5000,
+    });
   });
 
   test('signup form should have all required fields', async ({ page }) => {
@@ -105,7 +111,9 @@ test.describe('Authentication', () => {
 });
 
 test.describe('Protected Routes', () => {
-  test('should redirect to login when accessing protected page', async ({ page }) => {
+  test('should redirect to login when accessing protected page', async ({
+    page,
+  }) => {
     // Try to access dashboard without authentication
     await page.goto('/dashboard');
 
@@ -113,7 +121,9 @@ test.describe('Protected Routes', () => {
     await expect(page).toHaveURL(/.*login/);
   });
 
-  test('should redirect to login when accessing admin page', async ({ page }) => {
+  test('should redirect to login when accessing admin page', async ({
+    page,
+  }) => {
     // Try to access admin without authentication
     await page.goto('/admin');
 

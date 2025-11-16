@@ -29,9 +29,9 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db/drizzle';
 import { subscription, user } from '@/db/schema';
 import { logSubscriptionChange } from '@/lib/audit-logger';
+import { emailService } from '@/lib/email-service';
 import { getPlanName } from '@/lib/plan-map';
 import { getOrCreateQuota } from '@/lib/usage-tracker';
-import { emailService } from '@/lib/email-service';
 
 /**
  * Polar subscription data structure from webhooks.

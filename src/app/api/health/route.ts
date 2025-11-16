@@ -7,6 +7,7 @@
  * @see https://learn.microsoft.com/en-us/azure/architecture/patterns/health-endpoint-monitoring
  */
 
+import { sql } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 import { db } from '@/db/drizzle';
 
@@ -42,7 +43,7 @@ export async function GET(request: Request) {
 
     // Check database connection
     try {
-      await db.execute('SELECT 1' as any);
+      await db.execute(sql`SELECT 1`);
       checks.database = { status: 'ok' };
     } catch (error) {
       checks.database = {

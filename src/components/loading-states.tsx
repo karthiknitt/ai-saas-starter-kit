@@ -44,13 +44,21 @@ export function ButtonLoader({ text = 'Loading...' }: { text?: string }) {
  *
  * Skeleton for table/list loading states
  */
-export function TableLoader({ rows = 5, columns = 4 }: { rows?: number; columns?: number }) {
+export function TableLoader({
+  rows = 5,
+  columns = 4,
+}: {
+  rows?: number;
+  columns?: number;
+}) {
   return (
     <div className="space-y-2">
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="flex gap-4">
+        // biome-ignore lint/suspicious/noArrayIndexKey: Static skeleton loader, items never reorder
+        <div key={`row-${i}`} className="flex gap-4">
           {Array.from({ length: columns }).map((_, j) => (
-            <Skeleton key={j} className="h-12 flex-1" />
+            // biome-ignore lint/suspicious/noArrayIndexKey: Static skeleton loader, items never reorder
+            <Skeleton key={`col-${i}-${j}`} className="h-12 flex-1" />
           ))}
         </div>
       ))}
@@ -95,7 +103,8 @@ export function DashboardLoader() {
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <CardLoader key={i} />
+          // biome-ignore lint/suspicious/noArrayIndexKey: Static skeleton loader, items never reorder
+          <CardLoader key={`dashboard-card-${i}`} />
         ))}
       </div>
       <div className="grid gap-4 md:grid-cols-2">
@@ -141,10 +150,13 @@ export function ChatLoader() {
     <div className="space-y-4">
       {Array.from({ length: 3 }).map((_, i) => (
         <div
-          key={i}
+          // biome-ignore lint/suspicious/noArrayIndexKey: Static skeleton loader, items never reorder
+          key={`chat-message-${i}`}
           className={`flex ${i % 2 === 0 ? 'justify-start' : 'justify-end'}`}
         >
-          <div className={`max-w-[80%] space-y-2 ${i % 2 === 0 ? '' : 'items-end'}`}>
+          <div
+            className={`max-w-[80%] space-y-2 ${i % 2 === 0 ? '' : 'items-end'}`}
+          >
             <Skeleton className="h-4 w-20" />
             <Skeleton className={`h-16 ${i % 2 === 0 ? 'w-64' : 'w-48'}`} />
           </div>
@@ -160,5 +172,7 @@ export function ChatLoader() {
  * Small inline spinner for inline loading states
  */
 export function InlineLoader({ size = 16 }: { size?: number }) {
-  return <Loader2 className="animate-spin" style={{ width: size, height: size }} />;
+  return (
+    <Loader2 className="animate-spin" style={{ width: size, height: size }} />
+  );
 }

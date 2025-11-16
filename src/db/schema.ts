@@ -385,7 +385,10 @@ export const webhookEvent = pgTable(
     createdAt: timestamp('created_at').defaultNow().notNull(),
   },
   (table) => ({
-    idxWebhookStatus: index('idx_webhook_status').on(table.status, table.createdAt),
+    idxWebhookStatus: index('idx_webhook_status').on(
+      table.status,
+      table.createdAt,
+    ),
   }),
 );
 

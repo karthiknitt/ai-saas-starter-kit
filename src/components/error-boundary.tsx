@@ -9,10 +9,16 @@
  * @see https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary
  */
 
-import { Component, type ReactNode } from 'react';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
+import { Component, type ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -38,7 +44,10 @@ interface ErrorBoundaryState {
  * </ErrorBoundary>
  * ```
  */
-export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+export class ErrorBoundary extends Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false, error: null };
@@ -85,7 +94,8 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                We're sorry, but something went wrong. The error has been logged and we'll look into it.
+                We're sorry, but something went wrong. The error has been logged
+                and we'll look into it.
               </p>
               {process.env.NODE_ENV === 'development' && this.state.error && (
                 <div className="mt-4 rounded-md bg-muted p-4">
@@ -103,7 +113,13 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                 <RefreshCw className="mr-2 h-4 w-4" />
                 Try Again
               </Button>
-              <Button onClick={() => window.location.href = '/'} variant="outline" size="sm">
+              <Button
+                onClick={() => {
+                  window.location.href = '/';
+                }}
+                variant="outline"
+                size="sm"
+              >
                 Go Home
               </Button>
             </CardFooter>
@@ -138,7 +154,12 @@ export function PageErrorBoundary({ children }: { children: ReactNode }) {
                 <RefreshCw className="mr-2 h-4 w-4" />
                 Reload Page
               </Button>
-              <Button onClick={() => window.location.href = '/'} variant="outline">
+              <Button
+                onClick={() => {
+                  window.location.href = '/';
+                }}
+                variant="outline"
+              >
                 Go Home
               </Button>
             </div>

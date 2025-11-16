@@ -7,7 +7,7 @@
  * - Subscription management
  */
 
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 test.describe('Subscription Flow', () => {
   test.beforeEach(async ({ page }) => {
@@ -53,7 +53,9 @@ test.describe('Subscription Flow', () => {
 
     // Look for Pro plan upgrade button
     const proSection = page.locator('text=Pro').first().locator('..');
-    const upgradeButton = proSection.locator('button:has-text("Upgrade")').first();
+    const upgradeButton = proSection
+      .locator('button:has-text("Upgrade")')
+      .first();
 
     // Button should exist or be visible
     const count = await upgradeButton.count();
@@ -97,7 +99,9 @@ test.describe('Billing Dashboard', () => {
     }
 
     // Look for usage-related text
-    const usageElements = await page.locator('text=/usage|quota|limit/i').count();
+    const usageElements = await page
+      .locator('text=/usage|quota|limit/i')
+      .count();
     expect(usageElements).toBeGreaterThan(0);
   });
 

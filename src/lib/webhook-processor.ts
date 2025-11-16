@@ -59,7 +59,11 @@ export async function logWebhookEvent(
     logger.info('Webhook event logged', { eventId, source, eventType });
     return eventId;
   } catch (error) {
-    logger.error('Failed to log webhook event', { error, source, eventType });
+    logger.error('Failed to log webhook event', {
+      error: error instanceof Error ? error.message : String(error),
+      source,
+      eventType,
+    });
     throw error;
   }
 }
@@ -157,7 +161,9 @@ export async function processWebhookEvent(
 
       // Schedule retry with exponential backoff
       if (newRetryCount <= MAX_RETRY_ATTEMPTS) {
-        const delay = RETRY_DELAYS[newRetryCount - 1] || RETRY_DELAYS[RETRY_DELAYS.length - 1];
+        const delay =
+          RETRY_DELAYS[newRetryCount - 1] ||
+          RETRY_DELAYS[RETRY_DELAYS.length - 1];
 
         setTimeout(() => {
           processWebhookEvent(eventId, processor).catch((err) => {
@@ -169,8 +175,12 @@ export async function processWebhookEvent(
       return { success: false, error: errorMessage };
     }
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    logger.error('Error processing webhook event', { eventId, error: errorMessage });
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error';
+    logger.error('Error processing webhook event', {
+      eventId,
+      error: errorMessage,
+    });
     return { success: false, error: errorMessage };
   }
 }
@@ -207,10 +217,7 @@ export async function processWebhookNow(
  * @param limit - Maximum number of events to return
  * @returns List of webhook events
  */
-export async function getWebhookEventsByStatus(
-  status: string,
-  limit = 100,
-) {
+export async function getWebhookEventsByStatus(status: string, limit = 100) {
   return await db.query.webhookEvent.findMany({
     where: eq(webhookEvent.status, status),
     limit,
@@ -245,7 +252,8 @@ export async function retryWebhookEvent(
     // Process the event
     return await processWebhookEvent(eventId, processor);
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error';
     logger.error('Manual retry failed', { eventId, error: errorMessage });
     return { success: false, error: errorMessage };
   }
