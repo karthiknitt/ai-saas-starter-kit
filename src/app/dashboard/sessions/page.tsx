@@ -8,6 +8,8 @@
 
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
+import { TableLoader } from '@/components/loading-states';
 import { SessionsClient } from '@/components/sessions-client';
 import { auth, type TypedSession } from '@/lib/auth';
 
@@ -34,7 +36,9 @@ export default async function SessionsPage() {
         </p>
       </div>
 
-      <SessionsClient />
+      <Suspense fallback={<TableLoader />}>
+        <SessionsClient />
+      </Suspense>
     </div>
   );
 }

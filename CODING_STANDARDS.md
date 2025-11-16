@@ -2,7 +2,7 @@
 
 **AI SaaS Starter Kit - Coding Standards & Best Practices**
 
-This document defines the coding standards for this project. All code contributions must follow these guidelines to ensure consistency, maintainability, and quality.
+This document defines the coding standards for this project. All code contributions must follow these guidelines to ensure consistency, maintainability, quality, performance, and excellent user experience.
 
 ---
 
@@ -17,6 +17,11 @@ This document defines the coding standards for this project. All code contributi
 - [Code Organization](#code-organization)
 - [Security Standards](#security-standards)
 - [Testing Standards](#testing-standards)
+- [Performance Optimization](#performance-optimization)
+- [UI/UX Standards](#uiux-standards)
+- [Error Handling & Resilience](#error-handling--resilience)
+- [Loading States & Feedback](#loading-states--feedback)
+- [Accessibility Standards](#accessibility-standards)
 - [Git & Documentation](#git--documentation)
 
 ---
@@ -31,6 +36,8 @@ This document defines the coding standards for this project. All code contributi
 4. **DRY (Don't Repeat Yourself)** - Extract repeated logic into reusable functions/components
 5. **Fail fast** - Validate inputs early and throw meaningful errors
 6. **Type safety first** - Leverage TypeScript's type system fully
+7. **Performance by default** - Consider performance implications in every decision
+8. **Accessibility first** - Build for all users, including those with disabilities
 
 ### File Naming Conventions
 
@@ -693,23 +700,6 @@ export function Button({
 }
 ```
 
-### Accessibility with Tailwind
-
-```typescript
-// Always include focus states
-<button className="rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-  Click me
-</button>
-
-// Use screen reader utilities
-<span className="sr-only">Loading...</span>
-
-// Proper contrast ratios
-<div className="bg-gray-900 text-white"> // ✅ Good contrast
-  <p className="text-gray-100">Content</p>
-</div>
-```
-
 ---
 
 ## JavaScript Standards
@@ -777,65 +767,6 @@ if (value == null) { } // ❌
 // Use: if (value === null || value === undefined) { }
 ```
 
-### Error Handling
-
-```typescript
-// Always use try-catch for async operations
-async function processPayment(amount: number) {
-  try {
-    const result = await paymentService.charge(amount);
-    await logAuditEvent('payment.success', result.id);
-    return { success: true, data: result };
-  } catch (error) {
-    // Log errors with context
-    console.error('Payment processing failed:', {
-      amount,
-      error: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined,
-    });
-
-    // Return user-friendly errors
-    return {
-      success: false,
-      error: 'Payment processing failed. Please try again.',
-    };
-  }
-}
-
-// Create custom error classes
-class ValidationError extends Error {
-  constructor(
-    message: string,
-    public field: string,
-    public code: string
-  ) {
-    super(message);
-    this.name = 'ValidationError';
-  }
-}
-
-// Use error boundaries in React
-class ErrorBoundary extends React.Component<
-  { children: React.ReactNode },
-  { hasError: boolean }
-> {
-  static getDerivedStateFromError() {
-    return { hasError: true };
-  }
-
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Error caught by boundary:', error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return <ErrorFallback />;
-    }
-    return this.props.children;
-  }
-}
-```
-
 ---
 
 ## Code Organization
@@ -901,48 +832,6 @@ import type { User, Post } from '@/types';
 
 // 7. Styles (if any)
 import './styles.css';
-```
-
-### Function Organization
-
-```typescript
-// Organize related functions together
-
-// 1. Type definitions
-interface UserService {
-  getUser: (id: string) => Promise<User>;
-  updateUser: (id: string, data: Partial<User>) => Promise<User>;
-  deleteUser: (id: string) => Promise<void>;
-}
-
-// 2. Helper functions
-function validateUserId(id: string): boolean {
-  return id.length > 0 && id.length <= 100;
-}
-
-function formatUserData(user: User): FormattedUser {
-  return {
-    ...user,
-    fullName: `${user.firstName} ${user.lastName}`,
-  };
-}
-
-// 3. Main exported functions
-export async function getUser(id: string): Promise<User> {
-  if (!validateUserId(id)) {
-    throw new ValidationError('Invalid user ID', 'id', 'INVALID_ID');
-  }
-
-  const user = await db.query.user.findFirst({
-    where: eq(userTable.id, id),
-  });
-
-  if (!user) {
-    throw new NotFoundError('User not found');
-  }
-
-  return user;
-}
 ```
 
 ---
@@ -1121,6 +1010,850 @@ describe('Button', () => {
 
 ---
 
+## Performance Optimization
+
+### Performance Monitoring
+
+**REQUIRED: Implement performance tracking on all pages**
+
+```typescript
+// Use the provided usePerformance hook
+import { usePerformance } from '@/hooks/use-performance';
+import { PerformanceMonitor } from '@/components/performance-monitor';
+
+// In your root layout (already implemented)
+export default function RootLayout({ children }: React.PropsWithChildren) {
+  return (
+    <html>
+      <body>
+        <PerformanceMonitor /> {/* Tracks LCP, FCP, TTFB */}
+        {children}
+      </body>
+    </html>
+  );
+}
+
+// In custom pages/components for detailed metrics
+function MyPage() {
+  const { metrics, getLCPRating, getFCPRating } = usePerformance();
+
+  // Use metrics for conditional rendering or analytics
+  useEffect(() => {
+    if (getLCPRating() === 'poor') {
+      // Log or alert about poor performance
+    }
+  }, [metrics]);
+}
+```
+
+### Image Optimization
+
+**✅ DO:**
+```typescript
+// Always use Next.js Image component
+import Image from 'next/image';
+
+<Image
+  src="/hero.jpg"
+  alt="Hero image"
+  width={1200}
+  height={600}
+  priority // For above-the-fold images
+  placeholder="blur"
+  blurDataURL="data:image/jpeg;base64,..."
+/>
+
+// Lazy load images below the fold
+<Image
+  src="/feature.jpg"
+  alt="Feature"
+  width={800}
+  height={400}
+  loading="lazy"
+/>
+```
+
+**❌ DON'T:**
+```typescript
+// Don't use regular img tags
+<img src="/large-image.jpg" /> // ❌
+
+// Don't load huge images without optimization
+<Image src="/10mb-photo.jpg" /> // ❌
+```
+
+### Code Splitting & Lazy Loading
+
+```typescript
+// Lazy load heavy components
+import dynamic from 'next/dynamic';
+
+const HeavyChart = dynamic(() => import('@/components/heavy-chart'), {
+  loading: () => <ChartLoader />,
+  ssr: false, // Disable SSR if not needed
+});
+
+// Lazy load routes
+const AdminPanel = dynamic(() => import('@/components/admin-panel'));
+
+// Use React.lazy for client components
+const LazyComponent = lazy(() => import('./LazyComponent'));
+
+function MyPage() {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <LazyComponent />
+    </Suspense>
+  );
+}
+```
+
+### Database Query Optimization
+
+```typescript
+// ✅ DO: Use indexes for frequent queries
+// In schema.ts
+export const user = pgTable('user', {
+  id: text('id').primaryKey(),
+  email: text('email').notNull(),
+  role: text('role').notNull(),
+}, (table) => ({
+  emailIdx: index('idx_user_email').on(table.email),
+  roleIdx: index('idx_user_role').on(table.role),
+}));
+
+// ✅ DO: Use parallel queries
+const [users, posts, comments] = await Promise.all([
+  db.query.user.findMany(),
+  db.query.post.findMany(),
+  db.query.comment.findMany(),
+]);
+
+// ✅ DO: Limit query results
+const users = await db.query.user.findMany({
+  limit: 20,
+  offset: page * 20,
+});
+
+// ❌ DON'T: N+1 queries
+for (const user of users) {
+  const posts = await db.query.post.findMany({
+    where: eq(post.userId, user.id)
+  }); // ❌
+}
+
+// ✅ DO: Use joins or eager loading
+const users = await db.query.user.findMany({
+  with: {
+    posts: true,
+  },
+});
+```
+
+### Bundle Size Optimization
+
+```typescript
+// ✅ DO: Import only what you need
+import { Button } from '@/components/ui/button'; // ✅
+
+// ❌ DON'T: Import entire libraries
+import * as Icons from 'lucide-react'; // ❌
+
+// ✅ DO: Use tree-shakeable imports
+import { Clock, User, Mail } from 'lucide-react'; // ✅
+
+// ✅ DO: Analyze bundle size regularly
+// Run: pnpm analyze
+```
+
+### Caching Strategies
+
+```typescript
+// Cache API responses
+export const revalidate = 3600; // Revalidate every hour
+
+// Use React cache for deduplication
+import { cache } from 'react';
+
+export const getUser = cache(async (id: string) => {
+  return db.query.user.findFirst({ where: eq(user.id, id) });
+});
+
+// Implement stale-while-revalidate
+export const fetchOptions = {
+  next: {
+    revalidate: 60, // Revalidate every 60 seconds
+  },
+};
+```
+
+### Next.js 16 Cache Components
+
+**This project uses Next.js 16 with `"use cache"` directive for optimal performance:**
+
+```typescript
+// Cache profiles (configured in next.config.ts)
+experimental: {
+  cacheLife: {
+    default: { stale: 3600, revalidate: 900, expire: 86400 },
+    short: { stale: 60, revalidate: 30, expire: 300 },
+    long: { stale: 86400, revalidate: 3600, expire: 604800 },
+    forever: { stale: Infinity, revalidate: 604800, expire: Infinity },
+  },
+}
+
+// Usage in code
+export const getUserPlan = cache(async (userId: string) => {
+  'use cache';
+  cacheLife('default'); // Uses default profile
+
+  const subscription = await db.query.subscription.findFirst({
+    where: eq(subscriptionTable.userId, userId),
+  });
+
+  return subscription?.plan || 'free';
+});
+```
+
+**Cache Profile Guidelines:**
+- `forever` - Static configuration, plan features
+- `long` - External API models, rarely changing data (1 day cache)
+- `default` - User plans, subscriptions (1 hour cache)
+- `short` - Analytics, leaderboards (1 minute cache)
+
+### Static Generation with ISR
+
+```typescript
+// Enable Incremental Static Regeneration
+export const revalidate = 86400; // Revalidate every 24 hours
+
+export default async function LandingPage() {
+  // Statically generated at build time
+  // Automatically revalidated every 24 hours
+  return <PageContent />;
+}
+```
+
+**Benefits:**
+- Near-instant page loads (< 100ms TTFB)
+- Perfect for SEO (fully rendered HTML)
+- Scales infinitely (no server rendering on each request)
+
+### Performance Budgets
+
+**Target Metrics (measured by usePerformance hook):**
+
+| Metric | Target | Good | Needs Improvement | Poor |
+|--------|--------|------|-------------------|------|
+| **LCP** (Largest Contentful Paint) | < 2.5s | < 2.5s | 2.5s - 4.0s | > 4.0s |
+| **FCP** (First Contentful Paint) | < 1.8s | < 1.8s | 1.8s - 3.0s | > 3.0s |
+| **TTFB** (Time to First Byte) | < 800ms | < 800ms | 800ms - 1.8s | > 1.8s |
+| **CLS** (Cumulative Layout Shift) | < 0.1 | < 0.1 | 0.1 - 0.25 | > 0.25 |
+| **FID** (First Input Delay) | < 100ms | < 100ms | 100ms - 300ms | > 300ms |
+| **TTI** (Time to Interactive) | < 3.5s | < 3.5s | 3.5s - 7.3s | > 7.3s |
+
+**Bundle Size Targets:**
+- **First Load JS**: < 100 KB
+- **Total Bundle**: < 500 KB
+- **CSS**: < 50 KB
+
+**How to Measure:**
+```bash
+# Lighthouse CI
+npx lighthouse https://your-domain.com --view
+
+# Core Web Vitals Report
+# Visit: https://pagespeed.web.dev/
+
+# Bundle analysis
+pnpm build
+# View .next/analyze/client.html
+```
+
+### React Compiler (Automatic Optimization)
+
+**Enabled in this project:**
+```typescript
+// next.config.ts
+reactCompiler: true
+```
+
+**What it does:**
+- Automatically memoizes components
+- Eliminates need for manual `useMemo`/`useCallback` in most cases
+- Reduces re-renders by 30-50%
+- Optimizes React components at build time
+
+**When to still use manual memoization:**
+- Complex comparison logic needed
+- Performance-critical paths with specific requirements
+- Working with very large datasets
+
+---
+
+## UI/UX Standards
+
+### Error Handling & Resilience
+
+**REQUIRED: Use error boundaries in all major sections**
+
+```typescript
+// Use the provided error boundary components
+import { ErrorBoundary, PageErrorBoundary, SectionErrorBoundary } from '@/components/error-boundary';
+
+// Page-level error boundary
+export default function MyPage() {
+  return (
+    <PageErrorBoundary>
+      <PageContent />
+    </PageErrorBoundary>
+  );
+}
+
+// Section-level error boundary (doesn't crash entire page)
+function Dashboard() {
+  return (
+    <div>
+      <SectionErrorBoundary title="User Stats">
+        <UserStats />
+      </SectionErrorBoundary>
+
+      <SectionErrorBoundary title="Recent Activity">
+        <RecentActivity />
+      </SectionErrorBoundary>
+    </div>
+  );
+}
+
+// Custom error boundary with callback
+<ErrorBoundary
+  onError={(error, errorInfo) => {
+    // Log to error tracking service
+    logError(error, errorInfo);
+  }}
+>
+  <CriticalComponent />
+</ErrorBoundary>
+```
+
+---
+
+## Loading States & Feedback
+
+**REQUIRED: Always provide loading feedback**
+
+```typescript
+// Use the provided loading state components
+import {
+  PageLoader,
+  ButtonLoader,
+  TableLoader,
+  CardLoader,
+  DashboardLoader,
+  FormLoader,
+  ChatLoader,
+  InlineLoader,
+} from '@/components/loading-states';
+
+// Page loading
+function MyPage() {
+  const [loading, setLoading] = useState(true);
+
+  if (loading) return <PageLoader />;
+  return <PageContent />;
+}
+
+// Button loading state
+<Button disabled={isSubmitting}>
+  {isSubmitting ? <ButtonLoader text="Saving..." /> : 'Save'}
+</Button>
+
+// Table/List loading
+{loading ? <TableLoader rows={5} columns={4} /> : <DataTable data={data} />}
+
+// Dashboard loading
+{loading ? <DashboardLoader /> : <DashboardContent />}
+
+// Form loading
+{loading ? <FormLoader /> : <UserForm />}
+
+// Chat loading
+{loading ? <ChatLoader /> : <ChatMessages />}
+
+// Inline loading for small elements
+{loading ? <InlineLoader size={16} /> : <StatusBadge />}
+
+// Next.js Suspense boundaries
+<Suspense fallback={<DashboardLoader />}>
+  <AsyncDashboard />
+</Suspense>
+```
+
+### Loading States Best Practices
+
+```typescript
+// ✅ DO: Show skeleton loaders that match content layout
+<CardLoader /> // Matches Card component structure
+
+// ✅ DO: Use Suspense for async components
+<Suspense fallback={<Skeleton />}>
+  <AsyncComponent />
+</Suspense>
+
+// ✅ DO: Disable buttons during submission
+<Button disabled={isSubmitting}>
+  {isSubmitting ? 'Saving...' : 'Save'}
+</Button>
+
+// ❌ DON'T: Show generic spinners everywhere
+{loading && <Spinner />} // ❌ Not contextual
+
+// ❌ DON'T: Leave users without feedback
+{/* No loading indicator */} // ❌
+```
+
+### Optimistic UI Updates
+
+**Provide instant feedback for better perceived performance:**
+
+```typescript
+import { useOptimistic } from 'react';
+
+function TodoList({ todos }: { todos: Todo[] }) {
+  const [optimisticTodos, addOptimisticTodo] = useOptimistic(
+    todos,
+    (state, newTodo: Todo) => [...state, { ...newTodo, pending: true }]
+  );
+
+  async function handleAdd(todo: Todo) {
+    addOptimisticTodo(todo); // Immediate UI update
+    await saveTodo(todo); // Background save
+  }
+
+  return (
+    <ul>
+      {optimisticTodos.map((todo) => (
+        <li key={todo.id} className={todo.pending ? 'opacity-50' : ''}>
+          {todo.title}
+          {todo.pending && <InlineLoader size={12} />}
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+### Interactive Feedback
+
+**Button States:**
+```typescript
+<button className={cn(
+  // Base styles
+  'px-4 py-2 rounded-md font-medium transition-all duration-200',
+
+  // Default state
+  'bg-blue-600 text-white',
+
+  // Hover state
+  'hover:bg-blue-700 hover:shadow-md',
+
+  // Active/pressed state
+  'active:bg-blue-800 active:scale-95',
+
+  // Focus state (REQUIRED for accessibility)
+  'focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2',
+
+  // Disabled state
+  'disabled:opacity-50 disabled:cursor-not-allowed',
+
+  // Loading state
+  loading && 'opacity-75 cursor-wait'
+)}>
+  {loading ? (
+    <>
+      <Loader2 className="h-4 w-4 animate-spin mr-2 inline" />
+      Processing...
+    </>
+  ) : (
+    'Submit'
+  )}
+</button>
+```
+
+**Micro-interactions:**
+```typescript
+// Smooth transitions
+<div className="
+  transform transition-all duration-200 ease-in-out
+  hover:scale-105 hover:shadow-lg
+  active:scale-95
+">
+  Interactive card
+</div>
+
+// Toast notifications with actions
+import { toast } from 'sonner';
+
+toast.error('Failed to save changes', {
+  description: 'Please try again or contact support.',
+  action: {
+    label: 'Retry',
+    onClick: () => retry(),
+  },
+});
+```
+
+### Responsive Design
+
+**Mobile-First Touch Targets:**
+```typescript
+// Minimum 44x44px touch targets for mobile
+<button className="
+  min-h-[44px] min-w-[44px]  // WCAG AAA requirement
+  px-4 py-2
+  text-base
+  active:scale-95             // Touch feedback
+  transition-transform
+">
+  Button
+</button>
+
+// Mobile-first layout
+<div className="
+  flex flex-col gap-4        // Mobile: vertical stack
+  md:flex-row md:gap-6       // Tablet: horizontal layout
+  lg:gap-8                   // Desktop: more spacing
+">
+  <aside className="w-full md:w-64 lg:w-80">Sidebar</aside>
+  <main className="flex-1">Main content</main>
+</div>
+```
+
+### Typography and Readability
+
+**Font Hierarchy:**
+```typescript
+<h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight">
+  Page Title
+</h1>
+
+<h2 className="text-3xl md:text-4xl font-semibold leading-snug">
+  Section Heading
+</h2>
+
+<p className="text-base md:text-lg leading-relaxed text-gray-700 max-w-2xl">
+  Body text with optimal line length (50-75 characters) and comfortable
+  line height (1.5-1.75) for improved readability.
+</p>
+
+<small className="text-sm text-gray-600">Helper text</small>
+```
+
+---
+
+## Accessibility Standards
+
+### WCAG 2.1 Level AA Compliance
+
+**This project aims for WCAG 2.1 Level AA compliance across all features.**
+
+#### 1. Semantic HTML (Foundation)
+
+```typescript
+// ✅ Good - Semantic elements provide context
+<nav aria-label="Main navigation">
+  <ul>
+    <li><a href="/dashboard">Dashboard</a></li>
+  </ul>
+</nav>
+
+<main>
+  <h1>Page Title</h1>
+  <article>
+    <h2>Article Heading</h2>
+    <p>Content...</p>
+  </article>
+</main>
+
+<footer>
+  <p>&copy; 2025 Company</p>
+</footer>
+
+// ❌ Bad - Divs provide no semantic meaning
+<div className="nav">
+  <div className="link">Dashboard</div>
+</div>
+```
+
+#### 2. ARIA Labels and Roles
+
+```typescript
+// Interactive elements with icons
+<button
+  aria-label="Close dialog"
+  aria-pressed={isOpen}
+  onClick={handleClose}
+>
+  <X className="h-4 w-4" />
+</button>
+
+// Loading states
+<div role="status" aria-live="polite" aria-busy={loading}>
+  {loading ? 'Loading...' : 'Content loaded'}
+</div>
+
+// Form inputs with validation
+<label htmlFor="email">
+  Email Address
+  <input
+    id="email"
+    type="email"
+    aria-required="true"
+    aria-invalid={hasError}
+    aria-describedby={hasError ? "email-error" : undefined}
+  />
+</label>
+{hasError && (
+  <p id="email-error" role="alert" className="text-red-600">
+    Please enter a valid email address
+  </p>
+)}
+
+// Dynamic content announcements
+<div
+  role="status"
+  aria-live="polite"
+  aria-atomic="true"
+  className="sr-only"
+>
+  {itemCount} items in cart
+</div>
+```
+
+#### 3. Color Contrast Requirements
+
+```typescript
+// WCAG AA Requirements:
+// - Normal text (< 18pt): 4.5:1 contrast ratio
+// - Large text (≥ 18pt or 14pt bold): 3:1 contrast ratio
+// - UI components: 3:1 contrast ratio
+
+// ✅ Good - High contrast
+<p className="text-gray-900 dark:text-gray-100">
+  Readable body text
+</p>
+
+// ⚠️ Avoid - Low contrast
+<p className="text-gray-400">
+  May not meet WCAG AA standards
+</p>
+
+// Tools to check:
+// - https://webaim.org/resources/contrastchecker/
+// - Chrome DevTools Accessibility panel
+// - axe DevTools extension
+```
+
+#### 4. Keyboard Navigation
+
+**All interactive elements must be keyboard accessible:**
+
+```typescript
+// Custom interactive div
+<div
+  role="button"
+  tabIndex={0}
+  onClick={handleClick}
+  onKeyDown={(e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleClick();
+    }
+  }}
+  className="cursor-pointer"
+>
+  Click me
+</div>
+
+// Focus management in dialogs
+import { useRef, useEffect } from 'react';
+
+function Dialog({ isOpen }: { isOpen: boolean }) {
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      previousFocusRef.current = document.activeElement as HTMLElement;
+      closeButtonRef.current?.focus();
+    } else {
+      previousFocusRef.current?.focus();
+    }
+  }, [isOpen]);
+
+  return (
+    <div role="dialog" aria-modal="true">
+      <button ref={closeButtonRef}>Close</button>
+    </div>
+  );
+}
+
+// Tab order (use natural DOM order, avoid tabIndex > 0)
+<form>
+  <input tabIndex={0} /> {/* First */}
+  <input tabIndex={0} /> {/* Second */}
+  <button tabIndex={0}>Submit</button> {/* Third */}
+</form>
+```
+
+#### 5. Focus Visible Styles (REQUIRED)
+
+```css
+/* Global focus styles in globals.css */
+*:focus-visible {
+  @apply outline-2 outline-offset-2 outline-blue-600 ring-2 ring-blue-600;
+}
+
+button:focus-visible,
+a:focus-visible {
+  @apply ring-2 ring-blue-600 ring-offset-2;
+}
+```
+
+#### 6. Screen Reader Support
+
+```typescript
+// Descriptive labels
+<img
+  src="/chart.png"
+  alt="Sales revenue chart showing 20% growth in Q4 2024"
+/>
+
+// Icon buttons
+<button aria-label="Delete item">
+  <Trash2 className="h-4 w-4" />
+  <span className="sr-only">Delete</span>
+</button>
+
+// Navigation landmarks
+<nav aria-label="Primary navigation">
+  <a href="/dashboard">Dashboard</a>
+</nav>
+
+// Live regions for dynamic updates
+<div
+  role="alert"
+  aria-live="assertive"  // For urgent announcements
+  className="sr-only"
+>
+  {errorMessage}
+</div>
+
+<div
+  role="status"
+  aria-live="polite"  // For non-urgent updates
+  aria-atomic="true"
+  className="sr-only"
+>
+  {successMessage}
+</div>
+
+// Skip to main content link
+<a
+  href="#main-content"
+  className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4"
+>
+  Skip to main content
+</a>
+<main id="main-content">
+  {/* Page content */}
+</main>
+```
+
+#### 7. Form Accessibility
+
+```typescript
+// ✅ Complete accessible form
+<form onSubmit={handleSubmit}>
+  <fieldset>
+    <legend>Personal Information</legend>
+
+    <div className="space-y-4">
+      <FormField>
+        <FormLabel htmlFor="name">
+          Full Name
+          <span aria-label="required" className="text-red-600">*</span>
+        </FormLabel>
+        <FormControl>
+          <Input
+            id="name"
+            type="text"
+            aria-required="true"
+            aria-invalid={!!errors.name}
+            aria-describedby={errors.name ? "name-error" : "name-hint"}
+          />
+        </FormControl>
+        <FormDescription id="name-hint">
+          Enter your full legal name
+        </FormDescription>
+        {errors.name && (
+          <FormMessage id="name-error" role="alert">
+            {errors.name.message}
+          </FormMessage>
+        )}
+      </FormField>
+    </div>
+  </fieldset>
+
+  <button
+    type="submit"
+    disabled={isSubmitting}
+    aria-busy={isSubmitting}
+  >
+    {isSubmitting ? 'Submitting...' : 'Submit'}
+  </button>
+</form>
+```
+
+### Accessibility Testing Tools
+
+**Automated Testing:**
+```bash
+# Install axe-core
+pnpm add -D @axe-core/react
+
+# In development only
+if (process.env.NODE_ENV === 'development') {
+  import('@axe-core/react').then((axe) => {
+    axe.default(React, ReactDOM, 1000);
+  });
+}
+```
+
+**Manual Testing Checklist:**
+1. **Keyboard Navigation**
+   - Tab through entire page
+   - Ensure all interactive elements are accessible
+   - Verify focus indicators are visible
+   - Test with only keyboard (no mouse)
+
+2. **Screen Reader Testing**
+   - macOS: VoiceOver (Cmd+F5)
+   - Windows: NVDA (free)
+   - Test landmark navigation
+   - Verify all content is announced
+
+3. **Color Blindness Simulation**
+   - Chrome DevTools > Rendering > Emulate vision deficiencies
+   - Test with different types of color blindness
+
+4. **Zoom and Text Resize**
+   - Test at 200% zoom
+   - Verify no content is cut off
+   - Check layout doesn't break
+
+---
+
 ## Git & Documentation
 
 ### Commit Messages
@@ -1136,6 +1869,8 @@ docs(readme): update installation instructions
 refactor(components): extract common button logic
 test(utils): add tests for date formatting
 chore(deps): update dependencies to latest versions
+perf(images): optimize image loading with lazy loading
+style(ui): improve button focus states
 ```
 
 **Types:**
@@ -1204,21 +1939,49 @@ export async function getUser(id: string): Promise<User | null> {
 
 Before submitting code for review, ensure:
 
+### Code Quality
 - [ ] Code follows TypeScript strict mode (no `any` types)
 - [ ] All functions have explicit return types
 - [ ] Components follow the standard structure
 - [ ] Server/Client components are correctly separated
+
+### Performance
+- [ ] Images are optimized with Next.js Image
+- [ ] Heavy components are lazy-loaded
+- [ ] Database queries are optimized with indexes
+- [ ] Performance metrics are monitored with usePerformance
+
+### UI/UX
+- [ ] Error boundaries are implemented
+- [ ] Loading states are shown for all async operations
+- [ ] All interactive elements have hover/focus/active states
+- [ ] Forms provide clear validation feedback
+
+### Security
 - [ ] All user inputs are validated with Zod
 - [ ] API routes include auth, rate limiting, and error handling
+- [ ] No sensitive data in logs or client-side code
+- [ ] Security best practices followed
+
+### Accessibility
+- [ ] Color contrast meets WCAG AA standards
+- [ ] All interactive elements are keyboard accessible
+- [ ] Images have alt text
+- [ ] Forms have proper labels and error messages
+
+### Testing
+- [ ] Tests are written for new functionality
+- [ ] All tests pass (`pnpm test:run`)
+- [ ] E2E tests cover critical flows
+
+### Code Style
 - [ ] Tailwind utilities are used (not custom CSS)
 - [ ] `cn()` is used for conditional class names
-- [ ] Tests are written for new functionality
 - [ ] No console.logs in production code
-- [ ] Security best practices followed
-- [ ] Commit messages follow conventional commits format
 - [ ] Code is formatted with Biome (`pnpm format`)
 - [ ] No linting errors (`pnpm lint`)
 - [ ] TypeScript compiles without errors (`pnpm type-check`)
+- [ ] Commit messages follow conventional commits format
 
 ---
 
@@ -1253,6 +2016,17 @@ const users = await db.query.user.findMany({
   limit: 10,
 });
 
+// Error boundary
+<PageErrorBoundary>
+  <YourPage />
+</PageErrorBoundary>
+
+// Loading state
+{loading ? <PageLoader /> : <Content />}
+
+// Performance monitoring
+const { metrics, getLCPRating } = usePerformance();
+
 // Class name merging
 className={cn('base-classes', condition && 'conditional-classes', className)}
 ```
@@ -1274,6 +2048,8 @@ pnpm type-check      # Check TypeScript types
 pnpm test            # Run tests in watch mode
 pnpm test:run        # Run tests once
 pnpm test:coverage   # Run tests with coverage
+pnpm test:e2e        # Run E2E tests
+pnpm test:e2e:ui     # Run E2E tests in UI mode
 
 # Database
 pnpm db:push         # Push schema changes
@@ -1282,6 +2058,7 @@ pnpm db:generate     # Generate migrations
 
 # Build
 pnpm build           # Build for production
+pnpm analyze         # Analyze bundle size
 ```
 
 ---
@@ -1295,10 +2072,12 @@ pnpm build           # Build for production
 - [Zod Documentation](https://zod.dev/)
 - [Better Auth Documentation](https://www.better-auth.com/docs)
 - [Drizzle ORM Documentation](https://orm.drizzle.team/docs/overview)
+- [Web Vitals](https://web.dev/vitals/)
+- [WCAG Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
 
 ---
 
 **Last Updated:** January 2025
-**Version:** 1.0.0
+**Version:** 2.0.0
 
 This guide is a living document. As the project evolves and new patterns emerge, update this guide to reflect current best practices.

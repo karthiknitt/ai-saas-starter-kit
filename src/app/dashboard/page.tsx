@@ -4,6 +4,11 @@ import { useEffect, useState } from 'react';
 import { AppSidebar } from '@/components/app-sidebar';
 import { ChartAreaInteractive } from '@/components/chart-area-interactive';
 import { DataTable } from '@/components/data-table';
+import {
+  PageErrorBoundary,
+  SectionErrorBoundary,
+} from '@/components/error-boundary';
+import { DashboardLoader } from '@/components/loading-states';
 import { SectionCards } from '@/components/section-cards';
 import { SiteHeader } from '@/components/site-header';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
@@ -51,33 +56,41 @@ export default function Page() {
   }, []);
 
   if (loading) {
-    return <div className="p-10 text-center">Loading dashboard...</div>;
+    return <DashboardLoader />;
   }
 
   return (
-    <SidebarProvider
-      style={
-        {
-          '--sidebar-width': 'calc(var(--spacing) * 72)',
-          '--header-height': 'calc(var(--spacing) * 12)',
-        } as React.CSSProperties
-      }
-    >
-      <AppSidebar variant="inset" user={user} />
-      <SidebarInset>
-        <SiteHeader user={user} pageTitle="Dashboard" />
-        <div className="flex flex-1 flex-col">
-          <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-              <SectionCards />
-              <div className="px-4 lg:px-6">
-                <ChartAreaInteractive />
+    <PageErrorBoundary>
+      <SidebarProvider
+        style={
+          {
+            '--sidebar-width': 'calc(var(--spacing) * 72)',
+            '--header-height': 'calc(var(--spacing) * 12)',
+          } as React.CSSProperties
+        }
+      >
+        <AppSidebar variant="inset" user={user} />
+        <SidebarInset>
+          <SiteHeader user={user} pageTitle="Dashboard" />
+          <div className="flex flex-1 flex-col">
+            <div className="@container/main flex flex-1 flex-col gap-2">
+              <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+                <SectionErrorBoundary title="Dashboard Cards">
+                  <SectionCards />
+                </SectionErrorBoundary>
+                <SectionErrorBoundary title="Analytics Chart">
+                  <div className="px-4 lg:px-6">
+                    <ChartAreaInteractive />
+                  </div>
+                </SectionErrorBoundary>
+                <SectionErrorBoundary title="Data Table">
+                  <DataTable data={data} />
+                </SectionErrorBoundary>
               </div>
-              <DataTable data={data} />
             </div>
           </div>
-        </div>
-      </SidebarInset>
-    </SidebarProvider>
+        </SidebarInset>
+      </SidebarProvider>
+    </PageErrorBoundary>
   );
 }

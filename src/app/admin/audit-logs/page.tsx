@@ -1,6 +1,8 @@
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
 import { AuditLogsClient } from '@/components/audit-logs-client';
+import { TableLoader } from '@/components/loading-states';
 import { auth, type TypedSession } from '@/lib/auth';
 
 export default async function AuditLogsPage() {
@@ -26,7 +28,9 @@ export default async function AuditLogsPage() {
         </p>
       </div>
 
-      <AuditLogsClient />
+      <Suspense fallback={<TableLoader />}>
+        <AuditLogsClient />
+      </Suspense>
     </div>
   );
 }
