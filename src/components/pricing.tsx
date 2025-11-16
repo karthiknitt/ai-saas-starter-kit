@@ -19,7 +19,7 @@ import {
  */
 export default function Pricing() {
   return (
-    <section className="pt-8 pb-16 md:pt-16 md:pb-32">
+    <section id="pricing" className="pt-8 pb-16 md:pt-16 md:pb-32">
       <div className="mx-auto max-w-6xl px-6">
         <div className="mx-auto max-w-2xl space-y-6 text-center">
           <h1 className="text-center text-4xl font-semibold lg:text-5xl">
