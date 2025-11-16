@@ -16,7 +16,11 @@ import { expect, test } from '@playwright/test';
  * Convert OKLCH color to RGB for contrast calculation
  * This is a simplified conversion - in production you might want to use a library
  */
-function oklchToRgb(l: number, c: number, h: number): [number, number, number] {
+function _oklchToRgb(
+  l: number,
+  c: number,
+  _h: number,
+): [number, number, number] {
   // Simplified OKLCH to RGB conversion
   // For grayscale (c=0), L maps directly to RGB
   if (c === 0) {
@@ -61,7 +65,11 @@ function getContrastRatio(
 function parseRgbColor(colorString: string): [number, number, number] | null {
   const match = colorString.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
   if (match) {
-    return [parseInt(match[1]), parseInt(match[2]), parseInt(match[3])];
+    return [
+      parseInt(match[1], 10),
+      parseInt(match[2], 10),
+      parseInt(match[3], 10),
+    ];
   }
   return null;
 }
