@@ -33,6 +33,7 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizeCss: true,
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
+    cacheComponents: true,
 
     // Next.js 16 Cache Components - Explicit caching configuration
     cacheLife: {
