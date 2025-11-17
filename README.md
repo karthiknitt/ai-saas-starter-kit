@@ -16,7 +16,7 @@ A production-ready, full-stack AI SaaS application starter kit built with Next.j
 - **Multi-Tenancy/Workspaces**: Complete team workspace management with UI and member controls
 - **Role-Based Access Control (RBAC)**: Granular permission system with admin dashboard
 - **Usage Tracking**: Quota enforcement and feature gating by subscription tier
-- **Audit Logging**: Comprehensive activity tracking for compliance
+- **Audit Logging**: Comprehensive activity tracking for compliance and workspace actions
 - **Encrypted API Key Management**: Secure storage for user API keys
 - **Rate Limiting**: Protection against abuse with Arcjet
 - **Security Headers**: Helmet integration for enhanced security
@@ -351,9 +351,35 @@ Ensure your hosting platform supports:
 ## Documentation
 
 - [Improvement Roadmap](./IMPROVEMENT_ROADMAP.md) - Feature roadmap and development plans
+- [Coding Standards](./CODING_STANDARDS.md) - Code quality guidelines and best practices
 - [RBAC & Payment Status](./RBAC_PAYMENT_STATUS.md) - Details on access control and payments
 - [Testing Guide](./TESTING_GUIDE.md) - How to write and run tests
 - [Phase 1 Complete](./PHASE_1_COMPLETE.md) - MVP completion summary
+- [Phase 2 Implementation](./PHASE_2_IMPLEMENTATION.md) - Production readiness features
+
+## Workspace Features
+
+### Team Workspaces
+Create and manage team workspaces with member collaboration:
+- **Create Workspaces**: Organize teams with unique workspace names
+- **Invite Members**: Send email invitations to team members
+- **Role Management**: Assign roles (owner, admin, member, viewer)
+- **Workspace Billing**: Unified subscriptions for entire teams
+
+### Email Invitations
+Professional invitation system with secure token-based authentication:
+- **Send Invitations**: Invite users by email to join workspaces
+- **Email Templates**: Branded invitation emails with role descriptions
+- **Accept/Decline**: Recipients can accept or decline invitations
+- **Expiration**: Invitations automatically expire after 7 days
+
+### Workspace Billing
+Flexible billing model supporting both individual and team subscriptions:
+- **User-Level Plans**: Individual subscriptions for personal use
+- **Workspace Plans**: Team subscriptions shared across all members
+- **Usage Aggregation**: Track combined usage across workspace members
+- **Effective Plans**: Automatic selection of highest available plan
+- **Quota Management**: Enforce limits at both user and workspace levels
 
 ## Tech Stack
 

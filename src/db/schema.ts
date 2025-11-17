@@ -200,13 +200,15 @@ export const verification = pgTable('verification', {
 });
 
 /**
- * Subscription table - User subscription management via Polar.
+ * Subscription table - User and workspace subscription management via Polar.
  *
  * Tracks Polar subscription details and synchronizes with local application state.
  * Updated via webhooks from Polar.
+ * Supports both individual user subscriptions and workspace-level billing.
  *
  * @property {string} id - Unique subscription identifier
  * @property {string} userId - Associated user ID (foreign key, cascade delete)
+ * @property {string | null} workspaceId - Optional workspace ID for workspace-level billing
  * @property {string} polarSubscriptionId - Polar subscription ID (unique)
  * @property {string} polarCustomerId - Polar customer ID
  * @property {string} status - Subscription status ('active', 'canceled', 'past_due', etc.)
@@ -217,26 +219,44 @@ export const verification = pgTable('verification', {
  * @property {Date} createdAt - Subscription creation timestamp
  * @property {Date} updatedAt - Last subscription update timestamp
  *
+ * Billing Models:
+ * - User-level: workspaceId is null, subscription applies to single user
+ * - Workspace-level: workspaceId is set, subscription applies to all workspace members
+ *
+ * Indexes:
+ * - idx_subscription_workspace: For workspace-level subscription lookups
+ *
  * @see {@link /api/webhooks/polar Polar Webhook Handler}
  */
-export const subscription = pgTable('subscription', {
-  id: text('id').primaryKey(),
-  userId: text('user_id')
-    .notNull()
-    .references(() => user.id, { onDelete: 'cascade' }),
-  polarSubscriptionId: text('polar_subscription_id').notNull().unique(),
-  polarCustomerId: text('polar_customer_id').notNull(),
-  status: text('status').notNull(), // active, canceled, past_due, etc.
-  plan: text('plan').notNull(), // Free, Pro, Startup
-  currentPeriodStart: timestamp('current_period_start'),
-  currentPeriodEnd: timestamp('current_period_end'),
-  cancelAtPeriodEnd: boolean('cancel_at_period_end').default(false),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at')
-    .defaultNow()
-    .$onUpdate(() => /* @__PURE__ */ new Date())
-    .notNull(),
-});
+export const subscription = pgTable(
+  'subscription',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    workspaceId: text('workspace_id').references(() => workspace.id, {
+      onDelete: 'cascade',
+    }),
+    polarSubscriptionId: text('polar_subscription_id').notNull().unique(),
+    polarCustomerId: text('polar_customer_id').notNull(),
+    status: text('status').notNull(), // active, canceled, past_due, etc.
+    plan: text('plan').notNull(), // Free, Pro, Startup
+    currentPeriodStart: timestamp('current_period_start'),
+    currentPeriodEnd: timestamp('current_period_end'),
+    cancelAtPeriodEnd: boolean('cancel_at_period_end').default(false),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => ({
+    idxSubscriptionWorkspace: index('idx_subscription_workspace').on(
+      table.workspaceId,
+    ),
+  }),
+);
 
 /**
  * Usage log table - Detailed tracking of resource usage.
@@ -494,6 +514,76 @@ export const workspaceMember = pgTable(
 );
 
 /**
+ * Workspace invitation status enumeration.
+ *
+ * Invitation lifecycle states:
+ * - `pending`: Invitation sent, awaiting response
+ * - `accepted`: Invitation accepted, user added to workspace
+ * - `declined`: Invitation declined by recipient
+ * - `expired`: Invitation expired (not accepted within time limit)
+ */
+export const invitationStatus = pgEnum('invitation_status', [
+  'pending',
+  'accepted',
+  'declined',
+  'expired',
+]);
+
+/**
+ * Workspace invitation table - Email-based workspace member invitations.
+ *
+ * Tracks pending and completed workspace invitations.
+ * Invitations expire after 7 days if not accepted.
+ *
+ * @property {string} id - Unique invitation identifier
+ * @property {string} workspaceId - Associated workspace ID (foreign key, cascade delete)
+ * @property {string} email - Invitee email address
+ * @property {string} role - Invited workspace role ('admin', 'member', 'viewer')
+ * @property {string} status - Invitation status (pending, accepted, declined, expired)
+ * @property {string} invitedBy - User ID who sent the invitation (foreign key)
+ * @property {string} token - Unique invitation token for acceptance
+ * @property {Date} expiresAt - Invitation expiration timestamp (7 days)
+ * @property {Date | null} acceptedAt - Timestamp when invitation was accepted
+ * @property {Date} createdAt - Invitation creation timestamp
+ * @property {Date} updatedAt - Last invitation update timestamp
+ *
+ * Indexes:
+ * - idx_invitation_workspace: For workspace-based invitation queries
+ * - idx_invitation_email: For email-based invitation lookups
+ * - idx_invitation_token: For token-based validation
+ */
+export const workspaceInvitation = pgTable(
+  'workspace_invitation',
+  {
+    id: text('id').primaryKey(),
+    workspaceId: text('workspace_id')
+      .notNull()
+      .references(() => workspace.id, { onDelete: 'cascade' }),
+    email: text('email').notNull(),
+    role: workspaceRole('role').notNull().default('member'),
+    status: invitationStatus('status').notNull().default('pending'),
+    invitedBy: text('invited_by')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    token: text('token').notNull().unique(),
+    expiresAt: timestamp('expires_at').notNull(),
+    acceptedAt: timestamp('accepted_at'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at')
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => ({
+    idxInvitationWorkspace: index('idx_invitation_workspace').on(
+      table.workspaceId,
+    ),
+    idxInvitationEmail: index('idx_invitation_email').on(table.email),
+    idxInvitationToken: index('idx_invitation_token').on(table.token),
+  }),
+);
+
+/**
  * Permission table - Granular permissions for resource-level access control.
  *
  * Defines individual permissions that can be assigned to roles.
@@ -579,8 +669,10 @@ export const schema = {
   webhookEvent,
   workspace,
   workspaceMember,
+  workspaceInvitation,
   permission,
   rolePermission,
   userRole,
   workspaceRole,
+  invitationStatus,
 };

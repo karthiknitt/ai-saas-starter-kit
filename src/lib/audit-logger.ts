@@ -23,7 +23,11 @@ export type AuditAction =
   | 'workspace.deleted'
   | 'workspace.member_added'
   | 'workspace.member_removed'
-  | 'workspace.member_role_updated';
+  | 'workspace.member_role_updated'
+  | 'workspace.invitation_created'
+  | 'workspace.invitation_accepted'
+  | 'workspace.invitation_declined'
+  | 'workspace.invitation_cancelled';
 
 interface AuditLogEntry {
   userId?: string | null;
