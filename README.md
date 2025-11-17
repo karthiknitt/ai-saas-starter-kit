@@ -13,26 +13,17 @@ A production-ready, full-stack AI SaaS application starter kit built with Next.j
 - **UI Components**: 50+ customizable shadcn/ui components
 
 ### Advanced Features
-- **Multi-Tenancy/Workspaces**: Complete team workspace system with member invitations
-  - Email-based member invitations with secure token authentication
-  - Workspace-level billing and usage aggregation
-  - Role-based access control (owner, admin, member, viewer)
-- **Email-Based Invitations**: Send workspace invitations via email
-  - Professional email templates with Resend integration
-  - Automatic expiration after 7 days
-  - Accept/decline invitation flow
-- **Workspace-Level Billing**: Unified billing for teams
-  - Aggregate usage across all workspace members
-  - Effective plan calculation (highest between user and workspace)
-  - Quota enforcement at both user and workspace levels
+- **Multi-Tenancy/Workspaces**: Complete team workspace management with UI and member controls
 - **Role-Based Access Control (RBAC)**: Granular permission system with admin dashboard
 - **Usage Tracking**: Quota enforcement and feature gating by subscription tier
 - **Audit Logging**: Comprehensive activity tracking for compliance and workspace actions
 - **Encrypted API Key Management**: Secure storage for user API keys
 - **Rate Limiting**: Protection against abuse with Arcjet
 - **Security Headers**: Helmet integration for enhanced security
-- **Email Integration**: Resend for transactional emails (6+ email templates)
-- **Analytics**: Vercel Analytics, Speed Insights, and PostHog integration
+- **Email Integration**: Resend for transactional emails
+- **Product Analytics**: PostHog integration for event tracking and user behavior analysis
+- **API Documentation**: Interactive Swagger UI documentation for all endpoints
+- **Advanced Analytics**: Usage insights dashboard with charts and metrics
 
 ### Developer Experience
 - **Type Safety**: Strict TypeScript configuration
@@ -150,7 +141,7 @@ Get Arcjet key from [Arcjet](https://arcjet.com)
 #### Analytics (Optional but Recommended)
 ```env
 NEXT_PUBLIC_POSTHOG_KEY=phc_xxx
-NEXT_PUBLIC_POSTHOG_HOST=https://app.posthog.com
+NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 ```
 
 Get your PostHog API key from [PostHog](https://posthog.com). PostHog provides:
@@ -165,6 +156,8 @@ Get your PostHog API key from [PostHog](https://posthog.com). PostHog provides:
 - Privacy-friendly with GDPR compliance
 - Comprehensive analytics without vendor lock-in
 - Perfect for understanding workspace usage patterns
+- Automatic page view tracking
+- Client and server-side event tracking
 
 ### 4. Database Setup
 
@@ -295,8 +288,15 @@ To connect AI coding assistants to your Next.js dev server:
 - Start chatting with AI with streaming responses
 - Usage tracked and limited by subscription tier
 
+### Workspace Management
+- Create and manage team workspaces at `/dashboard/workspaces`
+- Invite team members with role-based access (Owner, Admin, Member, Viewer)
+- Switch between workspaces using the sidebar switcher
+- Each workspace has its own members, settings, and plan
+- Workspace-level role management and permissions
+
 ### Subscription Plans
-- **Free**: 100 messages/month, basic features
+- **Free**: 10 messages/month, basic features
 - **Pro**: 1000 messages/month, advanced features
 - **Startup**: Unlimited messages, all features
 
@@ -305,6 +305,19 @@ To connect AI coding assistants to your Next.js dev server:
 - User management with role assignment
 - View audit logs and system activity
 - Monitor usage and subscriptions
+
+### Analytics & Insights
+- View usage analytics at `/dashboard/analytics`
+- Track AI model usage breakdown
+- Monitor response times and error rates
+- Export usage reports
+- PostHog integration for product analytics
+
+### API Documentation
+- Interactive API documentation at `/api-docs`
+- Comprehensive endpoint reference
+- Request/response examples
+- Code snippets for integration
 
 ### API Key Management
 - Users can add their own OpenAI API keys
