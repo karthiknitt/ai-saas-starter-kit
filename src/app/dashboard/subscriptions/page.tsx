@@ -5,7 +5,7 @@ import {
   PageErrorBoundary,
   SectionErrorBoundary,
 } from '@/components/error-boundary';
-import { CardLoader, PageLoader } from '@/components/loading-states';
+import { PageLoader } from '@/components/loading-states';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { authClient } from '@/lib/auth-client';
