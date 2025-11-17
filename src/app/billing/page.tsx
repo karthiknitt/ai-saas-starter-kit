@@ -6,7 +6,7 @@ import {
   PageErrorBoundary,
   SectionErrorBoundary,
 } from '@/components/error-boundary';
-import { CardLoader, PageLoader } from '@/components/loading-states';
+import { PageLoader } from '@/components/loading-states';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {

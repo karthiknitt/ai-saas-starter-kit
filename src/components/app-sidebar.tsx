@@ -31,6 +31,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { WorkspaceSwitcher } from '@/components/workspace-switcher';
 import { authClient } from '@/lib/auth-client';
 import { PERMISSIONS, roleHasPermission } from '@/lib/permissions';
 
@@ -98,10 +99,10 @@ const ALL_NAV_ITEMS = [
     requiredPermission: null,
   },
   {
-    title: 'Team',
-    url: '#',
+    title: 'Workspaces',
+    url: '/dashboard/workspaces',
     icon: IconUsersGroup,
-    requiredPermission: PERMISSIONS.USERS_READ,
+    requiredPermission: null, // Available to all authenticated users
   },
   {
     title: 'Admin',
@@ -245,6 +246,9 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
+        <div className="mt-4 px-3">
+          <WorkspaceSwitcher />
+        </div>
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={filteredNavItems} />
