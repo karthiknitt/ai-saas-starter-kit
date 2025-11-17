@@ -17,6 +17,7 @@ import PaymentSuccessEmail from '@/components/emails/payment-success';
 import QuotaWarningEmail from '@/components/emails/quota-warning';
 import SubscriptionCancelledEmail from '@/components/emails/subscription-cancelled';
 import SubscriptionConfirmationEmail from '@/components/emails/subscription-confirmation';
+import WorkspaceInvitationEmail from '@/components/emails/workspace-invitation';
 import { logger } from '@/lib/logger';
 
 /** Resend client instance */
@@ -316,6 +317,67 @@ export async function sendSubscriptionCancelledEmail(params: {
 }
 
 /**
+ * Send workspace invitation email
+ *
+ * @param params - Email parameters
+ * @param params.to - Recipient email address
+ * @param params.inviteeName - Name of the invitee
+ * @param params.inviterName - Name of the person who sent the invitation
+ * @param params.workspaceName - Name of the workspace
+ * @param params.role - Role being offered ('owner', 'admin', 'member', 'viewer')
+ * @param params.invitationUrl - URL to accept the invitation
+ * @param params.expiresInDays - Number of days until invitation expires
+ * @returns Promise with email sending result
+ */
+export async function sendWorkspaceInvitationEmail(params: {
+  to: string;
+  inviteeName: string;
+  inviterName: string;
+  workspaceName: string;
+  role: string;
+  invitationUrl: string;
+  expiresInDays?: number;
+}) {
+  try {
+    const { data, error } = await resend.emails.send({
+      from: SENDER_EMAIL,
+      to: params.to,
+      subject: `${params.inviterName} invited you to join ${params.workspaceName}`,
+      react: WorkspaceInvitationEmail({
+        inviteeName: params.inviteeName,
+        inviterName: params.inviterName,
+        workspaceName: params.workspaceName,
+        role: params.role,
+        invitationUrl: params.invitationUrl,
+        expiresInDays: params.expiresInDays || 7,
+      }),
+    });
+
+    if (error) {
+      logger.error('Failed to send workspace invitation email', {
+        error,
+        recipient: params.to,
+      });
+      throw error;
+    }
+
+    logger.info('Workspace invitation email sent', {
+      emailId: data?.id,
+      recipient: params.to,
+      workspace: params.workspaceName,
+      role: params.role,
+    });
+
+    return { success: true, data };
+  } catch (error) {
+    logger.error('Error sending workspace invitation email', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return { success: false, error };
+  }
+}
+
+/**
  * Email service interface for easy testing and mocking
  */
 export const emailService = {
@@ -324,4 +386,5 @@ export const emailService = {
   sendPaymentFailure: sendPaymentFailureEmail,
   sendQuotaWarning: sendQuotaWarningEmail,
   sendSubscriptionCancelled: sendSubscriptionCancelledEmail,
+  sendWorkspaceInvitation: sendWorkspaceInvitationEmail,
 };
