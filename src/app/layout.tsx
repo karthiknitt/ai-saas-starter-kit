@@ -8,6 +8,7 @@ import { PerformanceMonitor } from '@/components/performance-monitor';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
 import { cn } from '@/lib/utils';
+import { PHProvider } from '@/providers/posthog-provider';
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.BETTER_AUTH_URL || 'http://localhost:3000'),
@@ -160,21 +161,23 @@ export default async function RootLayout({
           isScaled ? 'theme-scaled' : '',
         )}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-          enableColorScheme
-        >
-          <ActiveThemeProvider initialTheme={activeThemeValue}>
-            <PerformanceMonitor />
-            {children}
-            <Toaster />
-            <Analytics />
-            <SpeedInsights />
-          </ActiveThemeProvider>
-        </ThemeProvider>
+        <PHProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+            enableColorScheme
+          >
+            <ActiveThemeProvider initialTheme={activeThemeValue}>
+              <PerformanceMonitor />
+              {children}
+              <Toaster />
+              <Analytics />
+              <SpeedInsights />
+            </ActiveThemeProvider>
+          </ThemeProvider>
+        </PHProvider>
       </body>
     </html>
   );
