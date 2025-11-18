@@ -11,8 +11,5 @@
     "christian-kohler.path-intellisense",
     "ms-vscode.vscode-typescript-next"
   ],
-  "unwantedRecommendations": [
-    "esbenp.prettier-vscode",
-    "dbaeumer.jshint"
-  ]
+  "unwantedRecommendations": ["esbenp.prettier-vscode", "dbaeumer.jshint"]
 }
