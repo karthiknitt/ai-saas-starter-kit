@@ -3,6 +3,9 @@ import { config } from 'dotenv';
 import React from 'react';
 import { afterEach, beforeEach, vi } from 'vitest';
 
+// Mock server-only module to prevent import errors in tests
+vi.mock('server-only', () => ({}));
+
 // Load environment variables from .env file
 config();
 
