@@ -47,6 +47,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+#husky replaced by lefthook
+.husky
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

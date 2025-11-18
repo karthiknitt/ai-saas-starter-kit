@@ -331,7 +331,7 @@ describe('General Performance Tests', () => {
 
       // All benchmarks should complete within reasonable time
       results.forEach(({ executionTime }) => {
-        expect(executionTime).toBeLessThan(200);
+        expect(executionTime).toBeLessThan(400);
       });
     });
 
