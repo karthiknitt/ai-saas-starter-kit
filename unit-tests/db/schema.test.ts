@@ -110,6 +110,7 @@ describe('database schema', () => {
       const columns = Object.keys(subscription);
       expect(columns).toContain('id');
       expect(columns).toContain('userId');
+      expect(columns).toContain('workspaceId');
       expect(columns).toContain('polarSubscriptionId');
       expect(columns).toContain('polarCustomerId');
       expect(columns).toContain('status');
@@ -122,7 +123,7 @@ describe('database schema', () => {
     });
 
     it('should have correct number of columns', () => {
-      expect(Object.keys(subscription)).toHaveLength(12);
+      expect(Object.keys(subscription)).toHaveLength(13);
     });
   });
 
@@ -133,11 +134,22 @@ describe('database schema', () => {
       expect(schema).toHaveProperty('account');
       expect(schema).toHaveProperty('verification');
       expect(schema).toHaveProperty('subscription');
+      expect(schema).toHaveProperty('usageLog');
+      expect(schema).toHaveProperty('usageQuota');
+      expect(schema).toHaveProperty('auditLog');
+      expect(schema).toHaveProperty('webhookEvent');
+      expect(schema).toHaveProperty('workspace');
+      expect(schema).toHaveProperty('workspaceMember');
+      expect(schema).toHaveProperty('workspaceInvitation');
+      expect(schema).toHaveProperty('permission');
+      expect(schema).toHaveProperty('rolePermission');
       expect(schema).toHaveProperty('userRole');
+      expect(schema).toHaveProperty('workspaceRole');
+      expect(schema).toHaveProperty('invitationStatus');
     });
 
-    it('should have exactly 6 tables', () => {
-      expect(Object.keys(schema)).toHaveLength(6);
+    it('should have exactly 17 schema exports', () => {
+      expect(Object.keys(schema)).toHaveLength(17);
     });
 
     it('should reference the correct table instances', () => {
