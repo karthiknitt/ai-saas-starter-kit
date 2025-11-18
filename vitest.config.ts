@@ -16,6 +16,13 @@ export default defineConfig({
       '**/playwright-report/**',
       '**/test-results/**',
     ],
+    environmentMatchGlobs: [
+      // Use node environment for API route tests to avoid server-only import issues
+      ['unit-tests/integration/api-*.test.ts', 'node'],
+      // Use jsdom for component tests
+      ['unit-tests/integration/components/**', 'jsdom'],
+      ['unit-tests/components/**', 'jsdom'],
+    ],
   },
   resolve: {
     alias: {

@@ -1,5 +1,8 @@
+// @vitest-environment node
 import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
-import { POST } from '../../src/app/api/chat/route';
+
+// Mock server-only to prevent import errors in test environment
+vi.mock('server-only', () => ({}));
 
 // Mock external dependencies
 vi.mock('@/lib/auth');
@@ -7,13 +10,19 @@ vi.mock('@/db/drizzle');
 vi.mock('@/lib/crypto');
 vi.mock('@/lib/arcjet');
 vi.mock('@/lib/logger');
+vi.mock('@/lib/subscription-features');
+vi.mock('@/lib/usage-tracker');
 vi.mock('ai');
 vi.mock('@ai-sdk/openai');
 vi.mock('@openrouter/ai-sdk-provider');
 vi.mock('next/headers');
 
+import { POST } from '../../src/app/api/chat/route';
+
 import { db } from '../../src/db/drizzle';
 import { aj } from '../../src/lib/arcjet';
+import { hasModelAccess } from '../../src/lib/subscription-features';
+import { trackAndCheckAiRequest } from '../../src/lib/usage-tracker';
 // Import after mocking to get the mocked versions
 import { auth } from '../../src/lib/auth';
 import { decrypt } from '../../src/lib/crypto';
@@ -25,6 +34,8 @@ const mockDb = vi.mocked(db) as any;
 const mockDecrypt = vi.mocked(decrypt);
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mockAj = vi.mocked(aj) as any;
+const mockHasModelAccess = vi.mocked(hasModelAccess);
+const mockTrackAndCheckAiRequest = vi.mocked(trackAndCheckAiRequest);
 
 // Mock AI SDK
 vi.mock('ai', () => ({
@@ -42,7 +53,7 @@ vi.mock('@openrouter/ai-sdk-provider', () => ({
 }));
 
 vi.mock('next/headers', () => ({
-  cookies: vi.fn(() => ({
+  cookies: vi.fn(() => Promise.resolve({
     get: vi.fn(() => null),
   })),
 }));
@@ -92,6 +103,11 @@ describe('/api/chat', () => {
       }),
     } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
     mockDecrypt.mockReturnValue('decrypted-api-key');
+    mockHasModelAccess.mockResolvedValue(true);
+    mockTrackAndCheckAiRequest.mockResolvedValue({
+      allowed: true,
+      quota: { used: 0, limit: 1000, remaining: 1000, unlimited: false },
+    });
   });
 
   describe('Authentication', () => {
