@@ -11,8 +11,14 @@ import {
 // Mock dependencies
 vi.mock('@/db/drizzle', () => ({
   db: {
-    insert: vi.fn(),
-    update: vi.fn(),
+    insert: vi.fn().mockReturnValue({
+      values: vi.fn().mockResolvedValue(undefined),
+    }),
+    update: vi.fn().mockReturnValue({
+      set: vi.fn().mockReturnValue({
+        where: vi.fn().mockResolvedValue(undefined),
+      }),
+    }),
     query: {
       webhookEvent: {
         findFirst: vi.fn(),
@@ -449,6 +455,8 @@ describe('Webhook Processor', () => {
 
   describe('Retry mechanism', () => {
     it('should use exponential backoff delays', async () => {
+      const setTimeoutSpy = vi.spyOn(global, 'setTimeout');
+
       const mockEvent = {
         id: 'event_123',
         payload: JSON.stringify({ data: 'test' }),
@@ -469,7 +477,9 @@ describe('Webhook Processor', () => {
       await processWebhookEvent('event_123', processor);
 
       // Verify setTimeout was called (retry was scheduled)
-      expect(setTimeout).toHaveBeenCalled();
+      expect(setTimeoutSpy).toHaveBeenCalled();
+
+      setTimeoutSpy.mockRestore();
     });
   });
 });

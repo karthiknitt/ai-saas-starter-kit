@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi, type MockedFunction } from 'vitest';
 import {
   cancelSubscription,
   createCheckoutSession,
@@ -7,27 +7,24 @@ import {
   listProducts,
   PLAN_TO_PRODUCT_ID,
 } from '@/lib/polar-client';
+import type { Polar } from '@polar-sh/sdk';
 
 // Mock Polar SDK
-vi.mock('@polar-sh/sdk', () => {
-  return {
-    Polar: vi.fn(function () {
-      return {
-        checkouts: {
-          create: vi.fn(),
-          get: vi.fn(),
-        },
-        products: {
-          list: vi.fn(),
-        },
-        subscriptions: {
-          get: vi.fn(),
-          revoke: vi.fn(),
-        },
-      };
-    }),
-  };
-});
+vi.mock('@polar-sh/sdk', () => ({
+  Polar: class {
+    checkouts = {
+      create: vi.fn(),
+      get: vi.fn(),
+    };
+    products = {
+      list: vi.fn(),
+    };
+    subscriptions = {
+      get: vi.fn(),
+      revoke: vi.fn(),
+    };
+  },
+}));
 
 // Mock environment variables
 const mockEnv = {
@@ -50,8 +47,8 @@ describe('Polar Client', () => {
     }
 
     // Get the mock Polar instance
-    const { Polar } = require('@polar-sh/sdk');
-    polarMock = new Polar();
+    const { Polar } = vi.mocked(require('@polar-sh/sdk'));
+    polarMock = vi.mocked(new Polar());
   });
 
   describe('PLAN_TO_PRODUCT_ID', () => {

@@ -12,10 +12,13 @@ import {
 // Mock Resend
 vi.mock('resend', () => {
   return {
-    Resend: vi.fn(function () {
+    Resend: vi.fn().mockImplementation(function() {
       return {
         emails: {
-          send: vi.fn(),
+          send: vi.fn().mockResolvedValue({
+            data: { id: 'test_email_id' },
+            error: null,
+          }),
         },
       };
     }),

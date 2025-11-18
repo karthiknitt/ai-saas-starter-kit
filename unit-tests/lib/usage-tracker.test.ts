@@ -14,8 +14,16 @@ import {
 // Mock dependencies
 vi.mock('@/db/drizzle', () => ({
   db: {
-    insert: vi.fn(),
-    update: vi.fn(),
+    insert: vi.fn().mockReturnValue({
+      values: vi.fn().mockReturnValue({
+        returning: vi.fn().mockResolvedValue([]),
+      }),
+    }),
+    update: vi.fn().mockReturnValue({
+      set: vi.fn().mockReturnValue({
+        where: vi.fn().mockResolvedValue(undefined),
+      }),
+    }),
     query: {
       usageQuota: {
         findFirst: vi.fn(),
@@ -53,6 +61,8 @@ import {
 describe('Usage Tracker', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Mock getAiRequestLimit to return a default value
+    vi.mocked(getAiRequestLimit).mockResolvedValue(10);
   });
 
   describe('logUsage', () => {
