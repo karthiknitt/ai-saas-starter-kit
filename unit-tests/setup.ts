@@ -7,6 +7,10 @@ import { afterEach, beforeEach, vi } from 'vitest';
 config();
 
 // Set test-specific environment variables
+process.env.DATABASE_URL =
+  process.env.DATABASE_URL || 'postgresql://test:test@localhost:5432/test';
+process.env.ARCJET_KEY = process.env.ARCJET_KEY || 'test_arcjet_key';
+process.env.RESEND_API_KEY = process.env.RESEND_API_KEY || 'test_resend_key';
 process.env.ENCRYPTION_KEY =
   process.env.ENCRYPTION_KEY || 'test-key-32-chars-long-for-aes256!!!';
 process.env.POLAR_PRODUCT_FREE =

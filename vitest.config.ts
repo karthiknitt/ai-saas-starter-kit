@@ -8,6 +8,14 @@ export default defineConfig({
     globals: true,
     testTimeout: 30000,
     hookTimeout: 10000,
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/e2e/**',
+      '**/.next/**',
+      '**/playwright-report/**',
+      '**/test-results/**',
+    ],
   },
   resolve: {
     alias: {
