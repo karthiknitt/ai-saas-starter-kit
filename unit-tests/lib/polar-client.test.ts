@@ -1,4 +1,24 @@
-import { beforeEach, describe, expect, it, vi, type MockedFunction } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+// Create shared mocks and set env vars using hoisted (runs before vi.mock)
+const { mockCheckoutsCreate, mockCheckoutsGet, mockProductsList, mockSubscriptionsGet, mockSubscriptionsRevoke } = vi.hoisted(() => {
+  // Set up environment variables before anything else
+  process.env.POLAR_ACCESS_TOKEN = 'test_token';
+  process.env.POLAR_PRODUCT_FREE = 'prod_free_123';
+  process.env.POLAR_PRODUCT_PRO = 'prod_pro_123';
+  process.env.POLAR_PRODUCT_STARTUP = 'prod_startup_123';
+  process.env.POLAR_SUCCESS_URL = 'https://example.com/success';
+  process.env.NEXT_PUBLIC_URL = 'https://example.com';
+
+  return {
+    mockCheckoutsCreate: vi.fn(),
+    mockCheckoutsGet: vi.fn(),
+    mockProductsList: vi.fn(),
+    mockSubscriptionsGet: vi.fn(),
+    mockSubscriptionsRevoke: vi.fn(),
+  };
+});
+
 import {
   cancelSubscription,
   createCheckoutSession,
@@ -7,21 +27,20 @@ import {
   listProducts,
   PLAN_TO_PRODUCT_ID,
 } from '@/lib/polar-client';
-import type { Polar } from '@polar-sh/sdk';
 
 // Mock Polar SDK
 vi.mock('@polar-sh/sdk', () => ({
   Polar: class {
     checkouts = {
-      create: vi.fn(),
-      get: vi.fn(),
+      create: mockCheckoutsCreate,
+      get: mockCheckoutsGet,
     };
     products = {
-      list: vi.fn(),
+      list: mockProductsList,
     };
     subscriptions = {
-      get: vi.fn(),
-      revoke: vi.fn(),
+      get: mockSubscriptionsGet,
+      revoke: mockSubscriptionsRevoke,
     };
   },
 }));
@@ -37,8 +56,6 @@ const mockEnv = {
 };
 
 describe('Polar Client', () => {
-  let polarMock: any;
-
   beforeEach(() => {
     vi.clearAllMocks();
     // Set up environment variables
@@ -46,9 +63,18 @@ describe('Polar Client', () => {
       process.env[key] = value;
     }
 
-    // Get the mock Polar instance
-    const { Polar } = vi.mocked(require('@polar-sh/sdk'));
-    polarMock = vi.mocked(new Polar());
+    // Reset mocks to default behavior
+    mockCheckoutsCreate.mockResolvedValue({
+      url: 'https://polar.sh/checkout/default',
+      id: 'checkout_default',
+    });
+    mockCheckoutsGet.mockResolvedValue({
+      id: 'checkout_default',
+      url: 'https://polar.sh/checkout/default',
+    });
+    mockProductsList.mockResolvedValue({ items: [] });
+    mockSubscriptionsGet.mockResolvedValue({ id: 'sub_default' });
+    mockSubscriptionsRevoke.mockResolvedValue({ id: 'sub_default', status: 'canceled' });
   });
 
   describe('PLAN_TO_PRODUCT_ID', () => {
@@ -61,7 +87,7 @@ describe('Polar Client', () => {
 
   describe('createCheckoutSession', () => {
     it('should create checkout session for pro plan', async () => {
-      polarMock.checkouts.create.mockResolvedValueOnce({
+      mockCheckoutsCreate.mockResolvedValueOnce({
         url: 'https://polar.sh/checkout/123',
         id: 'checkout_123',
       });
@@ -72,7 +98,7 @@ describe('Polar Client', () => {
       });
 
       expect(url).toBe('https://polar.sh/checkout/123');
-      expect(polarMock.checkouts.create).toHaveBeenCalledWith({
+      expect(mockCheckoutsCreate).toHaveBeenCalledWith({
         products: ['prod_pro_123'],
         customerEmail: 'user@example.com',
         successUrl: 'https://example.com/success',
@@ -80,7 +106,7 @@ describe('Polar Client', () => {
     });
 
     it('should create checkout session for startup plan', async () => {
-      polarMock.checkouts.create.mockResolvedValueOnce({
+      mockCheckoutsCreate.mockResolvedValueOnce({
         url: 'https://polar.sh/checkout/456',
         id: 'checkout_456',
       });
@@ -91,7 +117,7 @@ describe('Polar Client', () => {
       });
 
       expect(url).toBe('https://polar.sh/checkout/456');
-      expect(polarMock.checkouts.create).toHaveBeenCalledWith({
+      expect(mockCheckoutsCreate).toHaveBeenCalledWith({
         products: ['prod_startup_123'],
         customerEmail: 'user@example.com',
         successUrl: 'https://example.com/success',
@@ -99,7 +125,7 @@ describe('Polar Client', () => {
     });
 
     it('should use custom success URL if provided', async () => {
-      polarMock.checkouts.create.mockResolvedValueOnce({
+      mockCheckoutsCreate.mockResolvedValueOnce({
         url: 'https://polar.sh/checkout/123',
       });
 
@@ -109,7 +135,7 @@ describe('Polar Client', () => {
         successUrl: 'https://custom.com/success',
       });
 
-      expect(polarMock.checkouts.create).toHaveBeenCalledWith({
+      expect(mockCheckoutsCreate).toHaveBeenCalledWith({
         products: ['prod_pro_123'],
         customerEmail: 'user@example.com',
         successUrl: 'https://custom.com/success',
@@ -126,7 +152,9 @@ describe('Polar Client', () => {
     });
 
     it('should throw error if product ID not configured', async () => {
-      delete process.env.POLAR_PRODUCT_PRO;
+      // Temporarily set product ID to undefined to simulate missing configuration
+      const originalPro = PLAN_TO_PRODUCT_ID.pro;
+      (PLAN_TO_PRODUCT_ID as any).pro = undefined;
 
       await expect(
         createCheckoutSession({
@@ -134,10 +162,13 @@ describe('Polar Client', () => {
           customerEmail: 'user@example.com',
         }),
       ).rejects.toThrow(/Product ID not configured/);
+
+      // Restore original value
+      (PLAN_TO_PRODUCT_ID as any).pro = originalPro;
     });
 
     it('should throw error if no checkout URL returned', async () => {
-      polarMock.checkouts.create.mockResolvedValueOnce({
+      mockCheckoutsCreate.mockResolvedValueOnce({
         id: 'checkout_123',
         url: null,
       });
@@ -151,7 +182,7 @@ describe('Polar Client', () => {
     });
 
     it('should handle Polar SDK errors', async () => {
-      polarMock.checkouts.create.mockRejectedValueOnce(
+      mockCheckoutsCreate.mockRejectedValueOnce(
         new Error('Polar API error'),
       );
 
@@ -179,18 +210,18 @@ describe('Polar Client', () => {
         status: 'pending',
       };
 
-      polarMock.checkouts.get.mockResolvedValueOnce(mockCheckout);
+      mockCheckoutsGet.mockResolvedValueOnce(mockCheckout);
 
       const result = await getCheckoutSession('checkout_123');
 
       expect(result).toEqual(mockCheckout);
-      expect(polarMock.checkouts.get).toHaveBeenCalledWith({
+      expect(mockCheckoutsGet).toHaveBeenCalledWith({
         id: 'checkout_123',
       });
     });
 
     it('should handle errors when retrieving checkout session', async () => {
-      polarMock.checkouts.get.mockRejectedValueOnce(new Error('Not found'));
+      mockCheckoutsGet.mockRejectedValueOnce(new Error('Not found'));
 
       const consoleErrorSpy = vi
         .spyOn(console, 'error')
@@ -214,12 +245,12 @@ describe('Polar Client', () => {
         ],
       };
 
-      polarMock.products.list.mockResolvedValueOnce(mockProducts);
+      mockProductsList.mockResolvedValueOnce(mockProducts);
 
       const result = await listProducts();
 
       expect(result).toEqual(mockProducts);
-      expect(polarMock.products.list).toHaveBeenCalledWith({
+      expect(mockProductsList).toHaveBeenCalledWith({
         organizationId: undefined,
         page: 1,
       });
@@ -230,19 +261,19 @@ describe('Polar Client', () => {
         items: [{ id: 'prod_1', name: 'Product 1' }],
       };
 
-      polarMock.products.list.mockResolvedValueOnce(mockProducts);
+      mockProductsList.mockResolvedValueOnce(mockProducts);
 
       const result = await listProducts('org_123');
 
       expect(result).toEqual(mockProducts);
-      expect(polarMock.products.list).toHaveBeenCalledWith({
+      expect(mockProductsList).toHaveBeenCalledWith({
         organizationId: 'org_123',
         page: 1,
       });
     });
 
     it('should handle errors when listing products', async () => {
-      polarMock.products.list.mockRejectedValueOnce(
+      mockProductsList.mockRejectedValueOnce(
         new Error('API error'),
       );
 
@@ -267,18 +298,18 @@ describe('Polar Client', () => {
         plan: 'pro',
       };
 
-      polarMock.subscriptions.get.mockResolvedValueOnce(mockSubscription);
+      mockSubscriptionsGet.mockResolvedValueOnce(mockSubscription);
 
       const result = await getSubscription('sub_123');
 
       expect(result).toEqual(mockSubscription);
-      expect(polarMock.subscriptions.get).toHaveBeenCalledWith({
+      expect(mockSubscriptionsGet).toHaveBeenCalledWith({
         id: 'sub_123',
       });
     });
 
     it('should handle errors when retrieving subscription', async () => {
-      polarMock.subscriptions.get.mockRejectedValueOnce(
+      mockSubscriptionsGet.mockRejectedValueOnce(
         new Error('Not found'),
       );
 
@@ -302,18 +333,18 @@ describe('Polar Client', () => {
         status: 'canceled',
       };
 
-      polarMock.subscriptions.revoke.mockResolvedValueOnce(mockSubscription);
+      mockSubscriptionsRevoke.mockResolvedValueOnce(mockSubscription);
 
       const result = await cancelSubscription('sub_123');
 
       expect(result).toEqual(mockSubscription);
-      expect(polarMock.subscriptions.revoke).toHaveBeenCalledWith({
+      expect(mockSubscriptionsRevoke).toHaveBeenCalledWith({
         id: 'sub_123',
       });
     });
 
     it('should handle errors when canceling subscription', async () => {
-      polarMock.subscriptions.revoke.mockRejectedValueOnce(
+      mockSubscriptionsRevoke.mockRejectedValueOnce(
         new Error('Cannot cancel'),
       );
 
@@ -332,7 +363,7 @@ describe('Polar Client', () => {
 
   describe('Error handling', () => {
     it('should handle non-Error objects in catch blocks', async () => {
-      polarMock.checkouts.create.mockRejectedValueOnce('string error');
+      mockCheckoutsCreate.mockRejectedValueOnce('string error');
 
       const consoleErrorSpy = vi
         .spyOn(console, 'error')

@@ -108,7 +108,7 @@ describe('Webhook Processor', () => {
         retryCount: 0,
       };
 
-      vi.mocked(db.query.webhookEvent.findFirst).mockResolvedValueOnce(
+      vi.mocked(db.query.webhookEvent.findFirst).mockResolvedValue(
         mockEvent as any,
       );
       vi.mocked(db.update).mockReturnValue({
@@ -129,7 +129,7 @@ describe('Webhook Processor', () => {
     });
 
     it('should return error if event not found', async () => {
-      vi.mocked(db.query.webhookEvent.findFirst).mockResolvedValueOnce(null);
+      vi.mocked(db.query.webhookEvent.findFirst).mockResolvedValue(null);
 
       const processor = vi.fn();
       const result = await processWebhookEvent('invalid_id', processor);
@@ -145,7 +145,7 @@ describe('Webhook Processor', () => {
         status: 'success',
       };
 
-      vi.mocked(db.query.webhookEvent.findFirst).mockResolvedValueOnce(
+      vi.mocked(db.query.webhookEvent.findFirst).mockResolvedValue(
         mockEvent as any,
       );
 
@@ -163,7 +163,7 @@ describe('Webhook Processor', () => {
         retryCount: 3,
       };
 
-      vi.mocked(db.query.webhookEvent.findFirst).mockResolvedValueOnce(
+      vi.mocked(db.query.webhookEvent.findFirst).mockResolvedValue(
         mockEvent as any,
       );
       vi.mocked(db.update).mockReturnValue({
@@ -188,7 +188,7 @@ describe('Webhook Processor', () => {
         retryCount: 0,
       };
 
-      vi.mocked(db.query.webhookEvent.findFirst).mockResolvedValueOnce(
+      vi.mocked(db.query.webhookEvent.findFirst).mockResolvedValue(
         mockEvent as any,
       );
       vi.mocked(db.update).mockReturnValue({
@@ -216,7 +216,7 @@ describe('Webhook Processor', () => {
         retryCount: 1,
       };
 
-      vi.mocked(db.query.webhookEvent.findFirst).mockResolvedValueOnce(
+      vi.mocked(db.query.webhookEvent.findFirst).mockResolvedValue(
         mockEvent as any,
       );
 
@@ -245,7 +245,7 @@ describe('Webhook Processor', () => {
         retryCount: 0,
       };
 
-      vi.mocked(db.query.webhookEvent.findFirst).mockResolvedValueOnce(
+      vi.mocked(db.query.webhookEvent.findFirst).mockResolvedValue(
         mockEvent as any,
       );
       vi.mocked(db.update).mockReturnValue({
@@ -275,7 +275,7 @@ describe('Webhook Processor', () => {
         retryCount: 0,
       };
 
-      vi.mocked(db.query.webhookEvent.findFirst).mockResolvedValueOnce(
+      vi.mocked(db.query.webhookEvent.findFirst).mockResolvedValue(
         mockEvent as any,
       );
       vi.mocked(db.update).mockReturnValue({
@@ -309,7 +309,7 @@ describe('Webhook Processor', () => {
         retryCount: 0,
       };
 
-      vi.mocked(db.query.webhookEvent.findFirst).mockResolvedValueOnce(
+      vi.mocked(db.query.webhookEvent.findFirst).mockResolvedValue(
         mockEvent as any,
       );
       vi.mocked(db.update).mockReturnValue({
@@ -377,16 +377,16 @@ describe('Webhook Processor', () => {
       const mockEvent = {
         id: 'event_123',
         payload: JSON.stringify({ data: 'test' }),
-        status: 'failed',
-        retryCount: 3,
+        status: 'pending', // After reset, status should be pending
+        retryCount: 0, // After reset, retryCount should be 0
       };
 
       vi.mocked(db.update).mockReturnValue({
         set: vi.fn().mockReturnValue({
-          where: vi.fn(),
+          where: vi.fn().mockResolvedValue(undefined),
         }),
       } as any);
-      vi.mocked(db.query.webhookEvent.findFirst).mockResolvedValueOnce(
+      vi.mocked(db.query.webhookEvent.findFirst).mockResolvedValue(
         mockEvent as any,
       );
 
@@ -464,7 +464,7 @@ describe('Webhook Processor', () => {
         retryCount: 1,
       };
 
-      vi.mocked(db.query.webhookEvent.findFirst).mockResolvedValueOnce(
+      vi.mocked(db.query.webhookEvent.findFirst).mockResolvedValue(
         mockEvent as any,
       );
       vi.mocked(db.update).mockReturnValue({

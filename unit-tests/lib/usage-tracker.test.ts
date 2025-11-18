@@ -138,7 +138,7 @@ describe('Usage Tracker', () => {
         resetAt: new Date(),
       };
 
-      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValueOnce(
+      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValue(
         mockQuota as any,
       );
 
@@ -148,7 +148,7 @@ describe('Usage Tracker', () => {
     });
 
     it('should create new quota if not exists', async () => {
-      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValueOnce(null);
+      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValue(null);
       vi.mocked(getAiRequestLimit).mockResolvedValueOnce(10);
       vi.mocked(db.insert).mockReturnValue({
         values: vi.fn().mockReturnValue({
@@ -206,7 +206,7 @@ describe('Usage Tracker', () => {
 
   describe('incrementAiRequests', () => {
     it('should increment usage counter', async () => {
-      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValueOnce({
+      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValue({
         userId: 'user_123',
         resetAt: new Date(Date.now() + 1000000),
       } as any);
@@ -223,7 +223,7 @@ describe('Usage Tracker', () => {
 
     it('should reset quota if past reset date', async () => {
       const pastDate = new Date(Date.now() - 1000);
-      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValueOnce({
+      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValue({
         userId: 'user_123',
         resetAt: pastDate,
       } as any);
@@ -242,9 +242,9 @@ describe('Usage Tracker', () => {
 
   describe('checkAiRequestQuota', () => {
     it('should return allowed true if under limit', async () => {
-      vi.mocked(hasUnlimitedAiRequests).mockResolvedValueOnce(false);
-      vi.mocked(getAiRequestLimit).mockResolvedValueOnce(10);
-      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValueOnce({
+      vi.mocked(hasUnlimitedAiRequests).mockResolvedValue(false);
+      vi.mocked(getAiRequestLimit).mockResolvedValue(10);
+      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValue({
         userId: 'user_123',
         aiRequestsUsed: '5',
         aiRequestsLimit: '10',
@@ -260,8 +260,8 @@ describe('Usage Tracker', () => {
     });
 
     it('should return allowed false if over limit', async () => {
-      vi.mocked(hasUnlimitedAiRequests).mockResolvedValueOnce(false);
-      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValueOnce({
+      vi.mocked(hasUnlimitedAiRequests).mockResolvedValue(false);
+      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValue({
         userId: 'user_123',
         aiRequestsUsed: '10',
         aiRequestsLimit: '10',
@@ -288,7 +288,7 @@ describe('Usage Tracker', () => {
     it('should reset quota if past reset date', async () => {
       const pastDate = new Date(Date.now() - 1000);
       vi.mocked(hasUnlimitedAiRequests).mockResolvedValueOnce(false);
-      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValueOnce({
+      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValue({
         userId: 'user_123',
         aiRequestsUsed: '10',
         aiRequestsLimit: '10',
@@ -328,7 +328,7 @@ describe('Usage Tracker', () => {
         mockLogs as any,
       );
       vi.mocked(hasUnlimitedAiRequests).mockResolvedValueOnce(false);
-      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValueOnce({
+      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValue({
         userId: 'user_123',
         aiRequestsUsed: '5',
         aiRequestsLimit: '10',
@@ -369,7 +369,7 @@ describe('Usage Tracker', () => {
         mockLogs as any,
       );
       vi.mocked(hasUnlimitedAiRequests).mockResolvedValueOnce(false);
-      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValueOnce({
+      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValue({
         userId: 'user_123',
         aiRequestsUsed: '5',
         aiRequestsLimit: '10',
@@ -394,7 +394,7 @@ describe('Usage Tracker', () => {
 
     it('should calculate percentage correctly', async () => {
       vi.mocked(hasUnlimitedAiRequests).mockResolvedValueOnce(false);
-      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValueOnce({
+      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValue({
         userId: 'user_123',
         aiRequestsUsed: '50',
         aiRequestsLimit: '100',
@@ -408,7 +408,7 @@ describe('Usage Tracker', () => {
 
     it('should return 100 if over quota', async () => {
       vi.mocked(hasUnlimitedAiRequests).mockResolvedValueOnce(false);
-      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValueOnce({
+      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValue({
         userId: 'user_123',
         aiRequestsUsed: '150',
         aiRequestsLimit: '100',
@@ -422,7 +422,7 @@ describe('Usage Tracker', () => {
 
     it('should return 100 if limit is 0', async () => {
       vi.mocked(hasUnlimitedAiRequests).mockResolvedValueOnce(false);
-      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValueOnce({
+      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValue({
         userId: 'user_123',
         aiRequestsUsed: '0',
         aiRequestsLimit: '0',
@@ -438,7 +438,7 @@ describe('Usage Tracker', () => {
   describe('isNearQuotaLimit', () => {
     it('should return true if near limit (>=80%)', async () => {
       vi.mocked(hasUnlimitedAiRequests).mockResolvedValueOnce(false);
-      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValueOnce({
+      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValue({
         userId: 'user_123',
         aiRequestsUsed: '85',
         aiRequestsLimit: '100',
@@ -452,7 +452,7 @@ describe('Usage Tracker', () => {
 
     it('should return false if not near limit', async () => {
       vi.mocked(hasUnlimitedAiRequests).mockResolvedValueOnce(false);
-      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValueOnce({
+      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValue({
         userId: 'user_123',
         aiRequestsUsed: '50',
         aiRequestsLimit: '100',
@@ -468,7 +468,7 @@ describe('Usage Tracker', () => {
   describe('trackAndCheckAiRequest', () => {
     it('should track and allow request if under quota', async () => {
       vi.mocked(hasUnlimitedAiRequests).mockResolvedValueOnce(false);
-      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValueOnce({
+      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValue({
         userId: 'user_123',
         aiRequestsUsed: '5',
         aiRequestsLimit: '10',
@@ -496,7 +496,7 @@ describe('Usage Tracker', () => {
 
     it('should reject request if over quota', async () => {
       vi.mocked(hasUnlimitedAiRequests).mockResolvedValueOnce(false);
-      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValueOnce({
+      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValue({
         userId: 'user_123',
         aiRequestsUsed: '10',
         aiRequestsLimit: '10',
@@ -512,7 +512,7 @@ describe('Usage Tracker', () => {
 
   describe('Quota warning emails', () => {
     it('should send 80% warning email', async () => {
-      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValueOnce({
+      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValue({
         userId: 'user_123',
         aiRequestsUsed: '80',
         aiRequestsLimit: '100',
@@ -543,7 +543,7 @@ describe('Usage Tracker', () => {
     });
 
     it('should send 90% warning email', async () => {
-      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValueOnce({
+      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValue({
         userId: 'user_123',
         aiRequestsUsed: '90',
         aiRequestsLimit: '100',
@@ -574,7 +574,7 @@ describe('Usage Tracker', () => {
     });
 
     it('should send 100% warning email', async () => {
-      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValueOnce({
+      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValue({
         userId: 'user_123',
         aiRequestsUsed: '100',
         aiRequestsLimit: '100',
@@ -605,7 +605,7 @@ describe('Usage Tracker', () => {
     });
 
     it('should not send duplicate warning emails', async () => {
-      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValueOnce({
+      vi.mocked(db.query.usageQuota.findFirst).mockResolvedValue({
         userId: 'user_123',
         aiRequestsUsed: '80',
         aiRequestsLimit: '100',

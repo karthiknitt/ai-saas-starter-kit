@@ -9,16 +9,18 @@ import {
   sendWorkspaceInvitationEmail,
 } from '@/lib/email-service';
 
+// Create a shared mock for emails.send using hoisted
+const { mockEmailsSend } = vi.hoisted(() => ({
+  mockEmailsSend: vi.fn(),
+}));
+
 // Mock Resend
 vi.mock('resend', () => {
   return {
     Resend: vi.fn().mockImplementation(function() {
       return {
         emails: {
-          send: vi.fn().mockResolvedValue({
-            data: { id: 'test_email_id' },
-            error: null,
-          }),
+          send: mockEmailsSend,
         },
       };
     }),
@@ -58,25 +60,25 @@ vi.mock('@/components/emails/workspace-invitation', () => ({
   default: vi.fn(() => 'WorkspaceInvitationEmail'),
 }));
 
-import { Resend } from 'resend';
 import { logger } from '@/lib/logger';
 
 describe('Email Service', () => {
-  let resendMock: any;
-
   beforeEach(() => {
     vi.clearAllMocks();
     // Set up environment variables
     process.env.RESEND_API_KEY = 'test_api_key';
     process.env.RESEND_SENDER_EMAIL = 'test@example.com';
 
-    // Get the mock Resend instance
-    resendMock = new Resend();
+    // Reset mock to default behavior
+    mockEmailsSend.mockResolvedValue({
+      data: { id: 'test_email_id' },
+      error: null,
+    });
   });
 
   describe('sendSubscriptionConfirmationEmail', () => {
     it('should send subscription confirmation email successfully', async () => {
-      resendMock.emails.send.mockResolvedValueOnce({
+      mockEmailsSend.mockResolvedValueOnce({
         data: { id: 'email_123' },
         error: null,
       });
@@ -91,7 +93,7 @@ describe('Email Service', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(resendMock.emails.send).toHaveBeenCalledWith(
+      expect(mockEmailsSend).toHaveBeenCalledWith(
         expect.objectContaining({
           to: 'user@example.com',
           subject: 'Welcome to Pro! 🎉',
@@ -104,7 +106,7 @@ describe('Email Service', () => {
     });
 
     it('should handle Resend errors', async () => {
-      resendMock.emails.send.mockResolvedValueOnce({
+      mockEmailsSend.mockResolvedValueOnce({
         data: null,
         error: { message: 'Send failed' },
       });
@@ -123,7 +125,7 @@ describe('Email Service', () => {
     });
 
     it('should catch exceptions', async () => {
-      resendMock.emails.send.mockRejectedValueOnce(new Error('Network error'));
+      mockEmailsSend.mockRejectedValueOnce(new Error('Network error'));
 
       const result = await sendSubscriptionConfirmationEmail({
         to: 'user@example.com',
@@ -141,7 +143,7 @@ describe('Email Service', () => {
 
   describe('sendPaymentSuccessEmail', () => {
     it('should send payment success email successfully', async () => {
-      resendMock.emails.send.mockResolvedValueOnce({
+      mockEmailsSend.mockResolvedValueOnce({
         data: { id: 'email_123' },
         error: null,
       });
@@ -156,7 +158,7 @@ describe('Email Service', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(resendMock.emails.send).toHaveBeenCalledWith(
+      expect(mockEmailsSend).toHaveBeenCalledWith(
         expect.objectContaining({
           to: 'user@example.com',
           subject: 'Payment Received - Thank You!',
@@ -166,7 +168,7 @@ describe('Email Service', () => {
     });
 
     it('should handle missing optional invoiceUrl', async () => {
-      resendMock.emails.send.mockResolvedValueOnce({
+      mockEmailsSend.mockResolvedValueOnce({
         data: { id: 'email_123' },
         error: null,
       });
@@ -179,13 +181,13 @@ describe('Email Service', () => {
         paymentDate: '2024-01-15',
       });
 
-      expect(resendMock.emails.send).toHaveBeenCalled();
+      expect(mockEmailsSend).toHaveBeenCalled();
     });
   });
 
   describe('sendPaymentFailureEmail', () => {
     it('should send payment failure email successfully', async () => {
-      resendMock.emails.send.mockResolvedValueOnce({
+      mockEmailsSend.mockResolvedValueOnce({
         data: { id: 'email_123' },
         error: null,
       });
@@ -200,7 +202,7 @@ describe('Email Service', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(resendMock.emails.send).toHaveBeenCalledWith(
+      expect(mockEmailsSend).toHaveBeenCalledWith(
         expect.objectContaining({
           to: 'user@example.com',
           subject: '⚠️ Payment Failed - Action Required',
@@ -209,7 +211,7 @@ describe('Email Service', () => {
     });
 
     it('should handle missing optional fields', async () => {
-      resendMock.emails.send.mockResolvedValueOnce({
+      mockEmailsSend.mockResolvedValueOnce({
         data: { id: 'email_123' },
         error: null,
       });
@@ -221,13 +223,13 @@ describe('Email Service', () => {
         amount: '$19',
       });
 
-      expect(resendMock.emails.send).toHaveBeenCalled();
+      expect(mockEmailsSend).toHaveBeenCalled();
     });
   });
 
   describe('sendQuotaWarningEmail', () => {
     it('should send 80% quota warning email', async () => {
-      resendMock.emails.send.mockResolvedValueOnce({
+      mockEmailsSend.mockResolvedValueOnce({
         data: { id: 'email_123' },
         error: null,
       });
@@ -243,7 +245,7 @@ describe('Email Service', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(resendMock.emails.send).toHaveBeenCalledWith(
+      expect(mockEmailsSend).toHaveBeenCalledWith(
         expect.objectContaining({
           subject: '⚠️ 80% of Your Quota Used',
         }),
@@ -251,7 +253,7 @@ describe('Email Service', () => {
     });
 
     it('should send 90% quota warning email', async () => {
-      resendMock.emails.send.mockResolvedValueOnce({
+      mockEmailsSend.mockResolvedValueOnce({
         data: { id: 'email_123' },
         error: null,
       });
@@ -266,7 +268,7 @@ describe('Email Service', () => {
         resetDate: '2024-02-01',
       });
 
-      expect(resendMock.emails.send).toHaveBeenCalledWith(
+      expect(mockEmailsSend).toHaveBeenCalledWith(
         expect.objectContaining({
           subject: '⚠️ 90% of Your Quota Used',
         }),
@@ -274,7 +276,7 @@ describe('Email Service', () => {
     });
 
     it('should send 100% quota warning email', async () => {
-      resendMock.emails.send.mockResolvedValueOnce({
+      mockEmailsSend.mockResolvedValueOnce({
         data: { id: 'email_123' },
         error: null,
       });
@@ -289,7 +291,7 @@ describe('Email Service', () => {
         resetDate: '2024-02-01',
       });
 
-      expect(resendMock.emails.send).toHaveBeenCalledWith(
+      expect(mockEmailsSend).toHaveBeenCalledWith(
         expect.objectContaining({
           subject: '⚠️ Usage Limit Reached',
         }),
@@ -299,7 +301,7 @@ describe('Email Service', () => {
 
   describe('sendSubscriptionCancelledEmail', () => {
     it('should send subscription cancelled email successfully', async () => {
-      resendMock.emails.send.mockResolvedValueOnce({
+      mockEmailsSend.mockResolvedValueOnce({
         data: { id: 'email_123' },
         error: null,
       });
@@ -313,7 +315,7 @@ describe('Email Service', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(resendMock.emails.send).toHaveBeenCalledWith(
+      expect(mockEmailsSend).toHaveBeenCalledWith(
         expect.objectContaining({
           to: 'user@example.com',
           subject: 'Subscription Cancelled',
@@ -322,7 +324,7 @@ describe('Email Service', () => {
     });
 
     it('should handle missing optional cancellationReason', async () => {
-      resendMock.emails.send.mockResolvedValueOnce({
+      mockEmailsSend.mockResolvedValueOnce({
         data: { id: 'email_123' },
         error: null,
       });
@@ -334,13 +336,13 @@ describe('Email Service', () => {
         endDate: '2024-02-01',
       });
 
-      expect(resendMock.emails.send).toHaveBeenCalled();
+      expect(mockEmailsSend).toHaveBeenCalled();
     });
   });
 
   describe('sendWorkspaceInvitationEmail', () => {
     it('should send workspace invitation email successfully', async () => {
-      resendMock.emails.send.mockResolvedValueOnce({
+      mockEmailsSend.mockResolvedValueOnce({
         data: { id: 'email_123' },
         error: null,
       });
@@ -356,7 +358,7 @@ describe('Email Service', () => {
       });
 
       expect(result.success).toBe(true);
-      expect(resendMock.emails.send).toHaveBeenCalledWith(
+      expect(mockEmailsSend).toHaveBeenCalledWith(
         expect.objectContaining({
           to: 'user@example.com',
           subject: 'Test User invited you to join Acme Corp',
@@ -366,7 +368,7 @@ describe('Email Service', () => {
     });
 
     it('should use default expiry of 7 days', async () => {
-      resendMock.emails.send.mockResolvedValueOnce({
+      mockEmailsSend.mockResolvedValueOnce({
         data: { id: 'email_123' },
         error: null,
       });
@@ -380,7 +382,7 @@ describe('Email Service', () => {
         invitationUrl: 'https://example.com/accept',
       });
 
-      expect(resendMock.emails.send).toHaveBeenCalled();
+      expect(mockEmailsSend).toHaveBeenCalled();
     });
   });
 
@@ -410,7 +412,7 @@ describe('Email Service', () => {
 
   describe('Error handling', () => {
     it('should handle non-Error objects in catch blocks', async () => {
-      resendMock.emails.send.mockRejectedValueOnce('string error');
+      mockEmailsSend.mockRejectedValueOnce('string error');
 
       const result = await sendSubscriptionConfirmationEmail({
         to: 'user@example.com',
