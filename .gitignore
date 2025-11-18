@@ -13,6 +13,8 @@
 # testing
 *.log
 /unit-tests/coverage/
+/test-results/
+/playwright-report/
 
 # next.js
 /.next/
