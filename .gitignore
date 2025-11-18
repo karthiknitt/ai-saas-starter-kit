@@ -47,6 +47,10 @@ yarn-error.log*
 # vercel
 .vercel
 
+coverage
+playwright-report
+test-results
+
 #husky replaced by lefthook
 .husky
 
