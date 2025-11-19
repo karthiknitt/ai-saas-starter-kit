@@ -45,7 +45,7 @@ export default function HeroSection() {
                       className="h-12 rounded-full pr-3 pl-5 text-base"
                     >
                       <Link href="#link">
-                        <span className="text-nowrap">Start Building</span>
+                        <span className="text-nowrap">Get Started</span>
                         <motion.div
                           whileHover={{ x: 2 }}
                           transition={{

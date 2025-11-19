@@ -28,9 +28,9 @@ import { cn } from '@/lib/utils';
 import { signUp } from '../../../server/users';
 
 const formSchema = z.object({
-  username: z.string().min(3, 'Name must be at least 3 characters long'),
-  email: z.string().email(),
-  password: z.string().min(8, 'Password must be at least 6 characters long'),
+  name: z.string().min(3, 'Name must be at least 3 characters long'),
+  email: z.string().email('Please enter a valid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters long'),
 });
 
 const signInWithGoogle = async () => {
@@ -49,7 +49,7 @@ export function SignUpForm({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: '',
+      name: '',
       email: '',
       password: '',
     },
@@ -61,7 +61,7 @@ export function SignUpForm({
     // ✅ This will be type-safe and validated.
     setIsLoading(true);
     const { success, message } = await signUp(
-      values.username,
+      values.name,
       values.email,
       values.password,
     );
@@ -93,7 +93,7 @@ export function SignUpForm({
     <div className={cn('flex flex-col gap-6', className)} {...props}>
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">Sign up for a New Account</CardTitle>
+          <CardTitle className="text-xl">Create your account</CardTitle>
           <CardDescription>Login with your Google account</CardDescription>
         </CardHeader>
         <CardContent>
@@ -131,7 +131,7 @@ export function SignUpForm({
                   <div className="grid gap-3">
                     <FormField
                       control={form.control}
-                      name="username"
+                      name="name"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Name</FormLabel>
