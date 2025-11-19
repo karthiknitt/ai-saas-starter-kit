@@ -37,6 +37,13 @@ const nextConfig: NextConfig = {
     // cacheComponents: true,
   },
 
+  // External packages for server-side rendering
+  // These packages use Node.js APIs and should not be bundled
+  serverExternalPackages: [
+    'import-in-the-middle',
+    'require-in-the-middle',
+  ],
+
   // Comprehensive security headers
   async headers() {
     return [

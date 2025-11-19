@@ -175,5 +175,11 @@
   "optionalDependencies": {
     "@tailwindcss/oxide-linux-x64-gnu": "^4.1.17",
     "lightningcss-linux-x64-gnu": "^1.30"
+  },
+  "pnpm": {
+    "overrides": {
+      "import-in-the-middle": "^2.0.0",
+      "require-in-the-middle": "^8.0.1"
+    }
   }
 }
