@@ -29,8 +29,14 @@ import { cn } from '@/lib/utils';
 import { signIn } from '../../../server/users';
 
 const formSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8, 'Password must be at least 8 characters long'),
+  email: z
+    .string()
+    .min(1, 'Email is required')
+    .email('Please enter a valid email address'),
+  password: z
+    .string()
+    .min(1, 'Password is required')
+    .min(8, 'Password must be at least 8 characters long'),
 });
 
 const signInWithGoogle = async () => {
