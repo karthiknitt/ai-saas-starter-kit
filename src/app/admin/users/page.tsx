@@ -2,8 +2,8 @@ import { sql } from 'drizzle-orm';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
+import { AdminUsersPageClient } from '@/components/admin-users-page-client';
 import { TableLoader } from '@/components/loading-states';
-import { UsersClient } from '@/components/users-client';
 import { db } from '@/db/drizzle';
 import { user as userTable } from '@/db/schema';
 import { auth, type TypedSession } from '@/lib/auth';
@@ -54,19 +54,17 @@ export default async function AdminUsersPage({
   const totalPages = Math.ceil(count / pageSize);
 
   return (
-    <div className="p-10">
-      <h1 className="mb-4 text-2xl font-bold">Manage Users</h1>
-      <Suspense fallback={<TableLoader />}>
-        <UsersClient
-          users={users}
-          pagination={{
-            currentPage: page,
-            pageSize,
-            totalCount: count,
-            totalPages,
-          }}
-        />
-      </Suspense>
-    </div>
+    <Suspense fallback={<TableLoader />}>
+      <AdminUsersPageClient
+        currentUser={session.user}
+        users={users}
+        pagination={{
+          currentPage: page,
+          pageSize,
+          totalCount: count,
+          totalPages,
+        }}
+      />
+    </Suspense>
   );
 }

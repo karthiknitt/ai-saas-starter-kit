@@ -1,6 +1,7 @@
 import { eq } from 'drizzle-orm';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { AdminPageClient } from '@/components/admin-page-client';
 import { db } from '@/db/drizzle';
 import { user as userTable } from '@/db/schema';
 import { auth, type TypedSession } from '@/lib/auth';
@@ -30,14 +31,5 @@ export default async function AdminPage() {
     redirect('/');
   }
 
-  return (
-    <div className="p-10">
-      <h1 className="mb-4 text-3xl font-bold">Admin Dashboard</h1>
-      <p className="text-muted-foreground">
-        Welcome {session.user.name ?? session.user.email}. You have admin
-        access.
-      </p>
-      {/* Add your admin widgets here */}
-    </div>
-  );
+  return <AdminPageClient user={session.user} />;
 }
