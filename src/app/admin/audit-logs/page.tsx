@@ -1,7 +1,7 @@
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
-import { AuditLogsClient } from '@/components/audit-logs-client';
+import { AdminAuditLogsPageClient } from '@/components/admin-audit-logs-page-client';
 import { TableLoader } from '@/components/loading-states';
 import { auth, type TypedSession } from '@/lib/auth';
 
@@ -20,17 +20,8 @@ export default async function AuditLogsPage() {
   }
 
   return (
-    <div className="container mx-auto space-y-6 p-6">
-      <div>
-        <h1 className="text-3xl font-bold">Audit Logs</h1>
-        <p className="text-muted-foreground mt-2">
-          View all system audit logs and administrative actions
-        </p>
-      </div>
-
-      <Suspense fallback={<TableLoader />}>
-        <AuditLogsClient />
-      </Suspense>
-    </div>
+    <Suspense fallback={<TableLoader />}>
+      <AdminAuditLogsPageClient user={session.user} />
+    </Suspense>
   );
 }

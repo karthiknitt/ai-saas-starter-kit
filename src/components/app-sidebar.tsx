@@ -231,7 +231,7 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
   }, [userRole]);
 
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
+    <Sidebar collapsible="offcanvas" data-testid="sidebar" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
