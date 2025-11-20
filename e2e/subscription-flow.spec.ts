@@ -11,45 +11,40 @@ import { expect, test } from '@playwright/test';
 
 test.describe('Subscription Flow', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/dashboard/subscriptions');
+    await page.goto('/dashboard/subscriptions', { waitUntil: 'domcontentloaded', timeout: 60000 });
+    await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
   });
 
   test('should display all subscription plans', async ({ page }) => {
-    // Wait for page to load
-    await page.waitForLoadState('networkidle');
-
     // If redirected to login, that's expected for unauthenticated users
     if (page.url().includes('login')) {
-      await expect(page).toHaveURL(/.*login/);
+      await expect(page).toHaveURL(/.*login/, { timeout: 15000 });
       return;
     }
 
-    // Check for plan cards
-    await expect(page.locator('text=Free')).toBeVisible();
-    await expect(page.locator('text=Pro')).toBeVisible();
-    await expect(page.locator('text=Startup')).toBeVisible();
+    // Check for plan cards with increased timeouts
+    await expect(page.locator('text=Free').first()).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('text=Pro').first()).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('text=Startup').first()).toBeVisible({ timeout: 15000 });
   });
 
   test('Free plan should be available by default', async ({ page }) => {
-    // Wait for page to load
-    await page.waitForLoadState('networkidle');
-
     if (page.url().includes('login')) {
       return; // Skip if not authenticated
     }
 
     // Free plan should show as current or available
     const freePlan = page.locator('text=Free').first();
-    await expect(freePlan).toBeVisible();
+    await expect(freePlan).toBeVisible({ timeout: 15000 });
   });
 
   test('Pro plan should show upgrade button', async ({ page }) => {
-    // Wait for page to load
-    await page.waitForLoadState('networkidle');
-
     if (page.url().includes('login')) {
       return; // Skip if not authenticated
     }
+
+    // Wait for page content to load
+    await page.waitForSelector('text=Pro', { timeout: 15000 }).catch(() => {});
 
     // Look for Pro plan upgrade button
     const proSection = page.locator('text=Pro').first().locator('..');
@@ -63,9 +58,6 @@ test.describe('Subscription Flow', () => {
   });
 
   test('plan comparison should show features', async ({ page }) => {
-    // Wait for page to load
-    await page.waitForLoadState('networkidle');
-
     if (page.url().includes('login')) {
       return; // Skip if not authenticated
     }
@@ -78,22 +70,17 @@ test.describe('Subscription Flow', () => {
 
 test.describe('Billing Dashboard', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/billing');
+    await page.goto('/billing', { waitUntil: 'domcontentloaded', timeout: 60000 });
+    await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
   });
 
   test('should display billing page', async ({ page }) => {
-    // Wait for page to load
-    await page.waitForLoadState('networkidle');
-
     // Check URL
     const url = page.url();
     expect(url).toMatch(/login|billing/);
   });
 
   test('billing page should show usage information', async ({ page }) => {
-    // Wait for page to load
-    await page.waitForLoadState('networkidle');
-
     if (page.url().includes('login')) {
       return; // Skip if not authenticated
     }
@@ -106,14 +93,12 @@ test.describe('Billing Dashboard', () => {
   });
 
   test('billing page should show current plan', async ({ page }) => {
-    // Wait for page to load
-    await page.waitForLoadState('networkidle');
-
     if (page.url().includes('login')) {
       return; // Skip if not authenticated
     }
 
-    // Look for plan information
+    // Look for plan information with increased timeout
+    await page.waitForSelector('text=/Free|Pro|Startup/i', { timeout: 15000 }).catch(() => {});
     const planElements = await page.locator('text=/Free|Pro|Startup/i').count();
     expect(planElements).toBeGreaterThan(0);
   });

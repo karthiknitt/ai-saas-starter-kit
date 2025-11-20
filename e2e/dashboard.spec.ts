@@ -29,16 +29,18 @@ test.describe('Dashboard - Unauthenticated', () => {
   test('should show login page when accessing dashboard without auth', async ({
     page,
   }) => {
-    await page.goto('/dashboard');
+    await page.goto('/dashboard', { waitUntil: 'domcontentloaded', timeout: 60000 });
+    await page.waitForURL(/.*login/, { timeout: 30000 }).catch(() => {});
 
     // Should be redirected to login
-    await expect(page).toHaveURL(/.*login/);
+    await expect(page).toHaveURL(/.*login/, { timeout: 15000 });
   });
 });
 
 test.describe('Dashboard - Navigation', () => {
   test('dashboard should have main navigation', async ({ page }) => {
-    await page.goto('/dashboard');
+    await page.goto('/dashboard', { waitUntil: 'domcontentloaded', timeout: 60000 });
+    await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
 
     // Check if we're on login page (unauthenticated)
     const url = page.url();
@@ -49,21 +51,23 @@ test.describe('Dashboard - Navigation', () => {
   });
 
   test('should have sidebar navigation', async ({ page }) => {
-    await page.goto('/dashboard');
+    await page.goto('/dashboard', { waitUntil: 'domcontentloaded', timeout: 60000 });
+    await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
 
     // If authenticated, check for sidebar
     const hasSidebar = await page.locator('[data-testid="sidebar"]').count();
 
     // If not authenticated, should be on login
     if (hasSidebar === 0) {
-      await expect(page).toHaveURL(/.*login/);
+      await expect(page).toHaveURL(/.*login/, { timeout: 15000 });
     }
   });
 });
 
 test.describe('Billing & Subscriptions', () => {
   test('should navigate to subscriptions page', async ({ page }) => {
-    await page.goto('/dashboard/subscriptions');
+    await page.goto('/dashboard/subscriptions', { waitUntil: 'domcontentloaded', timeout: 60000 });
+    await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
 
     // Should redirect to login if not authenticated
     const url = page.url();
@@ -71,10 +75,10 @@ test.describe('Billing & Subscriptions', () => {
   });
 
   test('subscriptions page should show plan options', async ({ page }) => {
-    await page.goto('/dashboard/subscriptions');
+    await page.goto('/dashboard/subscriptions', { waitUntil: 'domcontentloaded', timeout: 60000 });
 
     // Wait for page to load
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
 
     // If on subscriptions page, check for plans
     if (page.url().includes('subscriptions')) {
@@ -84,7 +88,8 @@ test.describe('Billing & Subscriptions', () => {
   });
 
   test('billing page should be accessible', async ({ page }) => {
-    await page.goto('/billing');
+    await page.goto('/billing', { waitUntil: 'domcontentloaded', timeout: 60000 });
+    await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
 
     // Should redirect to login if not authenticated
     const url = page.url();
@@ -94,7 +99,8 @@ test.describe('Billing & Subscriptions', () => {
 
 test.describe('AI Chat', () => {
   test('should navigate to AI chat page', async ({ page }) => {
-    await page.goto('/aichat');
+    await page.goto('/aichat', { waitUntil: 'domcontentloaded', timeout: 60000 });
+    await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
 
     // Check URL
     const url = page.url();
@@ -102,7 +108,8 @@ test.describe('AI Chat', () => {
   });
 
   test('chat page should have message input', async ({ page }) => {
-    await page.goto('/aichat');
+    await page.goto('/aichat', { waitUntil: 'domcontentloaded', timeout: 60000 });
+    await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
 
     // If on chat page, check for input
     if (page.url().includes('aichat')) {

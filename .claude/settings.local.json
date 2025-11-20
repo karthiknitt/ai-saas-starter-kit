@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm test:e2e:*)",
+      "Bash(pkill:*)",
+      "Bash(tee:*)",
+      "Bash(taskkill:*)",
+      "Bash(pnpm dev)",
+      "Bash(timeout 240 bash -c 'while kill -0 $(pgrep -f \"\"test:e2e\"\") 2>/dev/null; do sleep 5; done')",
+      "Bash(powershell:*)",
+      "Bash(nul)",
+      "Bash(exit 0)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

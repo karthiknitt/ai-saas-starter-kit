@@ -74,3 +74,5 @@ TESTING_GUIDE.md
 THEME_READABILITY_IMPROVEMENTS.md
 UI_UX_IMPROVEMENTS.md
 aisaas starterkit.txt
+*.md
+*.txt

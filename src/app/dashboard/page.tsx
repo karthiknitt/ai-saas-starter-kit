@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { AppSidebar } from '@/components/app-sidebar';
 import { ChartAreaInteractive } from '@/components/chart-area-interactive';
@@ -28,6 +29,7 @@ interface User {
 }
 
 export default function Page() {
+  const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -41,19 +43,21 @@ export default function Page() {
           console.log('[DEBUG] User authenticated:', session.data.user);
           setUser(session.data.user);
         } else {
-          console.log('[DEBUG] No authenticated user found');
-          setUser(null);
+          console.log(
+            '[DEBUG] No authenticated user found, redirecting to login',
+          );
+          router.push('/login');
         }
       } catch (error) {
         console.error('[DEBUG] Session check failed:', error);
-        setUser(null);
+        router.push('/login');
       } finally {
         setLoading(false);
       }
     };
 
     checkSession();
-  }, []);
+  }, [router]);
 
   if (loading) {
     return <DashboardLoader />;

@@ -21,9 +21,9 @@ export default async function AdminUsersPage({
   const session = (await auth.api.getSession({
     headers: await headers(),
   })) as TypedSession | null;
-  if (!session) redirect('/');
+  if (!session) redirect('/login');
   const role = session.user.role;
-  if (role !== 'admin') redirect('/');
+  if (role !== 'admin') redirect('/dashboard');
 
   // Parse and validate pagination parameters
   const page = Math.max(1, parseInt(searchParams.page || '1', 10));

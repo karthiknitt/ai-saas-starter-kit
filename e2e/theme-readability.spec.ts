@@ -77,7 +77,8 @@ function parseRgbColor(colorString: string): [number, number, number] | null {
 test.describe('Theme Readability Tests', () => {
   test.describe('Light Mode', () => {
     test.beforeEach(async ({ page }) => {
-      await page.goto('/');
+      await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 60000 });
+      await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
       // Force light mode
       await page.evaluate(() => {
         document.documentElement.classList.remove('dark');
@@ -240,7 +241,8 @@ test.describe('Theme Readability Tests', () => {
 
   test.describe('Dark Mode', () => {
     test.beforeEach(async ({ page }) => {
-      await page.goto('/');
+      await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 60000 });
+      await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
       // Force dark mode
       await page.evaluate(() => {
         document.documentElement.classList.add('dark');
@@ -412,7 +414,8 @@ test.describe('Theme Readability Tests', () => {
 
   test.describe('Cross-Browser Compatibility', () => {
     test('should render OKLCH colors correctly', async ({ page }) => {
-      await page.goto('/');
+      await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 60000 });
+      await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
 
       const oklchSupport = await page.evaluate(() => {
         const testEl = document.createElement('div');
@@ -434,7 +437,8 @@ test.describe('Theme Readability Tests', () => {
     });
 
     test('should maintain theme on page navigation', async ({ page }) => {
-      await page.goto('/');
+      await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 60000 });
+      await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
 
       // Set dark mode
       await page.evaluate(() => {
@@ -448,7 +452,7 @@ test.describe('Theme Readability Tests', () => {
       );
 
       // Navigate to another page (if exists)
-      await page.goto('/');
+      await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 60000 });
       await page.waitForTimeout(300);
 
       const isDarkAfter = await page.evaluate(() =>
@@ -463,7 +467,8 @@ test.describe('Theme Readability Tests', () => {
 
   test.describe('Accessibility Features', () => {
     test('should support high contrast mode', async ({ page }) => {
-      await page.goto('/');
+      await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 60000 });
+      await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
 
       const highContrastColors = await page.evaluate(() => {
         // Simulate high contrast preference
@@ -489,7 +494,8 @@ test.describe('Theme Readability Tests', () => {
     });
 
     test('should have proper focus indicators', async ({ page }) => {
-      await page.goto('/');
+      await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 60000 });
+      await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
 
       const focusStyles = await page.evaluate(() => {
         const button = document.createElement('button');

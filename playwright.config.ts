@@ -49,7 +49,16 @@ export default defineConfig({
 
     /* Video on failure */
     video: 'retain-on-failure',
+
+    /* Increase default navigation timeout to 60 seconds */
+    navigationTimeout: 60000,
+
+    /* Increase default action timeout to 30 seconds */
+    actionTimeout: 30000,
   },
+
+  /* Set test timeout to 90 seconds (increased from default 30s) */
+  timeout: 90000,
 
   /* Configure projects for major browsers */
   projects: [

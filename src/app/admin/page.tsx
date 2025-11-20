@@ -13,7 +13,7 @@ export default async function AdminPage() {
   })) as TypedSession | null;
 
   if (!session) {
-    redirect('/');
+    redirect('/login');
   }
 
   // In case role is not included in the session payload, fetch from DB
@@ -28,7 +28,7 @@ export default async function AdminPage() {
   }
 
   if (role !== 'admin') {
-    redirect('/');
+    redirect('/dashboard');
   }
 
   return <AdminPageClient user={session.user} />;

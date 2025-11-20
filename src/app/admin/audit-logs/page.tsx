@@ -11,12 +11,12 @@ export default async function AuditLogsPage() {
   })) as TypedSession | null;
 
   if (!session) {
-    redirect('/');
+    redirect('/login');
   }
 
   // Verify admin access
   if (session.user.role !== 'admin') {
-    redirect('/');
+    redirect('/dashboard');
   }
 
   return (
