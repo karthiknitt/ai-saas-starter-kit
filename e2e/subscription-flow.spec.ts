@@ -11,8 +11,13 @@ import { expect, test } from '@playwright/test';
 
 test.describe('Subscription Flow', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/dashboard/subscriptions', { waitUntil: 'domcontentloaded', timeout: 60000 });
-    await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
+    await page.goto('/dashboard/subscriptions', {
+      waitUntil: 'domcontentloaded',
+      timeout: 60000,
+    });
+    await page
+      .waitForLoadState('networkidle', { timeout: 20000 })
+      .catch(() => {});
   });
 
   test('should display all subscription plans', async ({ page }) => {
@@ -23,9 +28,15 @@ test.describe('Subscription Flow', () => {
     }
 
     // Check for plan cards with increased timeouts
-    await expect(page.locator('text=Free').first()).toBeVisible({ timeout: 15000 });
-    await expect(page.locator('text=Pro').first()).toBeVisible({ timeout: 15000 });
-    await expect(page.locator('text=Startup').first()).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('text=Free').first()).toBeVisible({
+      timeout: 15000,
+    });
+    await expect(page.locator('text=Pro').first()).toBeVisible({
+      timeout: 15000,
+    });
+    await expect(page.locator('text=Startup').first()).toBeVisible({
+      timeout: 15000,
+    });
   });
 
   test('Free plan should be available by default', async ({ page }) => {
@@ -70,8 +81,13 @@ test.describe('Subscription Flow', () => {
 
 test.describe('Billing Dashboard', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/billing', { waitUntil: 'domcontentloaded', timeout: 60000 });
-    await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
+    await page.goto('/billing', {
+      waitUntil: 'domcontentloaded',
+      timeout: 60000,
+    });
+    await page
+      .waitForLoadState('networkidle', { timeout: 20000 })
+      .catch(() => {});
   });
 
   test('should display billing page', async ({ page }) => {
@@ -98,7 +114,9 @@ test.describe('Billing Dashboard', () => {
     }
 
     // Look for plan information with increased timeout
-    await page.waitForSelector('text=/Free|Pro|Startup/i', { timeout: 15000 }).catch(() => {});
+    await page
+      .waitForSelector('text=/Free|Pro|Startup/i', { timeout: 15000 })
+      .catch(() => {});
     const planElements = await page.locator('text=/Free|Pro|Startup/i').count();
     expect(planElements).toBeGreaterThan(0);
   });

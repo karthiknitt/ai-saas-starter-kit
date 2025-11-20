@@ -11,7 +11,10 @@ import { expect, test } from '@playwright/test';
 
 test.describe('Admin Access Control', () => {
   test('non-admin users should not access admin panel', async ({ page }) => {
-    await page.goto('/admin', { waitUntil: 'domcontentloaded', timeout: 60000 });
+    await page.goto('/admin', {
+      waitUntil: 'domcontentloaded',
+      timeout: 60000,
+    });
     await page.waitForURL(/.*login/, { timeout: 30000 }).catch(() => {});
 
     // Should redirect to login or show unauthorized
@@ -20,7 +23,10 @@ test.describe('Admin Access Control', () => {
   });
 
   test('admin users page should require authentication', async ({ page }) => {
-    await page.goto('/admin/users', { waitUntil: 'domcontentloaded', timeout: 60000 });
+    await page.goto('/admin/users', {
+      waitUntil: 'domcontentloaded',
+      timeout: 60000,
+    });
     await page.waitForURL(/.*login/, { timeout: 30000 }).catch(() => {});
 
     // Should redirect to login
@@ -28,7 +34,10 @@ test.describe('Admin Access Control', () => {
   });
 
   test('audit logs page should require authentication', async ({ page }) => {
-    await page.goto('/admin/audit-logs', { waitUntil: 'domcontentloaded', timeout: 60000 });
+    await page.goto('/admin/audit-logs', {
+      waitUntil: 'domcontentloaded',
+      timeout: 60000,
+    });
     await page.waitForURL(/.*login/, { timeout: 30000 }).catch(() => {});
 
     // Should redirect to login
@@ -38,8 +47,13 @@ test.describe('Admin Access Control', () => {
 
 test.describe('Admin Dashboard', () => {
   test('admin page should have navigation', async ({ page }) => {
-    await page.goto('/admin', { waitUntil: 'domcontentloaded', timeout: 60000 });
-    await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
+    await page.goto('/admin', {
+      waitUntil: 'domcontentloaded',
+      timeout: 60000,
+    });
+    await page
+      .waitForLoadState('networkidle', { timeout: 20000 })
+      .catch(() => {});
 
     // If redirected to login, that's expected
     if (page.url().includes('login')) {
@@ -55,8 +69,13 @@ test.describe('Admin Dashboard', () => {
 
 test.describe('User Management', () => {
   test('users page should exist', async ({ page }) => {
-    await page.goto('/admin/users', { waitUntil: 'domcontentloaded', timeout: 60000 });
-    await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
+    await page.goto('/admin/users', {
+      waitUntil: 'domcontentloaded',
+      timeout: 60000,
+    });
+    await page
+      .waitForLoadState('networkidle', { timeout: 20000 })
+      .catch(() => {});
 
     // Check URL
     const url = page.url();
@@ -64,8 +83,13 @@ test.describe('User Management', () => {
   });
 
   test('users page should have table structure', async ({ page }) => {
-    await page.goto('/admin/users', { waitUntil: 'domcontentloaded', timeout: 60000 });
-    await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
+    await page.goto('/admin/users', {
+      waitUntil: 'domcontentloaded',
+      timeout: 60000,
+    });
+    await page
+      .waitForLoadState('networkidle', { timeout: 20000 })
+      .catch(() => {});
 
     if (page.url().includes('login')) {
       return; // Skip if not authenticated
@@ -79,8 +103,13 @@ test.describe('User Management', () => {
 
 test.describe('Audit Logs', () => {
   test('audit logs page should exist', async ({ page }) => {
-    await page.goto('/admin/audit-logs', { waitUntil: 'domcontentloaded', timeout: 60000 });
-    await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
+    await page.goto('/admin/audit-logs', {
+      waitUntil: 'domcontentloaded',
+      timeout: 60000,
+    });
+    await page
+      .waitForLoadState('networkidle', { timeout: 20000 })
+      .catch(() => {});
 
     // Check URL
     const url = page.url();
@@ -88,8 +117,13 @@ test.describe('Audit Logs', () => {
   });
 
   test('audit logs should have filtering options', async ({ page }) => {
-    await page.goto('/admin/audit-logs', { waitUntil: 'domcontentloaded', timeout: 60000 });
-    await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
+    await page.goto('/admin/audit-logs', {
+      waitUntil: 'domcontentloaded',
+      timeout: 60000,
+    });
+    await page
+      .waitForLoadState('networkidle', { timeout: 20000 })
+      .catch(() => {});
 
     if (page.url().includes('login')) {
       return; // Skip if not authenticated
