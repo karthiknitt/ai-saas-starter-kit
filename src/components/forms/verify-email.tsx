@@ -105,7 +105,7 @@ const EmailVerification = (props: EmailVerificationProps) => {
 };
 
 EmailVerification.PreviewProps = {
-  userEmail: 'karthiknitt@gmail.com',
+  userEmail: 'user@example.com',
   verificationUrl: 'https://yourapp.com/verify-email?token=abc123xyz789',
 };
 

@@ -15,6 +15,7 @@ async function generateCommitMessage() {
     // Get git diff, limited to prevent context window issues
     const fullDiff = execSync('git diff --staged --no-color', {
       encoding: 'utf8',
+      maxBuffer: 1024 * 1024 * 10, // 10MB buffer for large diffs
     });
 
     if (!fullDiff.trim()) {
@@ -32,6 +33,10 @@ async function generateCommitMessage() {
 
 Types: feat, fix, docs, style, refactor, test, chore
 Keep it concise and lowercase. Output only the commit message, no code blocks or extra text.
+Do NOT wrap the type in parentheses. Valid examples:
+- chore: update dependencies
+- feat(api): add user authentication
+- fix: resolve login issue
 
 Diff:
 ${diff}`;

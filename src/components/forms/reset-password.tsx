@@ -127,7 +127,7 @@ const ForgotPasswordEmail = (props: ForgotPasswordEmailProps) => {
 };
 
 ForgotPasswordEmail.PreviewProps = {
-  userEmail: 'karthiknitt@gmail.com',
+  userEmail: 'user@example.com',
   resetLink: 'https://yourapp.com/reset-password?token=abc123xyz',
 };
 

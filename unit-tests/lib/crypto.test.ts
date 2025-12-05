@@ -94,9 +94,11 @@ describe('crypto', () => {
       const encrypted = encrypt(originalText);
       // Tamper with the auth tag (second part) which should cause authentication to fail
       const parts = encrypted.split(':');
-      if (parts.length === 3 && parts[1].length > 0) {
-        // Change the first character of the auth tag
-        parts[1] = `0${parts[1].slice(1)}`;
+      if (parts.length === 3 && parts[1].length > 1) {
+        // Change the first two characters of the auth tag to ensure valid hex
+        const firstChar = parts[1][0];
+        const newFirstChar = firstChar === '0' ? 'f' : '0';
+        parts[1] = newFirstChar + parts[1].slice(1);
         const tampered = parts.join(':');
         expect(() => decrypt(tampered)).toThrow(
           'Decryption failed: invalid data or wrong key',

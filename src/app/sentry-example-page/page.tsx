@@ -47,15 +47,9 @@ export default function Page() {
         <h1>sentry-example-page</h1>
 
         <p className="description">
-          Click the button below, and view the sample error on the Sentry{' '}
-          <a
-            target="_blank"
-            href="https://revstrax.sentry.io/issues/?project=4510372393189456"
-            rel="noopener"
-          >
-            Issues Page
-          </a>
-          . For more details about setting up Sentry,{' '}
+          Click the button below, and view the sample error on your Sentry
+          Issues Page (update the link in the code with your Sentry project
+          URL). For more details about setting up Sentry,{' '}
           <a
             target="_blank"
             href="https://docs.sentry.io/platforms/javascript/guides/nextjs/"

@@ -10,6 +10,8 @@ import { Toaster } from '@/components/ui/sonner';
 import { cn } from '@/lib/utils';
 import { PHProvider } from '@/providers/posthog-provider';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.BETTER_AUTH_URL || 'http://localhost:3000'),
   title: {
@@ -106,8 +108,14 @@ export const viewport: Viewport = {
 export default async function RootLayout({
   children,
 }: React.PropsWithChildren) {
-  const cookieStore = await cookies();
-  const activeThemeValue = cookieStore.get('active_theme')?.value;
+  let activeThemeValue: string | undefined;
+  try {
+    const cookieStore = await cookies();
+    activeThemeValue = cookieStore.get('active_theme')?.value;
+  } catch {
+    // During static generation, cookies() might not be available
+    activeThemeValue = undefined;
+  }
   const isScaled = activeThemeValue?.endsWith('-scaled');
 
   return (

@@ -19,6 +19,9 @@ call_lefthook()
   elif lefthook.bat -h >/dev/null 2>&1
   then
     lefthook.bat "$@"
+  elif D:\starterkit\node_modules\.pnpm\lefthook-windows-x64@2.0.8\node_modules\lefthook-windows-x64\bin\lefthook.exe -h >/dev/null 2>&1
+  then
+    D:\starterkit\node_modules\.pnpm\lefthook-windows-x64@2.0.8\node_modules\lefthook-windows-x64\bin\lefthook.exe "$@"
   else
     dir="$(git rev-parse --show-toplevel)"
     osArch=$(uname | tr '[:upper:]' '[:lower:]')
@@ -35,7 +38,6 @@ call_lefthook()
     elif test -f "$dir/node_modules/lefthook/bin/index.js"
     then
       "$dir/node_modules/lefthook/bin/index.js" "$@"
-    
     elif go tool lefthook -h >/dev/null 2>&1
     then
       go tool lefthook "$@"
