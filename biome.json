@@ -48,6 +48,9 @@
       },
       "security": {
         "noDangerouslySetInnerHtml": "off"
+      },
+      "style": {
+        "noInlineStyles": "off"
       }
     },
     "domains": {
