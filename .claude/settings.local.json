@@ -30,7 +30,8 @@
       "Bash(wc:*)",
       "Bash(ls:*)",
       "Bash(code --list-extensions:*)",
-      "Bash(pnpm run lint:*)"
+      "Bash(pnpm run lint:*)",
+      "Bash(pnpm run type-check:*)"
     ],
     "deny": [],
     "ask": []
