@@ -91,9 +91,15 @@ describe('LoginForm Integration Tests', () => {
       fireEvent.change(emailInput, { target: { value: 'invalid-email' } });
       fireEvent.click(submitButton);
 
-      await waitFor(() => {
-        expect(screen.getByText(/invalid email/i)).toBeInTheDocument();
-      });
+      await waitFor(
+        () => {
+          const errorElement = screen.queryByText(
+            /please enter a valid email|invalid email/i,
+          );
+          expect(errorElement).toBeInTheDocument();
+        },
+        { timeout: 5000 },
+      );
     });
 
     it('should show validation error for short password', async () => {

@@ -9,7 +9,8 @@
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
-
+.claude/
+.vscode/
 # testing
 *.log
 /unit-tests/coverage/
@@ -48,6 +49,7 @@ yarn-error.log*
 
 # vercel
 .vercel
+.claude
 
 coverage
 playwright-report
@@ -63,16 +65,10 @@ next-env.d.ts
 # Sentry Config File
 .env.sentry-build-plugin
 
-#Agents files
-Claude.md
-PERFORMANCE_OPTIMIZATION.md
-PHASE_1_COMPLETE.md
-PHASE_2_IMPLEMENTATION.md
-RBAC_PAYMENT_STATUS.md
-TEST_SUMMARY.md
-TESTING_GUIDE.md
-THEME_READABILITY_IMPROVEMENTS.md
-UI_UX_IMPROVEMENTS.md
-aisaas starterkit.txt
-*.md
+# Documentation archive
+docs/
+
+#Agents files (archived to docs/)
 *.txt
+*.log
+

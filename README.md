@@ -1,16 +1,24 @@
 # AI SaaS Starter Kit
 
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![CI](https://github.com/karthiknitt/ai-saas-starter-kit/workflows/CI/badge.svg)](https://github.com/karthiknitt/ai-saas-starter-kit/actions)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black.svg)](https://nextjs.org/)
+
 A production-ready, full-stack AI SaaS application starter kit built with Next.js 16, React 19, and TypeScript. Ship your AI-powered SaaS product faster with authentication, payments, AI chat, role-based access control, and comprehensive security built-in.
+
+⭐ **If you find this project helpful, please give it a star!** ⭐
 
 ## Features
 
 ### Core Features
-- **Modern Tech Stack**: Next.js 16 with App Router, React 19, TypeScript 5.9, Tailwind CSS 4
+- **Modern Tech Stack**: Next.js 16.1 with App Router, React 19.2, TypeScript 5.9, Tailwind CSS 4.1
 - **AI Chat Interface**: Streaming AI responses with OpenAI integration and custom API key management
 - **Authentication**: Email/password + Google OAuth via Better Auth
 - **Payment Integration**: Subscription management with Polar (Free, Pro, Startup plans)
 - **Database**: PostgreSQL with Drizzle ORM
 - **UI Components**: 50+ customizable shadcn/ui components
+- **Error Monitoring**: Sentry integration for production error tracking
 
 ### Advanced Features
 - **Multi-Tenancy/Workspaces**: Complete team workspace management with UI and member controls
@@ -27,20 +35,22 @@ A production-ready, full-stack AI SaaS application starter kit built with Next.j
 
 ### Developer Experience
 - **Type Safety**: Strict TypeScript configuration
-- **Testing**: 163+ unit tests with Vitest
+- **Testing**: 40+ unit tests with Vitest + 5 E2E tests with Playwright
 - **Code Quality**: Biome for linting and formatting
 - **Git Hooks**: Lefthook for pre-commit checks and conventional commits
 - **Hot Reload**: Turbopack for blazing-fast development
 - **React Compiler**: Automatic memoization for optimized performance
 - **MCP Integration**: Built-in Model Context Protocol for AI-assisted debugging (dev-only)
+- **Continuous Integration**: GitHub Actions CI/CD pipeline
 
 ## Prerequisites
 
 Before you begin, ensure you have the following installed:
 - **Node.js** 18.x or higher
 - **pnpm** 8.x or higher (recommended) or npm/yarn
-- **PostgreSQL** database (we recommend [Neon](https://neon.tech))
+- **PostgreSQL** database (we recommend [Neon](https://neon.tech) or use Docker for local development)
 - **Git**
+- **Docker** (optional, for local PostgreSQL database)
 
 ## Getting Started
 
@@ -159,6 +169,22 @@ Get your PostHog API key from [PostHog](https://posthog.com). PostHog provides:
 - Automatic page view tracking
 - Client and server-side event tracking
 
+#### Error Monitoring (Optional but Recommended)
+```env
+SENTRY_ORG=your-sentry-organization-slug
+SENTRY_PROJECT=your-sentry-project-slug
+SENTRY_AUTH_TOKEN=sntrys_auth-token-goes-here
+SENTRY_DSN=https://your-sentry-dsn
+NEXT_PUBLIC_SENTRY_DSN=https://your-sentry-dsn-public
+```
+
+Get your Sentry configuration from [Sentry](https://sentry.io). Sentry provides:
+- Real-time error tracking and alerting
+- Performance monitoring and profiling
+- Session replay for debugging
+- Release tracking and deployment monitoring
+- Source map support for production debugging
+
 ### 4. Database Setup
 
 Run database migrations:
@@ -202,9 +228,14 @@ Follow the prompts to enter your email address.
 - `pnpm type-check` - Run TypeScript type checking
 
 ### Testing
-- `pnpm test` - Run tests in watch mode
-- `pnpm test:run` - Run tests once
+- `pnpm test` - Run unit tests in watch mode
+- `pnpm test:run` - Run unit tests once
 - `pnpm test:coverage` - Generate test coverage report
+- `pnpm test:e2e` - Run E2E tests with Playwright
+- `pnpm test:e2e:ui` - Run E2E tests with Playwright UI
+- `pnpm test:e2e:headed` - Run E2E tests in headed mode
+- `pnpm test:e2e:debug` - Debug E2E tests with Playwright
+- `pnpm test:e2e:setup` - Set up E2E test environment
 
 ### Database
 - `pnpm db:studio` - Open Drizzle Studio (database GUI)
@@ -215,6 +246,13 @@ Follow the prompts to enter your email address.
 ### Utilities
 - `pnpm make-admin` - Make a user an admin
 - `pnpm analyze` - Analyze bundle size
+- `pnpm test:email` - Test email configuration
+
+### Docker (Optional for Local Development)
+- `pnpm docker:up` - Start PostgreSQL in Docker
+- `pnpm docker:down` - Stop PostgreSQL container
+- `pnpm docker:logs` - View PostgreSQL logs
+- `pnpm docker:reset` - Reset PostgreSQL database
 
 ## Advanced Development Features
 
@@ -267,17 +305,31 @@ To connect AI coding assistants to your Next.js dev server:
 
 ```
 ├── src/
-│   ├── app/              # Next.js app router pages
-│   ├── components/       # React components
-│   │   ├── ui/          # shadcn/ui components
-│   │   └── ...          # Feature components
-│   ├── db/              # Database schema and utilities
-│   ├── hooks/           # Custom React hooks
-│   └── lib/             # Utilities and configurations
-├── scripts/             # Utility scripts
-├── public/              # Static assets
-├── migrations/          # Database migrations
-└── unit-tests/          # Test files
+│   ├── app/                    # Next.js app router pages
+│   │   ├── (auth)/            # Authentication pages (login, signup)
+│   │   ├── admin/             # Admin dashboard
+│   │   ├── aichat/            # AI chat interface
+│   │   ├── api/               # API routes
+│   │   ├── api-docs/          # Swagger API documentation
+│   │   ├── billing/           # Payment and subscription pages
+│   │   ├── dashboard/         # User dashboard and analytics
+│   │   ├── sentry-example-page/ # Sentry error monitoring demo
+│   │   └── workspace/         # Workspace management
+│   ├── components/            # React components
+│   │   ├── ui/               # shadcn/ui components
+│   │   ├── forms/            # Form components
+│   │   ├── emails/           # Email templates
+│   │   └── ai-elements/      # AI-specific UI components
+│   ├── db/                   # Database schema and utilities
+│   ├── hooks/                # Custom React hooks
+│   ├── lib/                  # Utilities and configurations
+│   └── providers/            # React context providers
+├── scripts/                  # Utility scripts
+├── public/                   # Static assets
+├── migrations/               # Database migrations
+├── unit-tests/               # Unit tests (40+ tests)
+├── e2e/                      # End-to-end tests (5 tests)
+└── docs/                     # Documentation
 ```
 
 ## Key Features Guide
@@ -326,36 +378,91 @@ To connect AI coding assistants to your Next.js dev server:
 
 ## Deployment
 
+### Continuous Integration
+
+This project includes a GitHub Actions CI pipeline that:
+- Runs on every push and pull request
+- Executes linting with Biome
+- Runs type checking with TypeScript
+- Executes unit tests with Vitest
+- Ensures code quality before merging
+
 ### Vercel (Recommended)
 
 1. Push your code to GitHub
 2. Import your repository in [Vercel](https://vercel.com)
-3. Configure environment variables
+3. Configure environment variables (copy from `.env.example`)
 4. Deploy
+
+**Important:** Ensure you set all required environment variables in Vercel:
+- Database connection (`DATABASE_URL`)
+- Authentication secrets (`BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`)
+- API keys (OpenAI, Resend, Arcjet, etc.)
+- Optional: Sentry DSN for error monitoring
 
 ### Other Platforms
 
 This is a standard Next.js application and can be deployed to:
-- AWS (Amplify, ECS, EC2)
-- Google Cloud Platform
-- Azure
-- Railway
-- Render
-- Any Node.js hosting platform
+- **Vercel** - Recommended for Next.js apps
+- **Netlify** - Supports Next.js with Edge Functions
+- **AWS** - Amplify, ECS, EC2, or Lambda
+- **Google Cloud Platform** - Cloud Run or App Engine
+- **Azure** - App Service or Container Instances
+- **Railway** - Easy deployment with database
+- **Render** - Simple deployment platform
+- **DigitalOcean** - App Platform or Droplets
+- **Fly.io** - Edge deployment
+- Any Node.js hosting platform supporting:
+  - Node.js 18+
+  - PostgreSQL database connection
+  - Environment variables
+  - WebSocket connections (for real-time features)
 
-Ensure your hosting platform supports:
-- Node.js 18+
-- PostgreSQL database connection
-- Environment variables
+## Testing
+
+### Unit Tests
+
+This project includes 40+ unit tests covering:
+- Component rendering and interactions
+- API route handlers
+- Database operations
+- Authentication flows
+- Utility functions and helpers
+
+Run unit tests:
+```bash
+pnpm test              # Watch mode
+pnpm test:run          # Single run
+pnpm test:coverage     # With coverage report
+```
+
+### End-to-End Tests
+
+5 E2E tests using Playwright cover critical user flows:
+- User authentication (login/signup)
+- AI chat interface
+- Workspace management
+- Subscription flows
+- Admin dashboard
+
+Run E2E tests:
+```bash
+pnpm test:e2e:setup    # First-time setup
+pnpm test:e2e          # Run tests
+pnpm test:e2e:ui       # Run with UI
+pnpm test:e2e:debug    # Debug mode
+```
+
+For detailed E2E testing documentation, see the [E2E Testing Guide](docs/testing/E2E_QUICKSTART.md).
 
 ## Documentation
 
-- [Improvement Roadmap](./IMPROVEMENT_ROADMAP.md) - Feature roadmap and development plans
-- [Coding Standards](./CODING_STANDARDS.md) - Code quality guidelines and best practices
-- [RBAC & Payment Status](./RBAC_PAYMENT_STATUS.md) - Details on access control and payments
-- [Testing Guide](./TESTING_GUIDE.md) - How to write and run tests
-- [Phase 1 Complete](./PHASE_1_COMPLETE.md) - MVP completion summary
-- [Phase 2 Implementation](./PHASE_2_IMPLEMENTATION.md) - Production readiness features
+For comprehensive documentation, see the [docs](docs/) directory:
+
+- **[Contributing Guide](CONTRIBUTING.md)** - How to contribute to this project
+- **[Code of Conduct](CODE_OF_CONDUCT.md)** - Community guidelines
+- **[Security Policy](SECURITY.md)** - Responsible disclosure guidelines
+- **[Changelog](CHANGELOG.md)** - Project history and version changes
 
 ## Workspace Features
 
@@ -383,32 +490,27 @@ Flexible billing model supporting both individual and team subscriptions:
 
 ## Tech Stack
 
-- **Framework**: [Next.js 16](https://nextjs.org)
-- **UI Library**: [React 19](https://react.dev)
-- **Language**: [TypeScript](https://www.typescriptlang.org)
-- **Styling**: [Tailwind CSS 4](https://tailwindcss.com)
+- **Framework**: [Next.js 16.1](https://nextjs.org) (Canary)
+- **UI Library**: [React 19.2](https://react.dev)
+- **Language**: [TypeScript 5.9](https://www.typescriptlang.org)
+- **Styling**: [Tailwind CSS 4.1](https://tailwindcss.com)
 - **UI Components**: [shadcn/ui](https://ui.shadcn.com)
-- **Database ORM**: [Drizzle](https://orm.drizzle.team)
-- **Authentication**: [Better Auth](https://www.better-auth.com)
+- **Database**: [PostgreSQL](https://www.postgresql.org) with [Neon](https://neon.tech)
+- **ORM**: [Drizzle ORM 0.45](https://orm.drizzle.team)
+- **Authentication**: [Better Auth 1.4](https://www.better-auth.com)
 - **Payments**: [Polar](https://polar.sh)
-- **AI SDK**: [Vercel AI SDK](https://sdk.vercel.ai)
+- **AI SDK**: [Vercel AI SDK 5.0](https://sdk.vercel.ai)
 - **Email**: [Resend](https://resend.com)
-- **Security**: [Arcjet](https://arcjet.com)
+- **Security**: [Arcjet](https://arcjet.com) + [Helmet](https://helmetjs.github.io/)
 - **Analytics**: [PostHog](https://posthog.com)
-- **Testing**: [Vitest](https://vitest.dev) + [Playwright](https://playwright.dev)
-- **Code Quality**: [Biome](https://biomejs.dev)
+- **Error Tracking**: [Sentry](https://sentry.io)
+- **Testing**: [Vitest 4.0](https://vitest.dev) + [Playwright 1.57](https://playwright.dev)
+- **Code Quality**: [Biome 2.3](https://biomejs.dev)
+- **Git Hooks**: [Lefthook 2.0](https://github.com/evilmartians/lefthook)
 
 ## Contributing
 
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes using conventional commits (`git commit -m 'feat: add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Commit Convention
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
 
 This project uses [Conventional Commits](https://www.conventionalcommits.org/):
 - `feat:` - New features
@@ -437,18 +539,30 @@ This project uses [Conventional Commits](https://www.conventionalcommits.org/):
 
 ## Support
 
-- Create an issue: [GitHub Issues](https://github.com/karthiknitt/ai-saas-starter-kit/issues)
-- Documentation: Check the docs in this repository
-- Community: Join discussions in GitHub
+- **Issues**: [GitHub Issues](https://github.com/karthiknitt/ai-saas-starter-kit/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/karthiknitt/ai-saas-starter-kit/discussions)
+- **Documentation**: Check the [docs](docs/) directory in this repository
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
-Built with amazing open-source technologies and inspired by the developer community.
+Built with amazing open-source technologies and inspired by the developer community. Special thanks to:
+- [Vercel](https://vercel.com) for Next.js and AI SDK
+- [shadcn/ui](https://ui.shadcn.com) for beautiful UI components
+- [Better Auth](https://www.better-auth.com) for authentication
+- [Polar](https://polar.sh) for payment infrastructure
+- [Neon](https://neon.tech) for serverless PostgreSQL
+- All open-source contributors
+
+## Star History
+
+If you find this project useful, please consider giving it a star ⭐
 
 ---
 
 **Ready to build your AI SaaS?** Follow the setup instructions above and start shipping! 🚀
+
+Made with ❤️ for the developer community

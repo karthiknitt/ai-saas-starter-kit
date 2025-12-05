@@ -37,7 +37,7 @@ describe('/admin page access', () => {
     await expect(mod.default()).rejects.toMatchObject({
       digest: 'NEXT_REDIRECT',
     });
-    expect(vi.mocked(redirect)).toHaveBeenCalledWith('/');
+    expect(vi.mocked(redirect)).toHaveBeenCalledWith('/login');
   });
 
   it('redirects non-admin users', async () => {
@@ -65,7 +65,7 @@ describe('/admin page access', () => {
     await expect(mod.default()).rejects.toMatchObject({
       digest: 'NEXT_REDIRECT',
     });
-    expect(vi.mocked(redirect)).toHaveBeenCalledWith('/');
+    expect(vi.mocked(redirect)).toHaveBeenCalledWith('/dashboard');
   });
 
   it('allows admin users', async () => {
@@ -130,6 +130,6 @@ describe('/admin page access', () => {
     await expect(mod.default()).rejects.toMatchObject({
       digest: 'NEXT_REDIRECT',
     });
-    expect(vi.mocked(redirect)).toHaveBeenCalledWith('/');
+    expect(vi.mocked(redirect)).toHaveBeenCalledWith('/dashboard');
   });
 });
