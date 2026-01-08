@@ -10,6 +10,8 @@ import {
   ExternalLink,
   Key,
   MessageSquare,
+  Mic,
+  MicOff,
   Shield,
   Zap,
 } from 'lucide-react';
@@ -129,6 +131,10 @@ export default function AichatPage() {
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   const [input, setInput] = useState('');
   const [models, setModels] = useState<Model[]>([]);
+  const [isListening, setIsListening] = useState(false);
+  const [recognition, setRecognition] = useState<SpeechRecognition | null>(
+    null,
+  );
 
   const form = useForm<SetupFormValues>({
     resolver: zodResolver(setupFormSchema),
@@ -228,6 +234,63 @@ export default function AichatPage() {
     }
   }, [user, fetchApiConfig]);
 
+  // Initialize speech recognition
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const SpeechRecognition =
+        window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        const recognitionInstance = new SpeechRecognition();
+        recognitionInstance.continuous = true;
+        recognitionInstance.interimResults = true;
+        recognitionInstance.lang = 'en-US';
+
+        recognitionInstance.onresult = (event: SpeechRecognitionEvent) => {
+          let interimTranscript = '';
+          let finalTranscript = '';
+
+          for (let i = event.resultIndex; i < event.results.length; i++) {
+            const transcript = event.results[i][0].transcript;
+            if (event.results[i].isFinal) {
+              finalTranscript += transcript + ' ';
+            } else {
+              interimTranscript += transcript;
+            }
+          }
+
+          if (finalTranscript) {
+            setInput((prev) => prev + finalTranscript);
+          }
+        };
+
+        recognitionInstance.onerror = (event: SpeechRecognitionErrorEvent) => {
+          console.error('Speech recognition error:', event.error);
+          setIsListening(false);
+
+          if (event.error === 'not-allowed') {
+            toast.error('Microphone access denied. Please enable it in browser settings.');
+          } else if (event.error === 'no-speech') {
+            toast.info('No speech detected. Please try again.');
+          } else {
+            toast.error(`Speech recognition error: ${event.error}`);
+          }
+        };
+
+        recognitionInstance.onend = () => {
+          setIsListening(false);
+        };
+
+        setRecognition(recognitionInstance);
+      }
+    }
+
+    return () => {
+      if (recognition) {
+        recognition.stop();
+      }
+    };
+  }, []);
+
   useEffect(() => {
     if (selectedModel) {
       document.cookie = `selectedModel=${selectedModel}; path=/; max-age=86400`;
@@ -299,6 +362,28 @@ export default function AichatPage() {
     sendMessage({ text: message.text });
     // Clear input after sending
     setInput('');
+  };
+
+  const toggleVoiceInput = () => {
+    if (!recognition) {
+      toast.error('Speech recognition is not supported in your browser.');
+      return;
+    }
+
+    if (isListening) {
+      recognition.stop();
+      setIsListening(false);
+      toast.success('Voice input stopped');
+    } else {
+      try {
+        recognition.start();
+        setIsListening(true);
+        toast.success('Voice input started. Speak now...');
+      } catch (error) {
+        console.error('Error starting speech recognition:', error);
+        toast.error('Failed to start voice input');
+      }
+    }
   };
 
   if (loading) {
@@ -600,6 +685,29 @@ export default function AichatPage() {
                                 models={models}
                                 placeholder="Select model"
                               />
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                onClick={toggleVoiceInput}
+                                disabled={status === 'streaming' || !selectedModel}
+                                className={
+                                  isListening
+                                    ? 'text-red-500 hover:text-red-600'
+                                    : ''
+                                }
+                                title={
+                                  isListening
+                                    ? 'Stop voice input'
+                                    : 'Start voice input'
+                                }
+                              >
+                                {isListening ? (
+                                  <MicOff className="h-4 w-4 animate-pulse" />
+                                ) : (
+                                  <Mic className="h-4 w-4" />
+                                )}
+                              </Button>
                             </PromptInputTools>
                             <PromptInputSubmit status={status} />
                           </PromptInputToolbar>
