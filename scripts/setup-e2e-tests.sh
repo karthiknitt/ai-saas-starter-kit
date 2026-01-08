@@ -19,7 +19,7 @@ echo "✓ Docker is running"
 # Start database containers
 echo ""
 echo "📦 Starting PostgreSQL database..."
-pnpm docker:up
+bun docker:up
 
 # Wait for PostgreSQL to be ready
 echo ""
@@ -44,25 +44,25 @@ echo "✓ PostgreSQL is ready"
 # Push database schema
 echo ""
 echo "📋 Pushing database schema..."
-pnpm db:push
+bun db:push
 
 # Seed database (optional, but good for testing)
 echo ""
 echo "🌱 Seeding database with test data..."
-pnpm db:seed || echo "⚠️  Warning: Database seeding failed, continuing anyway..."
+bun db:seed || echo "⚠️  Warning: Database seeding failed, continuing anyway..."
 
 echo ""
 echo "✅ Environment setup complete!"
 echo ""
 echo "📝 You can now run tests with:"
-echo "   pnpm test:e2e              # Run all tests"
-echo "   pnpm test:e2e:ui           # Run with UI"
-echo "   pnpm test:e2e:headed       # Run in headed mode"
-echo "   pnpm test:e2e:debug        # Run in debug mode"
+echo "   bun test:e2e              # Run all tests"
+echo "   bun test:e2e:ui           # Run with UI"
+echo "   bun test:e2e:headed       # Run in headed mode"
+echo "   bun test:e2e:debug        # Run in debug mode"
 echo ""
 echo "🧹 To clean up after testing:"
-echo "   pnpm docker:down           # Stop containers"
-echo "   pnpm docker:reset          # Reset database completely"
+echo "   bun docker:down           # Stop containers"
+echo "   bun docker:reset          # Reset database completely"
 echo ""
 
 # Ask if user wants to run tests now
@@ -71,5 +71,5 @@ echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo ""
     echo "🧪 Running e2e tests..."
-    pnpm test:e2e
+    bun test:e2e
 fi

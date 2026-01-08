@@ -28,9 +28,9 @@
   ],
   "scripts": {
     "dev": "next dev --turbopack",
-    "dev:clean": "rm -rf .next && pnpm dev",
+    "dev:clean": "rm -rf .next && bun dev",
     "build": "next build",
-    "build:analyze": "next build --turbopack && pnpm dlx vite-bundle-analyzer dist",
+    "build:analyze": "next build --turbopack && bunx vite-bundle-analyzer dist",
     "start": "next start",
     "lint": "biome check --write --css-parse-tailwind-directives=true",
     "format": "biome format --write --css-parse-tailwind-directives=true",
@@ -46,16 +46,16 @@
     "db:studio": "drizzle-kit studio",
     "db:push": "drizzle-kit push",
     "db:migrate": "drizzle-kit migrate",
-    "db:seed": "pnpm exec tsx scripts/seed.ts",
-    "db:reset": "pnpm db:push && pnpm db:seed",
-    "db:migrate:phase2": "pnpm exec tsx scripts/migrate-phase2.ts",
-    "make-admin": "pnpm exec tsx scripts/make-admin.ts",
-    "test:email": "pnpm exec tsx scripts/test-email.ts",
+    "db:seed": "bun run scripts/seed.ts",
+    "db:reset": "bun db:push && bun db:seed",
+    "db:migrate:phase2": "bun run scripts/migrate-phase2.ts",
+    "make-admin": "bun run scripts/make-admin.ts",
+    "test:email": "bun run scripts/test-email.ts",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
     "docker:logs": "docker-compose logs -f",
     "docker:reset": "docker-compose down -v && docker-compose up -d",
-    "analyze": "pnpm dlx vite-bundle-analyzer .next/static",
+    "analyze": "bunx vite-bundle-analyzer .next/static",
     "prepare": "lefthook install"
   },
   "dependencies": {
@@ -187,8 +187,8 @@
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx}": [
-      "pnpm run format",
-      "pnpm run lint",
+      "bun run format",
+      "bun run lint",
       "bash -c tsc --noEmit"
     ]
   },
@@ -200,11 +200,5 @@
   "optionalDependencies": {
     "@tailwindcss/oxide-linux-x64-gnu": "^4.1.17",
     "lightningcss-linux-x64-gnu": "^1.30"
-  },
-  "pnpm": {
-    "overrides": {
-      "import-in-the-middle": "^2.0.0",
-      "require-in-the-middle": "^8.0.1"
-    }
   }
 }

@@ -7,7 +7,7 @@ GIT_ROOT=$(git rev-parse --show-toplevel)
 cd "$GIT_ROOT" || exit 0
 
 # Generate commit message and capture output
-COMMIT_MSG=$(node generate-commit-msg.js 2>&1)
+COMMIT_MSG=$(bun run generate-commit-msg.js 2>&1)
 EXIT_CODE=$?
 
 if [ "$EXIT_CODE" -ne 0 ]; then
