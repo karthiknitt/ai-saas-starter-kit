@@ -5,7 +5,7 @@
 pre-commit:
   commands:
     lint-staged:
-      run: pnpm exec lint-staged
+      run: bunx lint-staged
       stage_fixed: true
 
 # Prepare commit message hook: Auto-generate AI commit messages
@@ -19,20 +19,20 @@ prepare-commit-msg:
 commit-msg:
   commands:
     commitlint:
-      run: pnpm exec commitlint --edit {1}
+      run: bunx commitlint --edit {1}
       fail_text: "Commit message doesn't follow conventional commits format"
 
 # Pre-push hook: Run quality checks before pushing
 pre-push:
   commands:
     lint:
-      run: pnpm run lint
+      run: bun run lint
       fail_text: "Linting failed. Fix the errors before pushing."
     type-check:
-      run: pnpm run type-check
+      run: bun run type-check
       fail_text: "Type checking failed. Fix the errors before pushing."
     build:
-      run: pnpm run build
+      run: bun run build
       fail_text: "Build failed. Fix the errors before pushing."
   # Uncomment below to run tests before push
   # parallel: true  # Run commands in parallel for faster execution

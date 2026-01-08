@@ -47,7 +47,7 @@ A production-ready, full-stack AI SaaS application starter kit built with Next.j
 
 Before you begin, ensure you have the following installed:
 - **Node.js** 18.x or higher
-- **pnpm** 8.x or higher (recommended) or npm/yarn
+- **Bun** 1.x or higher (recommended package manager, linter, formatter, and test runner)
 - **PostgreSQL** database (we recommend [Neon](https://neon.tech) or use Docker for local development)
 - **Git**
 - **Docker** (optional, for local PostgreSQL database)
@@ -64,11 +64,7 @@ cd ai-saas-starter-kit
 ### 2. Install Dependencies
 
 ```bash
-pnpm install
-# or
-npm install
-# or
-yarn install
+bun install
 ```
 
 ### 3. Environment Configuration
@@ -190,19 +186,19 @@ Get your Sentry configuration from [Sentry](https://sentry.io). Sentry provides:
 Run database migrations:
 
 ```bash
-pnpm db:push
+bun db:push
 ```
 
 (Optional) Seed the database with sample data:
 
 ```bash
-pnpm db:seed
+bun db:seed
 ```
 
 ### 5. Start Development Server
 
 ```bash
-pnpm dev
+bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) in your browser to see your application.
@@ -212,7 +208,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser to see your 
 After signing up, make your account an admin:
 
 ```bash
-pnpm make-admin
+bun make-admin
 ```
 
 Follow the prompts to enter your email address.
@@ -220,39 +216,39 @@ Follow the prompts to enter your email address.
 ## Available Scripts
 
 ### Development
-- `pnpm dev` - Start development server with Turbopack
-- `pnpm build` - Build for production
-- `pnpm start` - Start production server
-- `pnpm lint` - Lint and fix code with Biome
-- `pnpm format` - Format code with Biome
-- `pnpm type-check` - Run TypeScript type checking
+- `bun dev` - Start development server with Turbopack
+- `bun build` - Build for production
+- `bun start` - Start production server
+- `bun lint` - Lint and fix code with Biome
+- `bun format` - Format code with Biome
+- `bun type-check` - Run TypeScript type checking
 
 ### Testing
-- `pnpm test` - Run unit tests in watch mode
-- `pnpm test:run` - Run unit tests once
-- `pnpm test:coverage` - Generate test coverage report
-- `pnpm test:e2e` - Run E2E tests with Playwright
-- `pnpm test:e2e:ui` - Run E2E tests with Playwright UI
-- `pnpm test:e2e:headed` - Run E2E tests in headed mode
-- `pnpm test:e2e:debug` - Debug E2E tests with Playwright
-- `pnpm test:e2e:setup` - Set up E2E test environment
+- `bun test` - Run unit tests in watch mode
+- `bun test:run` - Run unit tests once
+- `bun test:coverage` - Generate test coverage report
+- `bun test:e2e` - Run E2E tests with Playwright
+- `bun test:e2e:ui` - Run E2E tests with Playwright UI
+- `bun test:e2e:headed` - Run E2E tests in headed mode
+- `bun test:e2e:debug` - Debug E2E tests with Playwright
+- `bun test:e2e:setup` - Set up E2E test environment
 
 ### Database
-- `pnpm db:studio` - Open Drizzle Studio (database GUI)
-- `pnpm db:push` - Push schema changes to database
-- `pnpm db:migrate` - Run migrations
-- `pnpm db:seed` - Seed database with sample data
+- `bun db:studio` - Open Drizzle Studio (database GUI)
+- `bun db:push` - Push schema changes to database
+- `bun db:migrate` - Run migrations
+- `bun db:seed` - Seed database with sample data
 
 ### Utilities
-- `pnpm make-admin` - Make a user an admin
-- `pnpm analyze` - Analyze bundle size
-- `pnpm test:email` - Test email configuration
+- `bun make-admin` - Make a user an admin
+- `bun analyze` - Analyze bundle size
+- `bun test:email` - Test email configuration
 
 ### Docker (Optional for Local Development)
-- `pnpm docker:up` - Start PostgreSQL in Docker
-- `pnpm docker:down` - Stop PostgreSQL container
-- `pnpm docker:logs` - View PostgreSQL logs
-- `pnpm docker:reset` - Reset PostgreSQL database
+- `bun docker:up` - Start PostgreSQL in Docker
+- `bun docker:down` - Stop PostgreSQL container
+- `bun docker:logs` - View PostgreSQL logs
+- `bun docker:reset` - Reset PostgreSQL database
 
 ## Advanced Development Features
 
@@ -431,9 +427,9 @@ This project includes 40+ unit tests covering:
 
 Run unit tests:
 ```bash
-pnpm test              # Watch mode
-pnpm test:run          # Single run
-pnpm test:coverage     # With coverage report
+bun test              # Watch mode
+bun test:run          # Single run
+bun test:coverage     # With coverage report
 ```
 
 ### End-to-End Tests
@@ -447,10 +443,10 @@ pnpm test:coverage     # With coverage report
 
 Run E2E tests:
 ```bash
-pnpm test:e2e:setup    # First-time setup
-pnpm test:e2e          # Run tests
-pnpm test:e2e:ui       # Run with UI
-pnpm test:e2e:debug    # Debug mode
+bun test:e2e:setup    # First-time setup
+bun test:e2e          # Run tests
+bun test:e2e:ui       # Run with UI
+bun test:e2e:debug    # Debug mode
 ```
 
 For detailed E2E testing documentation, see the [E2E Testing Guide](docs/testing/E2E_QUICKSTART.md).
@@ -529,8 +525,8 @@ This project uses [Conventional Commits](https://www.conventionalcommits.org/):
 
 ### Build Errors
 - Clear Next.js cache: `rm -rf .next`
-- Delete node_modules and reinstall: `rm -rf node_modules pnpm-lock.yaml && pnpm install`
-- Ensure you're using Node.js 18+
+- Delete node_modules and reinstall: `rm -rf node_modules bun.lockb && bun install`
+- Ensure you're using Node.js 18+ and Bun 1.x+
 
 ### Authentication Issues
 - Verify `BETTER_AUTH_SECRET` is set
