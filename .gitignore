@@ -66,6 +66,9 @@ next-env.d.ts
 .env.sentry-build-plugin
 
 
+# Local-only docs (plans, notes, dev history)
+docs/
+
 #Agents files (archived to docs/)
 *.txt
 *.log
