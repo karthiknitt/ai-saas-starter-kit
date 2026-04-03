@@ -246,15 +246,12 @@ export default function AichatPage() {
         recognitionInstance.lang = 'en-US';
 
         recognitionInstance.onresult = (event: SpeechRecognitionEvent) => {
-          let interimTranscript = '';
           let finalTranscript = '';
 
           for (let i = event.resultIndex; i < event.results.length; i++) {
             const transcript = event.results[i][0].transcript;
             if (event.results[i].isFinal) {
-              finalTranscript += transcript + ' ';
-            } else {
-              interimTranscript += transcript;
+              finalTranscript += `${transcript} `;
             }
           }
 
@@ -268,7 +265,9 @@ export default function AichatPage() {
           setIsListening(false);
 
           if (event.error === 'not-allowed') {
-            toast.error('Microphone access denied. Please enable it in browser settings.');
+            toast.error(
+              'Microphone access denied. Please enable it in browser settings.',
+            );
           } else if (event.error === 'no-speech') {
             toast.info('No speech detected. Please try again.');
           } else {
@@ -281,14 +280,12 @@ export default function AichatPage() {
         };
 
         setRecognition(recognitionInstance);
+
+        return () => {
+          recognitionInstance.stop();
+        };
       }
     }
-
-    return () => {
-      if (recognition) {
-        recognition.stop();
-      }
-    };
   }, []);
 
   useEffect(() => {
@@ -690,7 +687,9 @@ export default function AichatPage() {
                                 variant="ghost"
                                 size="icon"
                                 onClick={toggleVoiceInput}
-                                disabled={status === 'streaming' || !selectedModel}
+                                disabled={
+                                  status === 'streaming' || !selectedModel
+                                }
                                 className={
                                   isListening
                                     ? 'text-red-500 hover:text-red-600'
