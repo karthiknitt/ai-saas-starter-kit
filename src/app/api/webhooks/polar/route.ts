@@ -25,6 +25,7 @@
 
 import crypto from 'node:crypto';
 import { eq } from 'drizzle-orm';
+import { revalidateTag } from 'next/cache';
 import { type NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db/drizzle';
 import { subscription, user } from '@/db/schema';
@@ -202,6 +203,9 @@ async function handleSubscriptionCreated(data: WebhookEventData) {
     // Initialize usage quota for the user's new plan
     await getOrCreateQuota(userRecord.id);
 
+    // Invalidate the cached plan so next request reads fresh data
+    revalidateTag(`user-plan:${userRecord.id}`, { expire: 0 });
+
     // Log the subscription creation
     await logSubscriptionChange(userRecord.id, 'created', {
       plan,
@@ -283,6 +287,11 @@ async function handleSubscriptionUpdated(data: WebhookEventData) {
     // Update usage quota if plan changed
     if (existing && existing.plan !== plan) {
       await getOrCreateQuota(existing.userId);
+    }
+
+    // Invalidate the cached plan so next request reads fresh data
+    if (existing) {
+      revalidateTag(`user-plan:${existing.userId}`, { expire: 0 });
     }
 
     // Log the subscription update
@@ -367,6 +376,11 @@ async function handleSubscriptionCanceled(data: WebhookEventData) {
         updatedAt: new Date(),
       })
       .where(eq(subscription.polarSubscriptionId, subscriptionData.id));
+
+    // Invalidate the cached plan so next request reflects canceled status
+    if (existing) {
+      revalidateTag(`user-plan:${existing.userId}`, { expire: 0 });
+    }
 
     // Log the subscription cancellation
     if (existing) {

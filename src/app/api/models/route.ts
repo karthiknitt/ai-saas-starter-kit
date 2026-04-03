@@ -8,8 +8,6 @@ import { auth } from '@/lib/auth';
 import { decrypt } from '@/lib/crypto';
 import { getAllowedModels } from '@/lib/subscription-features';
 
-export const dynamic = 'force-dynamic';
-
 interface OpenAIModel {
   id: string;
   object: string;
@@ -49,7 +47,7 @@ const fetchOpenAIModels = cache(async (apiKey: string) => {
     headers: {
       Authorization: `Bearer ${apiKey}`,
     },
-    next: { revalidate: 3600 }, // Cache for 1 hour
+    next: { revalidate: 3600, tags: ['ai-models'] }, // Cache for 1 hour
   });
 
   if (!response.ok) {
@@ -70,7 +68,7 @@ const fetchOpenRouterModels = cache(async (apiKey: string, referer: string) => {
       'HTTP-Referer': referer || '',
       'X-Title': 'AI Chat',
     },
-    next: { revalidate: 3600 }, // Cache for 1 hour
+    next: { revalidate: 3600, tags: ['ai-models'] }, // Cache for 1 hour
   });
 
   if (!response.ok) {
