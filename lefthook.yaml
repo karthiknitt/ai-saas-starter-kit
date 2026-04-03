@@ -1,38 +1,28 @@
 # Lefthook configuration
-# Replaces Husky git hooks with enhanced functionality
+# Replaces Husky with enhanced git hooks
 
-# Pre-commit hook: Run linting and formatting on staged files
+# Pre-commit: format + lint staged files only
 pre-commit:
   commands:
     lint-staged:
-      run: bunx lint-staged
+      run: bunx --bun lint-staged
       stage_fixed: true
 
-# Prepare commit message hook: Auto-generate AI commit messages
-prepare-commit-msg:
-  commands:
-    generate-message:
-      run: bash scripts/generate-commit-msg.sh {1}
-      fail_text: "Failed to generate commit message"
-
-# Commit message validation: Ensure conventional commit format
+# Commit message validation: enforce conventional commits format
+# Note: commit message generation is handled by Claude Code directly,
+# not via an external API call — so no prepare-commit-msg hook needed.
 commit-msg:
   commands:
     commitlint:
-      run: bunx commitlint --edit {1}
-      fail_text: "Commit message doesn't follow conventional commits format"
+      run: bunx --bun commitlint --edit {1}
+      fail_text: "Commit message must follow conventional commits (feat:, fix:, chore:, etc.)"
 
-# Pre-push hook: Run quality checks before pushing
+# Pre-push: fast checks only — full build runs in CI, not locally
 pre-push:
   commands:
     lint:
       run: bun run lint
-      fail_text: "Linting failed. Fix the errors before pushing."
+      fail_text: "Linting failed. Fix errors before pushing."
     type-check:
       run: bun run type-check
-      fail_text: "Type checking failed. Fix the errors before pushing."
-    build:
-      run: bun run build
-      fail_text: "Build failed. Fix the errors before pushing."
-  # Uncomment below to run tests before push
-  # parallel: true  # Run commands in parallel for faster execution
+      fail_text: "Type errors found. Fix before pushing."
