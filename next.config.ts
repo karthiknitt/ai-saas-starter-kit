@@ -35,6 +35,10 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
     // cacheComponents disabled due to incompatibility with API routes and system pages
     // cacheComponents: true,
+    turbopackFileSystemCacheForBuild: true,
+    sri: { algorithm: 'sha256' as const },
+    prefetchInlining: true,
+    appNewScrollHandler: true,
   },
 
   // External packages for server-side rendering

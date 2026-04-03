@@ -29,7 +29,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "dev:clean": "rm -rf .next && bun dev",
-    "build": "next build",
+    "build": "next build --turbopack",
     "build:analyze": "next build --turbopack && bunx --bun vite-bundle-analyzer dist",
     "start": "next start",
     "lint": "biome check --write --css-parse-tailwind-directives=true",
