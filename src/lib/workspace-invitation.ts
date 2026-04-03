@@ -10,6 +10,7 @@
 import crypto from 'node:crypto';
 import { and, eq, or } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
+import { after } from 'next/server';
 import { db } from '@/db/drizzle';
 import { user, workspaceInvitation, workspaceMember } from '@/db/schema';
 import { logAudit } from './audit-logger';
@@ -170,19 +171,21 @@ export async function createWorkspaceInvitation(
     expiresInDays: 7,
   });
 
-  // Log audit trail
-  await logAudit({
-    userId: data.invitedBy,
-    action: 'workspace.invitation_created',
-    resourceType: 'workspace',
-    resourceId: data.workspaceId,
-    changes: {
-      invitationId: invitationId,
-      email: data.email,
-      role: data.role || 'member',
-    },
-    ipAddress: metadata?.ipAddress,
-    userAgent: metadata?.userAgent,
+  // Log audit trail — deferred post-response via after()
+  after(async () => {
+    await logAudit({
+      userId: data.invitedBy,
+      action: 'workspace.invitation_created',
+      resourceType: 'workspace',
+      resourceId: data.workspaceId,
+      changes: {
+        invitationId: invitationId,
+        email: data.email,
+        role: data.role || 'member',
+      },
+      ipAddress: metadata?.ipAddress,
+      userAgent: metadata?.userAgent,
+    });
   });
 
   return invitation;
@@ -308,19 +311,21 @@ export async function acceptWorkspaceInvitation(
     .where(eq(workspaceInvitation.id, invitation.id))
     .returning();
 
-  // Log audit trail
-  await logAudit({
-    userId: data.userId,
-    action: 'workspace.invitation_accepted',
-    resourceType: 'workspace',
-    resourceId: invitation.workspaceId,
-    changes: {
-      invitationId: invitation.id,
-      email: invitation.email,
-      role: invitation.role,
-    },
-    ipAddress: metadata?.ipAddress,
-    userAgent: metadata?.userAgent,
+  // Log audit trail — deferred post-response via after()
+  after(async () => {
+    await logAudit({
+      userId: data.userId,
+      action: 'workspace.invitation_accepted',
+      resourceType: 'workspace',
+      resourceId: invitation.workspaceId,
+      changes: {
+        invitationId: invitation.id,
+        email: invitation.email,
+        role: invitation.role,
+      },
+      ipAddress: metadata?.ipAddress,
+      userAgent: metadata?.userAgent,
+    });
   });
 
   return updatedInvitation;
@@ -360,18 +365,20 @@ export async function declineWorkspaceInvitation(
     .set({ status: 'declined', updatedAt: new Date() })
     .where(eq(workspaceInvitation.id, invitation.id));
 
-  // Log audit trail
-  await logAudit({
-    userId: data.userId || invitation.invitedBy,
-    action: 'workspace.invitation_declined',
-    resourceType: 'workspace',
-    resourceId: invitation.workspaceId,
-    changes: {
-      invitationId: invitation.id,
-      email: invitation.email,
-    },
-    ipAddress: metadata?.ipAddress,
-    userAgent: metadata?.userAgent,
+  // Log audit trail — deferred post-response via after()
+  after(async () => {
+    await logAudit({
+      userId: data.userId || invitation.invitedBy,
+      action: 'workspace.invitation_declined',
+      resourceType: 'workspace',
+      resourceId: invitation.workspaceId,
+      changes: {
+        invitationId: invitation.id,
+        email: invitation.email,
+      },
+      ipAddress: metadata?.ipAddress,
+      userAgent: metadata?.userAgent,
+    });
   });
 }
 
@@ -412,18 +419,20 @@ export async function cancelWorkspaceInvitation(
     .delete(workspaceInvitation)
     .where(eq(workspaceInvitation.id, data.invitationId));
 
-  // Log audit trail
-  await logAudit({
-    userId: data.cancelledBy,
-    action: 'workspace.invitation_cancelled',
-    resourceType: 'workspace',
-    resourceId: invitation.workspaceId,
-    changes: {
-      invitationId: invitation.id,
-      email: invitation.email,
-    },
-    ipAddress: metadata?.ipAddress,
-    userAgent: metadata?.userAgent,
+  // Log audit trail — deferred post-response via after()
+  after(async () => {
+    await logAudit({
+      userId: data.cancelledBy,
+      action: 'workspace.invitation_cancelled',
+      resourceType: 'workspace',
+      resourceId: invitation.workspaceId,
+      changes: {
+        invitationId: invitation.id,
+        email: invitation.email,
+      },
+      ipAddress: metadata?.ipAddress,
+      userAgent: metadata?.userAgent,
+    });
   });
 }
 
