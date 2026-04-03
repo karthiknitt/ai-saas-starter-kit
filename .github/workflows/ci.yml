@@ -39,11 +39,15 @@ jobs:
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
+      env:
+        FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       with:
         node-version: 24
 
     - name: Cache Next.js build
       uses: actions/cache@v4
+      env:
+        FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       with:
         path: |
           ${{ github.workspace }}/.next/cache
