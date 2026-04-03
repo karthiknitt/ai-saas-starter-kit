@@ -172,8 +172,25 @@ export async function createWorkspaceInvitation(
   });
 
   // Log audit trail — deferred post-response via after()
-  after(async () => {
-    await logAudit({
+  try {
+    after(async () => {
+      await logAudit({
+        userId: data.invitedBy,
+        action: 'workspace.invitation_created',
+        resourceType: 'workspace',
+        resourceId: data.workspaceId,
+        changes: {
+          invitationId: invitationId,
+          email: data.email,
+          role: data.role || 'member',
+        },
+        ipAddress: metadata?.ipAddress,
+        userAgent: metadata?.userAgent,
+      });
+    });
+  } catch {
+    // Fallback for script/test contexts outside a Next.js request scope
+    void logAudit({
       userId: data.invitedBy,
       action: 'workspace.invitation_created',
       resourceType: 'workspace',
@@ -186,7 +203,7 @@ export async function createWorkspaceInvitation(
       ipAddress: metadata?.ipAddress,
       userAgent: metadata?.userAgent,
     });
-  });
+  }
 
   return invitation;
 }
@@ -290,6 +307,7 @@ export async function acceptWorkspaceInvitation(
   }
 
   // Add user to workspace
+  // NOTE: addWorkspaceMember schedules its own after() for the workspace.member_added audit log
   await addWorkspaceMember(
     {
       workspaceId: invitation.workspaceId,
@@ -312,8 +330,25 @@ export async function acceptWorkspaceInvitation(
     .returning();
 
   // Log audit trail — deferred post-response via after()
-  after(async () => {
-    await logAudit({
+  try {
+    after(async () => {
+      await logAudit({
+        userId: data.userId,
+        action: 'workspace.invitation_accepted',
+        resourceType: 'workspace',
+        resourceId: invitation.workspaceId,
+        changes: {
+          invitationId: invitation.id,
+          email: invitation.email,
+          role: invitation.role,
+        },
+        ipAddress: metadata?.ipAddress,
+        userAgent: metadata?.userAgent,
+      });
+    });
+  } catch {
+    // Fallback for script/test contexts outside a Next.js request scope
+    void logAudit({
       userId: data.userId,
       action: 'workspace.invitation_accepted',
       resourceType: 'workspace',
@@ -326,7 +361,7 @@ export async function acceptWorkspaceInvitation(
       ipAddress: metadata?.ipAddress,
       userAgent: metadata?.userAgent,
     });
-  });
+  }
 
   return updatedInvitation;
 }
@@ -366,8 +401,24 @@ export async function declineWorkspaceInvitation(
     .where(eq(workspaceInvitation.id, invitation.id));
 
   // Log audit trail — deferred post-response via after()
-  after(async () => {
-    await logAudit({
+  try {
+    after(async () => {
+      await logAudit({
+        userId: data.userId || invitation.invitedBy,
+        action: 'workspace.invitation_declined',
+        resourceType: 'workspace',
+        resourceId: invitation.workspaceId,
+        changes: {
+          invitationId: invitation.id,
+          email: invitation.email,
+        },
+        ipAddress: metadata?.ipAddress,
+        userAgent: metadata?.userAgent,
+      });
+    });
+  } catch {
+    // Fallback for script/test contexts outside a Next.js request scope
+    void logAudit({
       userId: data.userId || invitation.invitedBy,
       action: 'workspace.invitation_declined',
       resourceType: 'workspace',
@@ -379,7 +430,7 @@ export async function declineWorkspaceInvitation(
       ipAddress: metadata?.ipAddress,
       userAgent: metadata?.userAgent,
     });
-  });
+  }
 }
 
 /**
@@ -420,8 +471,24 @@ export async function cancelWorkspaceInvitation(
     .where(eq(workspaceInvitation.id, data.invitationId));
 
   // Log audit trail — deferred post-response via after()
-  after(async () => {
-    await logAudit({
+  try {
+    after(async () => {
+      await logAudit({
+        userId: data.cancelledBy,
+        action: 'workspace.invitation_cancelled',
+        resourceType: 'workspace',
+        resourceId: invitation.workspaceId,
+        changes: {
+          invitationId: invitation.id,
+          email: invitation.email,
+        },
+        ipAddress: metadata?.ipAddress,
+        userAgent: metadata?.userAgent,
+      });
+    });
+  } catch {
+    // Fallback for script/test contexts outside a Next.js request scope
+    void logAudit({
       userId: data.cancelledBy,
       action: 'workspace.invitation_cancelled',
       resourceType: 'workspace',
@@ -433,7 +500,7 @@ export async function cancelWorkspaceInvitation(
       ipAddress: metadata?.ipAddress,
       userAgent: metadata?.userAgent,
     });
-  });
+  }
 }
 
 /**

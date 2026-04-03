@@ -134,8 +134,21 @@ export async function createWorkspace(
   });
 
   // Log audit trail — deferred post-response via after()
-  after(async () => {
-    await logAudit({
+  try {
+    after(async () => {
+      await logAudit({
+        userId: data.ownerId,
+        action: 'workspace.created',
+        resourceType: 'workspace',
+        resourceId: workspaceId,
+        changes: { workspace: newWorkspace },
+        ipAddress: metadata?.ipAddress,
+        userAgent: metadata?.userAgent,
+      });
+    });
+  } catch {
+    // Fallback for script/test contexts outside a Next.js request scope
+    void logAudit({
       userId: data.ownerId,
       action: 'workspace.created',
       resourceType: 'workspace',
@@ -144,7 +157,7 @@ export async function createWorkspace(
       ipAddress: metadata?.ipAddress,
       userAgent: metadata?.userAgent,
     });
-  });
+  }
 
   return newWorkspace;
 }
@@ -336,8 +349,24 @@ export async function addWorkspaceMember(
     .returning();
 
   // Log audit trail — deferred post-response via after()
-  after(async () => {
-    await logAudit({
+  try {
+    after(async () => {
+      await logAudit({
+        userId: data.invitedBy,
+        action: 'workspace.member_added',
+        resourceType: 'workspace',
+        resourceId: data.workspaceId,
+        changes: {
+          addedUserId: data.userId,
+          role: data.role || 'member',
+        },
+        ipAddress: metadata?.ipAddress,
+        userAgent: metadata?.userAgent,
+      });
+    });
+  } catch {
+    // Fallback for script/test contexts outside a Next.js request scope
+    void logAudit({
       userId: data.invitedBy,
       action: 'workspace.member_added',
       resourceType: 'workspace',
@@ -349,7 +378,7 @@ export async function addWorkspaceMember(
       ipAddress: metadata?.ipAddress,
       userAgent: metadata?.userAgent,
     });
-  });
+  }
 
   return member;
 }
@@ -406,8 +435,21 @@ export async function removeWorkspaceMember(
     );
 
   // Log audit trail — deferred post-response via after()
-  after(async () => {
-    await logAudit({
+  try {
+    after(async () => {
+      await logAudit({
+        userId: data.removedBy,
+        action: 'workspace.member_removed',
+        resourceType: 'workspace',
+        resourceId: data.workspaceId,
+        changes: { removedUserId: data.userId },
+        ipAddress: metadata?.ipAddress,
+        userAgent: metadata?.userAgent,
+      });
+    });
+  } catch {
+    // Fallback for script/test contexts outside a Next.js request scope
+    void logAudit({
       userId: data.removedBy,
       action: 'workspace.member_removed',
       resourceType: 'workspace',
@@ -416,7 +458,7 @@ export async function removeWorkspaceMember(
       ipAddress: metadata?.ipAddress,
       userAgent: metadata?.userAgent,
     });
-  });
+  }
 }
 
 /**
@@ -481,8 +523,25 @@ export async function updateWorkspaceMemberRole(
     );
 
   // Log audit trail — deferred post-response via after()
-  after(async () => {
-    await logAudit({
+  try {
+    after(async () => {
+      await logAudit({
+        userId: data.updatedBy,
+        action: 'workspace.member_role_updated',
+        resourceType: 'workspace',
+        resourceId: data.workspaceId,
+        changes: {
+          userId: data.userId,
+          oldRole,
+          newRole: data.newRole,
+        },
+        ipAddress: metadata?.ipAddress,
+        userAgent: metadata?.userAgent,
+      });
+    });
+  } catch {
+    // Fallback for script/test contexts outside a Next.js request scope
+    void logAudit({
       userId: data.updatedBy,
       action: 'workspace.member_role_updated',
       resourceType: 'workspace',
@@ -495,7 +554,7 @@ export async function updateWorkspaceMemberRole(
       ipAddress: metadata?.ipAddress,
       userAgent: metadata?.userAgent,
     });
-  });
+  }
 }
 
 /**
@@ -608,8 +667,21 @@ export async function updateWorkspace(
     .returning();
 
   // Log audit trail — deferred post-response via after()
-  after(async () => {
-    await logAudit({
+  try {
+    after(async () => {
+      await logAudit({
+        userId: data.updatedBy,
+        action: 'workspace.updated',
+        resourceType: 'workspace',
+        resourceId: data.workspaceId,
+        changes: { before: current, after: updated },
+        ipAddress: metadata?.ipAddress,
+        userAgent: metadata?.userAgent,
+      });
+    });
+  } catch {
+    // Fallback for script/test contexts outside a Next.js request scope
+    void logAudit({
       userId: data.updatedBy,
       action: 'workspace.updated',
       resourceType: 'workspace',
@@ -618,7 +690,7 @@ export async function updateWorkspace(
       ipAddress: metadata?.ipAddress,
       userAgent: metadata?.userAgent,
     });
-  });
+  }
 
   return updated;
 }
@@ -664,8 +736,21 @@ export async function deleteWorkspace(
   await db.delete(workspace).where(eq(workspace.id, data.workspaceId));
 
   // Log audit trail — deferred post-response via after()
-  after(async () => {
-    await logAudit({
+  try {
+    after(async () => {
+      await logAudit({
+        userId: data.deletedBy,
+        action: 'workspace.deleted',
+        resourceType: 'workspace',
+        resourceId: data.workspaceId,
+        changes: { workspace: ws },
+        ipAddress: metadata?.ipAddress,
+        userAgent: metadata?.userAgent,
+      });
+    });
+  } catch {
+    // Fallback for script/test contexts outside a Next.js request scope
+    void logAudit({
       userId: data.deletedBy,
       action: 'workspace.deleted',
       resourceType: 'workspace',
@@ -674,5 +759,5 @@ export async function deleteWorkspace(
       ipAddress: metadata?.ipAddress,
       userAgent: metadata?.userAgent,
     });
-  });
+  }
 }

@@ -351,6 +351,10 @@ export async function trackAndCheckAiRequest(
   after(async () => {
     await logUsage(userId, 'ai_request', 1, metadata);
   });
+  // NOTE: logUsage (audit trail) is deferred; incrementAiRequests (enforcement counter)
+  // runs synchronously. Under a crash between response and after(), the quota counter
+  // may be incremented without a corresponding usageLog entry — an acceptable trade-off
+  // for response latency.
 
   // Increment quota counter
   await incrementAiRequests(userId, 1);
