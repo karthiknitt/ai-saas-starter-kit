@@ -9,7 +9,7 @@
 
 import 'server-only';
 import { and, eq, sql } from 'drizzle-orm';
-import { unstable_cache } from 'next/cache';
+import { cacheLife, cacheTag } from 'next/cache';
 import { db } from '@/db/drizzle';
 import {
   subscription as subscriptionTable,
@@ -31,23 +31,18 @@ import {
  * @param workspaceId - Workspace ID
  * @returns Workspace subscription or null
  */
-export const getWorkspaceSubscription = async (workspaceId: string) => {
-  return unstable_cache(
-    async () => {
-      return db.query.subscription.findFirst({
-        where: and(
-          eq(subscriptionTable.workspaceId, workspaceId),
-          eq(subscriptionTable.status, 'active'),
-        ),
-      });
-    },
-    [`workspace-sub-${workspaceId}`],
-    {
-      tags: [`workspace-sub:${workspaceId}`, 'workspace-sub'],
-      revalidate: 3600,
-    },
-  )();
-};
+export async function getWorkspaceSubscription(workspaceId: string) {
+  'use cache';
+  cacheTag(`workspace-sub:${workspaceId}`, 'workspace-sub');
+  cacheLife('hours');
+
+  return db.query.subscription.findFirst({
+    where: and(
+      eq(subscriptionTable.workspaceId, workspaceId),
+      eq(subscriptionTable.status, 'active'),
+    ),
+  });
+}
 
 /**
  * Get workspace plan.

@@ -1,6 +1,6 @@
 import 'server-only';
 import { eq } from 'drizzle-orm';
-import { unstable_cache } from 'next/cache';
+import { cacheLife, cacheTag } from 'next/cache';
 import { db } from '@/db/drizzle';
 import { subscription as subscriptionTable } from '@/db/schema';
 
@@ -44,43 +44,38 @@ export type PlanName = keyof typeof PLAN_FEATURES;
 export type PlanFeatures = (typeof PLAN_FEATURES)[PlanName];
 
 /**
- * Get user's current subscription plan
- * Returns 'free' if no active subscription found
- * Cached with unstable_cache for cross-request persistence (1 hour TTL)
- * Tagged with user-plan:${userId} for per-user invalidation and 'user-plan' for bulk invalidation
+ * Get user's current subscription plan.
+ * Returns 'free' if no active subscription found.
+ * Cached with the "use cache" directive for cross-request persistence (1 hour TTL).
+ * Tagged with user-plan:${userId} for per-user invalidation and 'user-plan' for bulk invalidation.
  */
-export const getUserPlan = async (userId: string): Promise<PlanName> => {
-  return unstable_cache(
-    async () => {
-      try {
-        const subscription = await db.query.subscription.findFirst({
-          where: eq(subscriptionTable.userId, userId),
-        });
+export async function getUserPlan(userId: string): Promise<PlanName> {
+  'use cache';
+  cacheTag(`user-plan:${userId}`, 'user-plan');
+  cacheLife('hours');
 
-        // If no subscription or inactive, default to free
-        if (!subscription || subscription.status !== 'active') {
-          return 'free';
-        }
+  try {
+    const subscription = await db.query.subscription.findFirst({
+      where: eq(subscriptionTable.userId, userId),
+    });
 
-        // Validate plan name
-        const planName = subscription.plan.toLowerCase();
-        if (planName in PLAN_FEATURES) {
-          return planName as PlanName;
-        }
+    // If no subscription or inactive, default to free
+    if (!subscription || subscription.status !== 'active') {
+      return 'free';
+    }
 
-        return 'free';
-      } catch (error) {
-        console.error('Error fetching user plan:', error);
-        return 'free';
-      }
-    },
-    [`user-plan-${userId}`],
-    {
-      tags: [`user-plan:${userId}`, 'user-plan'],
-      revalidate: 3600,
-    },
-  )();
-};
+    // Validate plan name
+    const planName = subscription.plan.toLowerCase();
+    if (planName in PLAN_FEATURES) {
+      return planName as PlanName;
+    }
+
+    return 'free';
+  } catch (error) {
+    console.error('Error fetching user plan:', error);
+    return 'free';
+  }
+}
 
 /**
  * Get plan features for a user

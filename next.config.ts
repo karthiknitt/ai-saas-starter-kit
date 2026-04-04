@@ -33,7 +33,10 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizeCss: true,
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
-    // cacheComponents disabled due to incompatibility with API routes and system pages
+    // useCache enables the "use cache" directive for async server functions
+    useCache: true,
+    // cacheComponents enables component-level caching (PPR model) — disabled due
+    // to known incompatibility with API routes and Next.js system pages
     // cacheComponents: true,
     turbopackFileSystemCacheForBuild: true,
     sri: { algorithm: 'sha256' as const },
