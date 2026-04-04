@@ -9,7 +9,7 @@
 
 import 'server-only';
 import { and, eq, sql } from 'drizzle-orm';
-import { cache } from 'react';
+import { unstable_cache } from 'next/cache';
 import { db } from '@/db/drizzle';
 import {
   subscription as subscriptionTable,
@@ -25,18 +25,29 @@ import {
 
 /**
  * Get workspace subscription.
+ * Cached per workspace with tag-based invalidation — call revalidateTag(`workspace-sub:${workspaceId}`)
+ * after any subscription change for this workspace.
  *
  * @param workspaceId - Workspace ID
  * @returns Workspace subscription or null
  */
-export const getWorkspaceSubscription = cache(async (workspaceId: string) => {
-  return db.query.subscription.findFirst({
-    where: and(
-      eq(subscriptionTable.workspaceId, workspaceId),
-      eq(subscriptionTable.status, 'active'),
-    ),
-  });
-});
+export const getWorkspaceSubscription = async (workspaceId: string) => {
+  return unstable_cache(
+    async () => {
+      return db.query.subscription.findFirst({
+        where: and(
+          eq(subscriptionTable.workspaceId, workspaceId),
+          eq(subscriptionTable.status, 'active'),
+        ),
+      });
+    },
+    [`workspace-sub-${workspaceId}`],
+    {
+      tags: [`workspace-sub:${workspaceId}`, 'workspace-sub'],
+      revalidate: 3600,
+    },
+  )();
+};
 
 /**
  * Get workspace plan.
@@ -46,27 +57,27 @@ export const getWorkspaceSubscription = cache(async (workspaceId: string) => {
  * @param workspaceId - Workspace ID
  * @returns Plan name
  */
-export const getWorkspacePlan = cache(
-  async (workspaceId: string): Promise<PlanName> => {
-    try {
-      const subscription = await getWorkspaceSubscription(workspaceId);
+export const getWorkspacePlan = async (
+  workspaceId: string,
+): Promise<PlanName> => {
+  try {
+    const subscription = await getWorkspaceSubscription(workspaceId);
 
-      if (!subscription || subscription.status !== 'active') {
-        return 'free';
-      }
-
-      const planName = subscription.plan.toLowerCase();
-      if (planName in PLAN_FEATURES) {
-        return planName as PlanName;
-      }
-
-      return 'free';
-    } catch (error) {
-      console.error('Error fetching workspace plan:', error);
+    if (!subscription || subscription.status !== 'active') {
       return 'free';
     }
-  },
-);
+
+    const planName = subscription.plan.toLowerCase();
+    if (planName in PLAN_FEATURES) {
+      return planName as PlanName;
+    }
+
+    return 'free';
+  } catch (error) {
+    console.error('Error fetching workspace plan:', error);
+    return 'free';
+  }
+};
 
 /**
  * Get workspace plan features.
@@ -74,12 +85,12 @@ export const getWorkspacePlan = cache(
  * @param workspaceId - Workspace ID
  * @returns Plan features
  */
-export const getWorkspacePlanFeatures = cache(
-  async (workspaceId: string): Promise<PlanFeatures> => {
-    const plan = await getWorkspacePlan(workspaceId);
-    return PLAN_FEATURES[plan];
-  },
-);
+export const getWorkspacePlanFeatures = async (
+  workspaceId: string,
+): Promise<PlanFeatures> => {
+  const plan = await getWorkspacePlan(workspaceId);
+  return PLAN_FEATURES[plan];
+};
 
 /**
  * Get effective plan for a user.
@@ -90,65 +101,65 @@ export const getWorkspacePlanFeatures = cache(
  * @param userId - User ID
  * @returns Effective plan name
  */
-export const getUserEffectivePlan = cache(
-  async (userId: string): Promise<PlanName> => {
-    try {
-      // Get user's personal subscription
-      const userSubscription = await db.query.subscription.findFirst({
-        where: and(
-          eq(subscriptionTable.userId, userId),
-          eq(subscriptionTable.status, 'active'),
-          sql`${subscriptionTable.workspaceId} IS NULL`, // User-level only
-        ),
-      });
+export const getUserEffectivePlan = async (
+  userId: string,
+): Promise<PlanName> => {
+  try {
+    // Get user's personal subscription
+    const userSubscription = await db.query.subscription.findFirst({
+      where: and(
+        eq(subscriptionTable.userId, userId),
+        eq(subscriptionTable.status, 'active'),
+        sql`${subscriptionTable.workspaceId} IS NULL`, // User-level only
+      ),
+    });
 
-      // Get user's workspaces
-      const workspaces = await db.query.workspaceMember.findMany({
-        where: eq(workspaceMember.userId, userId),
-      });
+    // Get user's workspaces
+    const workspaces = await db.query.workspaceMember.findMany({
+      where: eq(workspaceMember.userId, userId),
+    });
 
-      // Get workspace subscriptions
-      const workspaceSubscriptions = await Promise.all(
-        workspaces.map((ws) => getWorkspaceSubscription(ws.workspaceId)),
-      );
+    // Get workspace subscriptions (each individually cached via getWorkspaceSubscription)
+    const workspaceSubscriptions = await Promise.all(
+      workspaces.map((ws) => getWorkspaceSubscription(ws.workspaceId)),
+    );
 
-      // Collect all plans
-      const plans: PlanName[] = [];
+    // Collect all plans
+    const plans: PlanName[] = [];
 
-      if (userSubscription) {
-        const planName = userSubscription.plan.toLowerCase();
+    if (userSubscription) {
+      const planName = userSubscription.plan.toLowerCase();
+      if (planName in PLAN_FEATURES) {
+        plans.push(planName as PlanName);
+      }
+    }
+
+    for (const wsSub of workspaceSubscriptions) {
+      if (wsSub) {
+        const planName = wsSub.plan.toLowerCase();
         if (planName in PLAN_FEATURES) {
           plans.push(planName as PlanName);
         }
       }
-
-      for (const wsSub of workspaceSubscriptions) {
-        if (wsSub) {
-          const planName = wsSub.plan.toLowerCase();
-          if (planName in PLAN_FEATURES) {
-            plans.push(planName as PlanName);
-          }
-        }
-      }
-
-      // Return highest plan (startup > pro > free)
-      const planPriority: Record<PlanName, number> = {
-        free: 0,
-        pro: 1,
-        startup: 2,
-      };
-
-      return plans.reduce(
-        (highest, current) =>
-          planPriority[current] > planPriority[highest] ? current : highest,
-        'free' as PlanName,
-      );
-    } catch (error) {
-      console.error('Error fetching user effective plan:', error);
-      return 'free';
     }
-  },
-);
+
+    // Return highest plan (startup > pro > free)
+    const planPriority: Record<PlanName, number> = {
+      free: 0,
+      pro: 1,
+      startup: 2,
+    };
+
+    return plans.reduce(
+      (highest, current) =>
+        planPriority[current] > planPriority[highest] ? current : highest,
+      'free' as PlanName,
+    );
+  } catch (error) {
+    console.error('Error fetching user effective plan:', error);
+    return 'free';
+  }
+};
 
 /**
  * Get effective plan features for a user.
@@ -156,12 +167,12 @@ export const getUserEffectivePlan = cache(
  * @param userId - User ID
  * @returns Plan features
  */
-export const getUserEffectivePlanFeatures = cache(
-  async (userId: string): Promise<PlanFeatures> => {
-    const plan = await getUserEffectivePlan(userId);
-    return PLAN_FEATURES[plan];
-  },
-);
+export const getUserEffectivePlanFeatures = async (
+  userId: string,
+): Promise<PlanFeatures> => {
+  const plan = await getUserEffectivePlan(userId);
+  return PLAN_FEATURES[plan];
+};
 
 /**
  * Get workspace usage aggregation.

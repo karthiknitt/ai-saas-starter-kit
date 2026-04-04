@@ -1,6 +1,6 @@
 import 'server-only';
 import { eq } from 'drizzle-orm';
-import { cache } from 'react';
+import { unstable_cache } from 'next/cache';
 import { db } from '@/db/drizzle';
 import { subscription as subscriptionTable } from '@/db/schema';
 
@@ -46,42 +46,52 @@ export type PlanFeatures = (typeof PLAN_FEATURES)[PlanName];
 /**
  * Get user's current subscription plan
  * Returns 'free' if no active subscription found
- * Cached with React cache for request deduplication
+ * Cached with unstable_cache for cross-request persistence (1 hour TTL)
+ * Tagged with user-plan:${userId} for per-user invalidation and 'user-plan' for bulk invalidation
  */
-export const getUserPlan = cache(async (userId: string): Promise<PlanName> => {
-  try {
-    const subscription = await db.query.subscription.findFirst({
-      where: eq(subscriptionTable.userId, userId),
-    });
+export const getUserPlan = async (userId: string): Promise<PlanName> => {
+  return unstable_cache(
+    async () => {
+      try {
+        const subscription = await db.query.subscription.findFirst({
+          where: eq(subscriptionTable.userId, userId),
+        });
 
-    // If no subscription or inactive, default to free
-    if (!subscription || subscription.status !== 'active') {
-      return 'free';
-    }
+        // If no subscription or inactive, default to free
+        if (!subscription || subscription.status !== 'active') {
+          return 'free';
+        }
 
-    // Validate plan name
-    const planName = subscription.plan.toLowerCase();
-    if (planName in PLAN_FEATURES) {
-      return planName as PlanName;
-    }
+        // Validate plan name
+        const planName = subscription.plan.toLowerCase();
+        if (planName in PLAN_FEATURES) {
+          return planName as PlanName;
+        }
 
-    return 'free';
-  } catch (error) {
-    console.error('Error fetching user plan:', error);
-    return 'free';
-  }
-});
+        return 'free';
+      } catch (error) {
+        console.error('Error fetching user plan:', error);
+        return 'free';
+      }
+    },
+    [`user-plan-${userId}`],
+    {
+      tags: [`user-plan:${userId}`, 'user-plan'],
+      revalidate: 3600,
+    },
+  )();
+};
 
 /**
  * Get plan features for a user
  * Leverages cached getUserPlan function
  */
-export const getUserPlanFeatures = cache(
-  async (userId: string): Promise<PlanFeatures> => {
-    const plan = await getUserPlan(userId);
-    return PLAN_FEATURES[plan];
-  },
-);
+export const getUserPlanFeatures = async (
+  userId: string,
+): Promise<PlanFeatures> => {
+  const plan = await getUserPlan(userId);
+  return PLAN_FEATURES[plan];
+};
 
 /**
  * Check if user has access to a specific AI model

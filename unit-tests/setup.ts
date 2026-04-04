@@ -6,6 +6,26 @@ import { afterEach, beforeEach, vi } from 'vitest';
 // Mock server-only module to prevent import errors in tests
 vi.mock('server-only', () => ({}));
 
+// Mock next/cache — unstable_cache requires Next.js's incremental cache which
+// doesn't exist in Vitest. Make it a transparent pass-through so cached
+// functions behave identically to their uncached equivalents in tests.
+vi.mock('next/cache', () => ({
+  unstable_cache: <T extends (...args: unknown[]) => unknown>(fn: T) => fn,
+  revalidateTag: vi.fn(),
+  revalidatePath: vi.fn(),
+}));
+
+// Mock next/server's after() — it requires a Next.js request scope that
+// doesn't exist in Vitest. Execute callbacks immediately so unit tests can
+// still assert on deferred side effects (emails, audit writes, etc.).
+vi.mock('next/server', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('next/server')>();
+  return {
+    ...actual,
+    after: vi.fn((fn: () => unknown) => { void fn(); }),
+  };
+});
+
 // Load environment variables from .env file
 config();
 

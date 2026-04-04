@@ -1,5 +1,6 @@
 import { and, eq, gte, sql } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
+import { after } from 'next/server';
 import { db } from '@/db/drizzle';
 import { usageLog, usageQuota, user } from '@/db/schema';
 import { emailService } from './email-service';
@@ -213,8 +214,14 @@ export async function incrementAiRequests(
     })
     .where(eq(usageQuota.userId, userId));
 
-  // Check if we should send a quota warning email
-  await checkAndSendQuotaWarning(userId);
+  // Check if we should send a quota warning email — deferred post-response via after()
+  try {
+    after(async () => {
+      await checkAndSendQuotaWarning(userId);
+    });
+  } catch {
+    // Not in a Next.js request context (scripts/tests) — skip deferral
+  }
 }
 
 /**
@@ -344,8 +351,18 @@ export async function trackAndCheckAiRequest(
     return { allowed: false, quota };
   }
 
-  // Log the usage
-  await logUsage(userId, 'ai_request', 1, metadata);
+  // Log the usage — deferred post-response via after()
+  try {
+    after(async () => {
+      await logUsage(userId, 'ai_request', 1, metadata);
+    });
+  } catch {
+    // Not in a Next.js request context (scripts/tests) — skip deferral
+  }
+  // NOTE: logUsage (audit trail) is deferred; incrementAiRequests (enforcement counter)
+  // runs synchronously. Under a crash between response and after(), the quota counter
+  // may be incremented without a corresponding usageLog entry — an acceptable trade-off
+  // for response latency.
 
   // Increment quota counter
   await incrementAiRequests(userId, 1);
