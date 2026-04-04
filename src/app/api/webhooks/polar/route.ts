@@ -292,6 +292,10 @@ async function handleSubscriptionUpdated(data: WebhookEventData) {
     // Invalidate the cached plan so next request reads fresh data
     if (existing) {
       revalidateTag(`user-plan:${existing.userId}`, { expire: 0 });
+      // Also invalidate workspace cache if this is a workspace-level subscription
+      if (existing.workspaceId) {
+        revalidateTag(`workspace-sub:${existing.workspaceId}`, { expire: 0 });
+      }
     }
 
     // Log the subscription update
@@ -380,6 +384,10 @@ async function handleSubscriptionCanceled(data: WebhookEventData) {
     // Invalidate the cached plan so next request reflects canceled status
     if (existing) {
       revalidateTag(`user-plan:${existing.userId}`, { expire: 0 });
+      // Also invalidate workspace cache if this is a workspace-level subscription
+      if (existing.workspaceId) {
+        revalidateTag(`workspace-sub:${existing.workspaceId}`, { expire: 0 });
+      }
     }
 
     // Log the subscription cancellation
