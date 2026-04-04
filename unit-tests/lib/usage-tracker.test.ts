@@ -491,7 +491,7 @@ describe('Usage Tracker', () => {
       });
 
       expect(result.allowed).toBe(true);
-      expect(db.insert).toHaveBeenCalled();
+      await vi.waitFor(() => expect(db.insert).toHaveBeenCalled());
     });
 
     it('should reject request if over quota', async () => {
@@ -535,10 +535,12 @@ describe('Usage Tracker', () => {
 
       await incrementAiRequests('user_123', 1);
 
-      expect(emailService.sendQuotaWarning).toHaveBeenCalledWith(
-        expect.objectContaining({
-          usagePercentage: 80,
-        }),
+      await vi.waitFor(() =>
+        expect(emailService.sendQuotaWarning).toHaveBeenCalledWith(
+          expect.objectContaining({
+            usagePercentage: 80,
+          }),
+        ),
       );
     });
 
@@ -566,10 +568,12 @@ describe('Usage Tracker', () => {
 
       await incrementAiRequests('user_123', 1);
 
-      expect(emailService.sendQuotaWarning).toHaveBeenCalledWith(
-        expect.objectContaining({
-          usagePercentage: 90,
-        }),
+      await vi.waitFor(() =>
+        expect(emailService.sendQuotaWarning).toHaveBeenCalledWith(
+          expect.objectContaining({
+            usagePercentage: 90,
+          }),
+        ),
       );
     });
 
@@ -597,10 +601,12 @@ describe('Usage Tracker', () => {
 
       await incrementAiRequests('user_123', 1);
 
-      expect(emailService.sendQuotaWarning).toHaveBeenCalledWith(
-        expect.objectContaining({
-          usagePercentage: 100,
-        }),
+      await vi.waitFor(() =>
+        expect(emailService.sendQuotaWarning).toHaveBeenCalledWith(
+          expect.objectContaining({
+            usagePercentage: 100,
+          }),
+        ),
       );
     });
 
