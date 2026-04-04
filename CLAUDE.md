@@ -122,6 +122,10 @@ See `.env.example` for all required variables. Key groups:
 - `SENTRY_*`, `NEXT_PUBLIC_SENTRY_DSN` — Error tracking
 - `NEXT_PUBLIC_POSTHOG_KEY/HOST` — Analytics (optional)
 
+## TODOs
+
+All Next.js 16.x upgrade tasks complete (merged via PR #72 and PR #73).
+
 ## Pre-Push Checklist
 
 Before every push:
