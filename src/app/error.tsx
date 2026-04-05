@@ -1,12 +1,6 @@
 'use client';
 
-// ErrorInfo from Next.js 16.2 — error.digest is added at runtime but not in the
-// public type; intersect to make it accessible without unsafe casting.
-type ErrorInfo = {
-  error: Error & { digest?: string };
-  reset: () => void;
-  unstable_retry: () => void;
-};
+import type { ErrorInfo } from '@/types/error';
 
 /**
  * Root error boundary for the application.

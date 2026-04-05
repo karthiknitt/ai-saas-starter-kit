@@ -1,12 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-
-type ErrorInfo = {
-  error: Error & { digest?: string };
-  reset: () => void;
-  unstable_retry: () => void;
-};
+import type { ErrorInfo } from '@/types/error';
 
 export default function DashboardError({ error, unstable_retry }: ErrorInfo) {
   const router = useRouter();

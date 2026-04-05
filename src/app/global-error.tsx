@@ -1,10 +1,6 @@
 'use client';
 
-type ErrorInfo = {
-  error: Error & { digest?: string };
-  reset: () => void;
-  unstable_retry: () => void;
-};
+import type { ErrorInfo } from '@/types/error';
 
 // Prevent static generation of this error page
 export const dynamic = 'force-dynamic';
