@@ -1,26 +1,26 @@
 /**
  * Subscription plan mapping and validation utilities.
  *
- * This module maps Polar product IDs to human-readable plan names (Free, Pro, Startup).
+ * This module maps Razorpay plan IDs to human-readable plan names (Free, Pro, Startup).
  * It validates required environment variables at startup and provides safe fallbacks
  * for development environments.
  *
  * Environment Variables Required:
- * - POLAR_PRODUCT_FREE: Polar product ID for the Free plan
- * - POLAR_PRODUCT_PRO: Polar product ID for the Pro plan
- * - POLAR_PRODUCT_STARTUP: Polar product ID for the Startup plan
+ * - RAZORPAY_PLAN_FREE: Razorpay plan ID for the Free plan
+ * - RAZORPAY_PLAN_PRO: Razorpay plan ID for the Pro plan
+ * - RAZORPAY_PLAN_STARTUP: Razorpay plan ID for the Startup plan
  *
  * @module plan-map
  * @example
  * ```typescript
  * import { PRODUCT_MAP, getPlanName } from './plan-map';
  *
- * // Get plan name from product ID
- * const planName = getPlanName('prod_abc123'); // => "Pro"
+ * // Get plan name from plan ID
+ * const planName = getPlanName('plan_abc123'); // => "Pro"
  *
- * // Check if a product ID exists
- * if (PRODUCT_MAP['prod_abc123']) {
- *   console.log('Valid product ID');
+ * // Check if a plan ID exists
+ * if (PRODUCT_MAP['plan_abc123']) {
+ *   console.log('Valid plan ID');
  * }
  * ```
  */
@@ -54,7 +54,7 @@ function validateEnvVar(name: string): string {
 type PlanType = 'Free' | 'Pro' | 'Startup';
 
 /**
- * Maps Polar product IDs to plan names.
+ * Maps Razorpay plan IDs to plan names.
  *
  * This map is constructed at module load using environment variables.
  * In production, missing variables will cause the application to fail fast.
@@ -63,20 +63,20 @@ type PlanType = 'Free' | 'Pro' | 'Startup';
  * @type {Record<string, PlanType>}
  * @example
  * ```typescript
- * // Check if a product ID is mapped to a plan
- * if (PRODUCT_MAP['prod_abc123']) {
- *   console.log(`Plan: ${PRODUCT_MAP['prod_abc123']}`);
+ * // Check if a plan ID is mapped to a plan
+ * if (PRODUCT_MAP['plan_abc123']) {
+ *   console.log(`Plan: ${PRODUCT_MAP['plan_abc123']}`);
  * }
  *
- * // Get all valid product IDs
- * const validProductIds = Object.keys(PRODUCT_MAP);
+ * // Get all valid plan IDs
+ * const validPlanIds = Object.keys(PRODUCT_MAP);
  * ```
  */
 export const PRODUCT_MAP: Record<string, PlanType> = (() => {
   try {
-    const free = validateEnvVar('POLAR_PRODUCT_FREE');
-    const pro = validateEnvVar('POLAR_PRODUCT_PRO');
-    const startup = validateEnvVar('POLAR_PRODUCT_STARTUP');
+    const free = validateEnvVar('RAZORPAY_PLAN_FREE');
+    const pro = validateEnvVar('RAZORPAY_PLAN_PRO');
+    const startup = validateEnvVar('RAZORPAY_PLAN_STARTUP');
 
     return {
       [free]: 'Free',
@@ -96,7 +96,7 @@ export const PRODUCT_MAP: Record<string, PlanType> = (() => {
 })();
 
 /**
- * Gets the plan name for a given Polar product ID with robust error handling.
+ * Gets the plan name for a given Razorpay plan ID with robust error handling.
  *
  * This function:
  * - Returns the mapped plan name if found
@@ -104,40 +104,40 @@ export const PRODUCT_MAP: Record<string, PlanType> = (() => {
  * - Returns "Unknown Plan" as a safe fallback
  * - Logs warnings for debugging purposes
  *
- * @param {string | undefined | null} productId - Polar product ID
+ * @param {string | undefined | null} planId - Razorpay plan ID
  * @returns {string} Plan name (Free/Pro/Startup) or "Unknown Plan"
  *
  * @example
  * ```typescript
- * // Valid product ID
- * const plan = getPlanName('prod_abc123');
+ * // Valid plan ID
+ * const plan = getPlanName('plan_abc123');
  * console.log(plan); // => "Pro"
  *
- * // Invalid or missing product ID
+ * // Invalid or missing plan ID
  * const unknownPlan = getPlanName(null);
  * console.log(unknownPlan); // => "Unknown Plan"
  *
  * // Use in subscription context
- * const userPlan = getPlanName(subscription?.productId);
+ * const userPlan = getPlanName(subscription?.planId);
  * if (userPlan === 'Pro') {
  *   // Grant pro features
  * }
  * ```
  */
-export function getPlanName(productId: string | undefined | null): string {
-  if (!productId) {
-    console.warn('No product ID provided to getPlanName');
+export function getPlanName(planId: string | undefined | null): string {
+  if (!planId) {
+    console.warn('No plan ID provided to getPlanName');
     return 'Unknown Plan';
   }
 
-  const planName = PRODUCT_MAP[productId];
+  const planName = PRODUCT_MAP[planId];
   if (!planName) {
-    console.warn(`Product ID ${productId} not found in PRODUCT_MAP`);
+    console.warn(`Plan ID ${planId} not found in PRODUCT_MAP`);
     console.log('Available PRODUCT_MAP keys:', Object.keys(PRODUCT_MAP));
 
     // Try to match by partial ID or provide fallback
     const partialMatch = Object.keys(PRODUCT_MAP).find(
-      (key) => key.includes(productId) || productId.includes(key),
+      (key) => key.includes(planId) || planId.includes(key),
     );
 
     if (partialMatch) {

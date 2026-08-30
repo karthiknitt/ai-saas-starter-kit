@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+#### Payment Provider Migration (Polar → Razorpay)
+- Replaced Polar.sh with Razorpay as the payment provider
+- New `razorpay` SDK integration (`src/lib/razorpay-client.ts`) with subscription-based checkout
+- New webhook endpoint `POST /api/webhooks/razorpay` with HMAC-SHA256 (timing-safe) signature verification
+- Handles `subscription.activated`, `subscription.charged`, `subscription.updated`, `subscription.cancelled`, `subscription.completed`, and `payment.failed` events
+- Renamed DB columns: `subscription.polar_subscription_id` → `razorpay_subscription_id`, `polar_customer_id` → `razorpay_customer_id` (run `bun db:push` to apply)
+- Environment variables: `POLAR_*` → `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET`, `RAZORPAY_PLAN_FREE/PRO/STARTUP`
+- Plan IDs (`plan_xxx`) are created in the Razorpay Dashboard under Subscriptions > Plans
+
 ## [1.0.0] - 2025-01-04 - Initial Open Source Release
 
 ### Features

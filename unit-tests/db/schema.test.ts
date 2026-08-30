@@ -111,8 +111,8 @@ describe('database schema', () => {
       expect(columns).toContain('id');
       expect(columns).toContain('userId');
       expect(columns).toContain('workspaceId');
-      expect(columns).toContain('polarSubscriptionId');
-      expect(columns).toContain('polarCustomerId');
+      expect(columns).toContain('razorpaySubscriptionId');
+      expect(columns).toContain('razorpayCustomerId');
       expect(columns).toContain('status');
       expect(columns).toContain('plan');
       expect(columns).toContain('currentPeriodStart');

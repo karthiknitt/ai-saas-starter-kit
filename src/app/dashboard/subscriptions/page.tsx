@@ -72,7 +72,7 @@ export default function SubscriptionsPage() {
 
       const { url } = await response.json();
 
-      // Redirect to Polar checkout
+      // Redirect to Razorpay checkout
       if (url) {
         window.location.href = url;
       } else {

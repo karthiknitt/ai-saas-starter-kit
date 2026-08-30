@@ -39,12 +39,11 @@ process.env.ARCJET_KEY = process.env.ARCJET_KEY || 'test_arcjet_key';
 process.env.RESEND_API_KEY = process.env.RESEND_API_KEY || 'test_resend_key';
 process.env.ENCRYPTION_KEY =
   process.env.ENCRYPTION_KEY || 'test-key-32-chars-long-for-aes256!!!';
-process.env.POLAR_PRODUCT_FREE =
-  process.env.POLAR_PRODUCT_FREE || 'free_product_id';
-process.env.POLAR_PRODUCT_PRO =
-  process.env.POLAR_PRODUCT_PRO || 'pro_product_id';
-process.env.POLAR_PRODUCT_STARTUP =
-  process.env.POLAR_PRODUCT_STARTUP || 'startup_product_id';
+process.env.RAZORPAY_PLAN_FREE = process.env.RAZORPAY_PLAN_FREE || 'free_plan_id';
+process.env.RAZORPAY_PLAN_PRO =
+  process.env.RAZORPAY_PLAN_PRO || 'pro_plan_id';
+process.env.RAZORPAY_PLAN_STARTUP =
+  process.env.RAZORPAY_PLAN_STARTUP || 'startup_plan_id';
 
 // Make React available globally for tests
 global.React = React;

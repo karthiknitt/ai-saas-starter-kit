@@ -336,8 +336,8 @@ describe('Database Operations Integration Tests', () => {
     const testSubscription = {
       id: 'subscription-123',
       userId: 'user-123',
-      polarSubscriptionId: 'polar-sub-123',
-      polarCustomerId: 'polar-cust-123',
+      razorpaySubscriptionId: 'sub_razorpay123',
+      razorpayCustomerId: 'cust_razorpay123',
       status: 'active',
       plan: 'Pro',
       currentPeriodStart: new Date(),

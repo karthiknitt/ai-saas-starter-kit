@@ -16,9 +16,8 @@
  * - GOOGLE_CLIENT_SECRET: Google OAuth client secret
  *
  * Important Notes:
- * - Polar Better Auth plugin has type incompatibilities with better-auth 1.3.9+
- * - Using manual Polar SDK integration instead (see src/lib/polar-client.ts)
- * - Webhooks handled separately in src/app/api/webhooks/polar/route.ts
+ * - Billing is handled via Razorpay (see src/lib/razorpay-client.ts)
+ * - Webhooks handled separately in src/app/api/webhooks/razorpay/route.ts
  *
  * @module auth
  * @example
@@ -110,9 +109,8 @@ export const auth = betterAuth({
   }),
   plugins: [
     nextCookies(),
-    // Polar plugin disabled due to type incompatibility - using manual SDK integration
-    // Manual checkout flow implemented in: src/lib/polar-client.ts
-    // Webhooks handled in: src/app/api/webhooks/polar/route.ts
+    // Billing flows are implemented via the Razorpay SDK (src/lib/razorpay-client.ts)
+    // Webhooks handled in: src/app/api/webhooks/razorpay/route.ts
   ],
 });
 

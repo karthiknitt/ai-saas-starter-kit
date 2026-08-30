@@ -15,7 +15,7 @@ import { z } from 'zod';
  * All required environment variables for the application:
  * - Database configuration
  * - Authentication settings
- * - Payment provider (Polar)
+ * - Payment provider (Razorpay)
  * - Email service (Resend)
  * - Security (Arcjet)
  * - AI providers (optional)
@@ -36,12 +36,16 @@ const envSchema = z.object({
   GOOGLE_CLIENT_ID: z.string().optional(),
   GOOGLE_CLIENT_SECRET: z.string().optional(),
 
-  // Payment Provider (Polar)
-  POLAR_ACCESS_TOKEN: z
+  // Payment Provider (Razorpay)
+  RAZORPAY_KEY_ID: z
     .string()
-    .startsWith('polar_', 'POLAR_ACCESS_TOKEN must start with "polar_"')
+    .regex(
+      /^rzp_(test|live)_/,
+      'RAZORPAY_KEY_ID must start with "rzp_test_" or "rzp_live_"',
+    )
     .optional(),
-  POLAR_WEBHOOK_SECRET: z.string().optional(),
+  RAZORPAY_KEY_SECRET: z.string().optional(),
+  RAZORPAY_WEBHOOK_SECRET: z.string().optional(),
 
   // Email Service (Resend)
   RESEND_API_KEY: z.string().optional(),
@@ -138,8 +142,9 @@ export function isProductionReady(
     'BETTER_AUTH_URL',
     'GOOGLE_CLIENT_ID',
     'GOOGLE_CLIENT_SECRET',
-    'POLAR_ACCESS_TOKEN',
-    'POLAR_WEBHOOK_SECRET',
+    'RAZORPAY_KEY_ID',
+    'RAZORPAY_KEY_SECRET',
+    'RAZORPAY_WEBHOOK_SECRET',
     'RESEND_API_KEY',
     'RESEND_SENDER_EMAIL',
     'ENCRYPTION_KEY',
