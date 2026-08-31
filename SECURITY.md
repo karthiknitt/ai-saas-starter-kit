@@ -78,7 +78,7 @@ When using this starter kit, follow these security practices:
 - See `src/lib/crypto.ts` for implementation details
 
 ### Payment Processing
-- Payment data is handled by Polar (PCI DSS compliant)
+- Payment data is handled by Razorpay (PCI DSS compliant)
 - Never store credit card information directly
 - Validate webhook signatures for all payment webhooks
 

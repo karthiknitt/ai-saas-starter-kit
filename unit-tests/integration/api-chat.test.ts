@@ -12,10 +12,11 @@ vi.mock('@/lib/arcjet');
 vi.mock('@/lib/logger');
 vi.mock('@/lib/subscription-features');
 vi.mock('@/lib/usage-tracker');
-vi.mock('ai');
-vi.mock('@ai-sdk/openai');
-vi.mock('@openrouter/ai-sdk-provider');
-vi.mock('next/headers');
+// NOTE: 'ai', '@ai-sdk/openai', '@openrouter/ai-sdk-provider' and
+// 'next/headers' are mocked with factories below — do NOT add factory-less
+// vi.mock() duplicates for them: which registration wins is
+// nondeterministic, and the auto-mock makes streamText/cookies/create*Client
+// return undefined, intermittently 500-ing the route.
 
 import { POST } from '../../src/app/api/chat/route';
 
@@ -122,6 +123,7 @@ describe('/api/chat', () => {
       });
 
       const response = await POST(request);
+
       expect(response.status).toBe(401);
 
       const data = await response.json();
@@ -139,6 +141,7 @@ describe('/api/chat', () => {
       });
 
       const response = await POST(request);
+
       expect(response.status).toBe(404);
 
       const data = await response.json();
@@ -165,6 +168,7 @@ describe('/api/chat', () => {
       });
 
       const response = await POST(request);
+
       expect(response.status).toBe(400);
 
       const data = await response.json();
@@ -184,6 +188,7 @@ describe('/api/chat', () => {
       });
 
       const response = await POST(request);
+
       expect(response.status).toBe(500);
 
       const data = await response.json();
@@ -199,6 +204,7 @@ describe('/api/chat', () => {
       });
 
       const response = await POST(request);
+
       expect(response.status).toBe(400);
 
       const data = await response.json();
@@ -219,6 +225,7 @@ describe('/api/chat', () => {
       });
 
       const response = await POST(request);
+
       expect(response.status).toBe(400);
 
       const data = await response.json();
@@ -235,6 +242,7 @@ describe('/api/chat', () => {
       });
 
       const response = await POST(request);
+
       expect(response.status).toBe(400);
 
       const data = await response.json();
@@ -253,6 +261,7 @@ describe('/api/chat', () => {
       });
 
       const response = await POST(request);
+
       expect(response.status).toBe(200);
     });
 
@@ -293,6 +302,7 @@ describe('/api/chat', () => {
       });
 
       const response = await POST(request);
+
       expect(response.status).toBe(400);
 
       const data = await response.json();
@@ -311,6 +321,7 @@ describe('/api/chat', () => {
       });
 
       const response = await POST(request);
+
       expect(response.status).toBe(200);
     });
 
@@ -323,6 +334,7 @@ describe('/api/chat', () => {
       });
 
       const response = await POST(request);
+
       expect(response.status).toBe(200);
     });
   });
@@ -345,6 +357,7 @@ describe('/api/chat', () => {
       });
 
       const response = await POST(request);
+
       expect(response.status).toBe(403);
 
       const data = await response.json();
@@ -366,6 +379,7 @@ describe('/api/chat', () => {
       });
 
       const response = await POST(request);
+
       expect(response.status).toBe(500);
 
       const data = await response.json();
@@ -389,6 +403,7 @@ describe('/api/chat', () => {
       });
 
       const response = await POST(request);
+
       expect(response.status).toBe(200);
     });
 
@@ -404,6 +419,7 @@ describe('/api/chat', () => {
       });
 
       const response = await POST(request);
+
       expect(response.status).toBe(200);
     });
   });

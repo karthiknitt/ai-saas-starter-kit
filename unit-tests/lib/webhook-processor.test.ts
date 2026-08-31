@@ -56,7 +56,7 @@ describe('Webhook Processor', () => {
       } as any);
 
       const payload = { type: 'subscription.created', data: { id: '123' } };
-      const eventId = await logWebhookEvent('polar', 'subscription.created', payload);
+      const eventId = await logWebhookEvent('razorpay', 'subscription.created', payload);
 
       expect(eventId).toBeDefined();
       expect(db.insert).toHaveBeenCalled();
@@ -64,7 +64,7 @@ describe('Webhook Processor', () => {
         'Webhook event logged',
         expect.objectContaining({
           eventId,
-          source: 'polar',
+          source: 'razorpay',
           eventType: 'subscription.created',
         }),
       );
@@ -76,7 +76,7 @@ describe('Webhook Processor', () => {
       } as any);
 
       await expect(
-        logWebhookEvent('polar', 'test', {}),
+        logWebhookEvent('razorpay', 'test', {}),
       ).rejects.toThrow('DB error');
 
       expect(logger.error).toHaveBeenCalled();
@@ -89,7 +89,7 @@ describe('Webhook Processor', () => {
       } as any);
 
       const payload = { nested: { data: 'value' } };
-      await logWebhookEvent('polar', 'test', payload);
+      await logWebhookEvent('razorpay', 'test', payload);
 
       expect(insertMock).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -286,7 +286,7 @@ describe('Webhook Processor', () => {
 
       const processor = vi.fn().mockResolvedValue(undefined);
       const result = await processWebhookNow(
-        'polar',
+'razorpay',
         'subscription.created',
         { data: 'test' },
         processor,
@@ -320,7 +320,7 @@ describe('Webhook Processor', () => {
 
       const processor = vi.fn().mockRejectedValue(new Error('Failed'));
       const result = await processWebhookNow(
-        'polar',
+'razorpay',
         'test',
         {},
         processor,

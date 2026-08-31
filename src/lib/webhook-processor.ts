@@ -34,7 +34,7 @@ export type WebhookProcessor = (payload: unknown) => Promise<void>;
 /**
  * Log an incoming webhook event
  *
- * @param source - Webhook source (e.g., 'polar', 'stripe')
+ * @param source - Webhook source (e.g., 'razorpay', 'stripe')
  * @param eventType - Event type from webhook payload
  * @param payload - Complete webhook payload
  * @returns Event ID for tracking

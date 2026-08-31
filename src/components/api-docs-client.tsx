@@ -142,7 +142,7 @@ const API_ENDPOINTS: ApiCategory[] = [
           plan: 'pro',
         },
         response: {
-          checkoutUrl: 'https://checkout.polar.sh/...',
+          checkoutUrl: 'https://rzp.io/i/...',
         },
       },
       {

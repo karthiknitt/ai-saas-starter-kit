@@ -1,7 +1,7 @@
 import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { auth, type TypedSession } from '@/lib/auth';
-import { createCheckoutSession } from '@/lib/polar-client';
+import { createCheckoutSession } from '@/lib/razorpay-client';
 
 export async function POST(request: Request) {
   try {

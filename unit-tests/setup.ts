@@ -29,6 +29,29 @@ vi.mock('next/server', async (importOriginal) => {
   };
 });
 
+// Mock @sentry/nextjs — newer SDK versions crash at import time under Vitest
+// (fileURLToPath requires a file: URL which Vitest's module loader does not
+// provide). Sentry is irrelevant for unit tests, so stub every export as a
+// no-op and make withSentryConfig an identity function for next.config.ts.
+vi.mock('@sentry/nextjs', () => {
+  const noop = () => undefined;
+  const withSentryConfig = (config: unknown) => config;
+  const sentryMock = {
+    withSentryConfig,
+    init: noop,
+    captureException: noop,
+    captureMessage: noop,
+    captureRequestError: noop,
+    captureRouterTransitionStart: noop,
+    captureEvent: noop,
+    startSpan: noop,
+    diagnoseSdkConnectivity: noop,
+    replayIntegration: noop,
+    browserTracingIntegration: noop,
+  };
+  return { ...sentryMock, default: sentryMock };
+});
+
 // Load environment variables from .env file
 config();
 
@@ -39,12 +62,11 @@ process.env.ARCJET_KEY = process.env.ARCJET_KEY || 'test_arcjet_key';
 process.env.RESEND_API_KEY = process.env.RESEND_API_KEY || 'test_resend_key';
 process.env.ENCRYPTION_KEY =
   process.env.ENCRYPTION_KEY || 'test-key-32-chars-long-for-aes256!!!';
-process.env.POLAR_PRODUCT_FREE =
-  process.env.POLAR_PRODUCT_FREE || 'free_product_id';
-process.env.POLAR_PRODUCT_PRO =
-  process.env.POLAR_PRODUCT_PRO || 'pro_product_id';
-process.env.POLAR_PRODUCT_STARTUP =
-  process.env.POLAR_PRODUCT_STARTUP || 'startup_product_id';
+process.env.RAZORPAY_PLAN_FREE = process.env.RAZORPAY_PLAN_FREE || 'free_plan_id';
+process.env.RAZORPAY_PLAN_PRO =
+  process.env.RAZORPAY_PLAN_PRO || 'pro_plan_id';
+process.env.RAZORPAY_PLAN_STARTUP =
+  process.env.RAZORPAY_PLAN_STARTUP || 'startup_plan_id';
 
 // Make React available globally for tests
 global.React = React;

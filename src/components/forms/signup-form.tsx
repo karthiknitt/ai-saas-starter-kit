@@ -67,16 +67,16 @@ export function SignUpForm({
     );
 
     if (success) {
-      // Create Polar customer after successful signup
+      // Razorpay customer is linked on first checkout
       try {
         // Note: Customer creation will happen when user logs in or accesses subscription features
         // This keeps the signup flow fast and doesn't block on external service calls
         console.log(
-          'User signed up successfully, Polar customer will be created when first accessing subscriptions',
+          'User signed up successfully, Razorpay customer will be created when first accessing subscriptions',
         );
       } catch (error) {
         console.error('Error during signup process:', error);
-        // Don't block signup flow for Polar errors
+        // Don't block signup flow for Razorpay errors
       }
 
       toast.success(

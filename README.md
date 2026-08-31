@@ -15,7 +15,7 @@ A production-ready, full-stack AI SaaS application starter kit built with Next.j
 - **Modern Tech Stack**: Next.js 16.1 with App Router, React 19.2, TypeScript 5.9, Tailwind CSS 4.1
 - **AI Chat Interface**: Streaming AI responses with OpenAI integration and custom API key management
 - **Authentication**: Email/password + Google OAuth via Better Auth
-- **Payment Integration**: Subscription management with Polar (Free, Pro, Startup plans)
+- **Payment Integration**: Subscription management with Razorpay (Free, Pro, Startup plans)
 - **Database**: PostgreSQL with Drizzle ORM
 - **UI Components**: 50+ customizable shadcn/ui components
 - **Error Monitoring**: Sentry integration for production error tracking
@@ -103,18 +103,21 @@ GOOGLE_CLIENT_SECRET=your-google-client-secret
 
 Create credentials at [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
 
-#### Polar Payment Integration
+#### Razorpay Payment Integration
 ```env
-POLAR_ACCESS_TOKEN=polar_at_xxx
-POLAR_SUCCESS_URL=http://localhost:3000/success?checkout_id={CHECKOUT_ID}
-POLAR_WEBHOOK_SECRET=polar_wh_sec_xxx
+RAZORPAY_KEY_ID=rzp_test_xxx
+RAZORPAY_KEY_SECRET=your-razorpay-key-secret
+RAZORPAY_WEBHOOK_SECRET=your-razorpay-webhook-secret
 
-POLAR_PRODUCT_FREE=prod_xxx
-POLAR_PRODUCT_PRO=prod_xxx
-POLAR_PRODUCT_STARTUP=prod_xxx
+RAZORPAY_PLAN_FREE=plan_xxx
+RAZORPAY_PLAN_PRO=plan_xxx
+RAZORPAY_PLAN_STARTUP=plan_xxx
 ```
 
-Sign up at [Polar](https://polar.sh) and create your products.
+Sign up at [Razorpay](https://razorpay.com), create subscription
+[Plans](https://dashboard.razorpay.com/app/subscriptions) for each tier, and
+configure a webhook pointing to `https://your-domain.com/api/webhooks/razorpay`
+(subscription events) with the same secret as `RAZORPAY_WEBHOOK_SECRET`.
 
 #### Email Service
 ```env
@@ -494,7 +497,7 @@ Flexible billing model supporting both individual and team subscriptions:
 - **Database**: [PostgreSQL](https://www.postgresql.org) with [Neon](https://neon.tech)
 - **ORM**: [Drizzle ORM 0.45](https://orm.drizzle.team)
 - **Authentication**: [Better Auth 1.4](https://www.better-auth.com)
-- **Payments**: [Polar](https://polar.sh)
+- **Payments**: [Razorpay](https://razorpay.com)
 - **AI SDK**: [Vercel AI SDK 5.0](https://sdk.vercel.ai)
 - **Email**: [Resend](https://resend.com)
 - **Security**: [Arcjet](https://arcjet.com) + [Helmet](https://helmetjs.github.io/)
@@ -549,7 +552,7 @@ Built with amazing open-source technologies and inspired by the developer commun
 - [Vercel](https://vercel.com) for Next.js and AI SDK
 - [shadcn/ui](https://ui.shadcn.com) for beautiful UI components
 - [Better Auth](https://www.better-auth.com) for authentication
-- [Polar](https://polar.sh) for payment infrastructure
+- [Razorpay](https://razorpay.com) for payment infrastructure
 - [Neon](https://neon.tech) for serverless PostgreSQL
 - All open-source contributors
 

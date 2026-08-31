@@ -15,7 +15,7 @@ A production-ready full-stack AI SaaS application starter kit. Provides complete
 | Auth | Better Auth 1.4 (email/password + Google OAuth) |
 | Email | Resend + React Email templates |
 | AI | Vercel AI SDK 5.0 + OpenAI / OpenRouter |
-| Payments | Polar.sh |
+| Payments | Razorpay |
 | Security | Arcjet (rate limiting) + Helmet + AES-256-GCM encryption |
 | Monitoring | Sentry + Winston + PostHog |
 | Package manager | Bun (never npm/yarn) |
@@ -61,7 +61,7 @@ scripts/                # seed.ts, make-admin.ts, test-email.ts
 - `POST /api/billing/checkout`, `GET /api/billing/subscription`, `GET /api/billing/usage`
 - `GET /api/admin/users`, `GET /api/admin/audit-logs`
 - `GET /api/analytics`, `GET /api/models`, `GET /api/health`
-- `POST /api/webhooks/polar` — subscription webhook (HMAC-SHA256 verified)
+- `POST /api/webhooks/razorpay` — subscription webhook (HMAC-SHA256 verified)
 
 ## Database Schema (14 tables)
 
@@ -114,7 +114,7 @@ See `.env.example` for all required variables. Key groups:
 - `DATABASE_URL` — PostgreSQL (Neon recommended)
 - `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL` — Auth
 - `GOOGLE_CLIENT_ID/SECRET` — OAuth
-- `POLAR_*` — Payments (access token, webhook secret, 3 product IDs)
+- `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET`, `RAZORPAY_PLAN_*` — Payments
 - `RESEND_API_KEY`, `RESEND_SENDER_EMAIL` — Email
 - `OPENAI_API_KEY` — AI provider
 - `ENCRYPTION_KEY` — 32-byte hex key for AES-256-GCM

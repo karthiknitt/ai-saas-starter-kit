@@ -10,9 +10,9 @@ describe('auth-client', () => {
     originalEnv = { ...process.env };
     // Mock environment variables
     process.env.BETTER_AUTH_URL = 'http://localhost:3000';
-    process.env.POLAR_PRODUCT_FREE = 'free_product_id';
-    process.env.POLAR_PRODUCT_PRO = 'pro_product_id';
-    process.env.POLAR_PRODUCT_STARTUP = 'startup_product_id';
+    process.env.RAZORPAY_PLAN_FREE = 'free_plan_id';
+    process.env.RAZORPAY_PLAN_PRO = 'pro_plan_id';
+    process.env.RAZORPAY_PLAN_STARTUP = 'startup_plan_id';
   });
 
   afterEach(() => {
@@ -37,8 +37,8 @@ describe('auth-client', () => {
       expect(authClient).toBeDefined();
     });
 
-    it('should configure Polar plugin', () => {
-      // The client should be configured with Polar plugin
+    it('should configure auth client', () => {
+      // The client should be configured with the expected plugins
       expect(authClient).toBeDefined();
     });
   });

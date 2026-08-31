@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+#### Dependency Upgrades (all packages to latest)
+- Next.js 16.2.2 → 16.3.3, React 19.2.4, TypeScript 6.0.2
+- AI SDK 6 → 7 (`ai@7`, `@ai-sdk/openai@4`, `@ai-sdk/react@4`, `@openrouter/ai-sdk-provider@3`)
+- Better Auth 1.5 → 1.7, Drizzle ORM 0.45, Vitest 4.1, Playwright 1.62
+- Biome 2.4 → 2.5 (migrated `linter.rules.recommended` → `preset`, added SVG a11y override)
+- TanStack Table 8 → 9 (migrated `data-table.tsx` to `useTable`/`tableFeatures` API, `table.state` reads)
+- Motion 12 → 13, nanoid 5 → 6, Sentry 10.72, commitlint 21, lint-staged 17
+- Vitest config: replaced deprecated `__dirname` with `import.meta.dirname`
+- Added `@sentry/nextjs` test mock (new SDK crashes at import time under Vitest)
+
+#### Payment Provider Migration (Polar → Razorpay)
+- Replaced Polar.sh with Razorpay as the payment provider
+- New `razorpay` SDK integration (`src/lib/razorpay-client.ts`) with subscription-based checkout
+- New webhook endpoint `POST /api/webhooks/razorpay` with HMAC-SHA256 (timing-safe) signature verification
+- Handles `subscription.activated`, `subscription.charged`, `subscription.updated`, `subscription.cancelled`, `subscription.completed`, and `payment.failed` events
+- Renamed DB columns: `subscription.polar_subscription_id` → `razorpay_subscription_id`, `polar_customer_id` → `razorpay_customer_id` (run `bun db:push` to apply)
+- Environment variables: `POLAR_*` → `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET`, `RAZORPAY_PLAN_FREE/PRO/STARTUP`
+- Plan IDs (`plan_xxx`) are created in the Razorpay Dashboard under Subscriptions > Plans
+
 ## [1.0.0] - 2025-01-04 - Initial Open Source Release
 
 ### Features

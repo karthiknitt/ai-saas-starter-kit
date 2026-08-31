@@ -200,17 +200,17 @@ export const verification = pgTable('verification', {
 });
 
 /**
- * Subscription table - User and workspace subscription management via Polar.
+ * Subscription table - User and workspace subscription management via Razorpay.
  *
- * Tracks Polar subscription details and synchronizes with local application state.
- * Updated via webhooks from Polar.
+ * Tracks Razorpay subscription details and synchronizes with local application state.
+ * Updated via webhooks from Razorpay.
  * Supports both individual user subscriptions and workspace-level billing.
  *
  * @property {string} id - Unique subscription identifier
  * @property {string} userId - Associated user ID (foreign key, cascade delete)
  * @property {string | null} workspaceId - Optional workspace ID for workspace-level billing
- * @property {string} polarSubscriptionId - Polar subscription ID (unique)
- * @property {string} polarCustomerId - Polar customer ID
+ * @property {string} razorpaySubscriptionId - Razorpay subscription ID (unique)
+ * @property {string} razorpayCustomerId - Razorpay customer ID
  * @property {string} status - Subscription status ('active', 'canceled', 'past_due', etc.)
  * @property {string} plan - Subscription plan ('Free', 'Pro', 'Startup')
  * @property {Date | null} currentPeriodStart - Current billing period start (optional)
@@ -226,7 +226,7 @@ export const verification = pgTable('verification', {
  * Indexes:
  * - idx_subscription_workspace: For workspace-level subscription lookups
  *
- * @see {@link /api/webhooks/polar Polar Webhook Handler}
+ * @see {@link /api/webhooks/razorpay Razorpay Webhook Handler}
  */
 export const subscription = pgTable(
   'subscription',
@@ -238,8 +238,8 @@ export const subscription = pgTable(
     workspaceId: text('workspace_id').references(() => workspace.id, {
       onDelete: 'cascade',
     }),
-    polarSubscriptionId: text('polar_subscription_id').notNull().unique(),
-    polarCustomerId: text('polar_customer_id').notNull(),
+    razorpaySubscriptionId: text('razorpay_subscription_id').notNull().unique(),
+    razorpayCustomerId: text('razorpay_customer_id').notNull(),
     status: text('status').notNull(), // active, canceled, past_due, etc.
     plan: text('plan').notNull(), // Free, Pro, Startup
     currentPeriodStart: timestamp('current_period_start'),
@@ -386,7 +386,7 @@ export const auditLog = pgTable(
  * Supports automatic retry with exponential backoff and dead letter queue.
  *
  * @property {string} id - Unique webhook event identifier
- * @property {string} source - Webhook source ('polar', 'stripe', etc.)
+ * @property {string} source - Webhook source ('razorpay', 'stripe', etc.)
  * @property {string} eventType - Event type from webhook payload
  * @property {string} payload - Complete webhook payload as JSON string
  * @property {string} status - Processing status ('pending', 'processing', 'success', 'failed')
@@ -404,7 +404,7 @@ export const webhookEvent = pgTable(
   'webhook_event',
   {
     id: text('id').primaryKey(),
-    source: text('source').notNull(), // 'polar', 'stripe', etc.
+    source: text('source').notNull(), // 'razorpay', 'stripe', etc.
     eventType: text('event_type').notNull(),
     payload: text('payload').notNull(), // JSON string
     status: text('status').notNull(), // 'pending', 'processing', 'success', 'failed'
