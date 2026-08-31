@@ -29,6 +29,29 @@ vi.mock('next/server', async (importOriginal) => {
   };
 });
 
+// Mock @sentry/nextjs — newer SDK versions crash at import time under Vitest
+// (fileURLToPath requires a file: URL which Vitest's module loader does not
+// provide). Sentry is irrelevant for unit tests, so stub every export as a
+// no-op and make withSentryConfig an identity function for next.config.ts.
+vi.mock('@sentry/nextjs', () => {
+  const noop = () => undefined;
+  const withSentryConfig = (config: unknown) => config;
+  const sentryMock = {
+    withSentryConfig,
+    init: noop,
+    captureException: noop,
+    captureMessage: noop,
+    captureRequestError: noop,
+    captureRouterTransitionStart: noop,
+    captureEvent: noop,
+    startSpan: noop,
+    diagnoseSdkConnectivity: noop,
+    replayIntegration: noop,
+    browserTracingIntegration: noop,
+  };
+  return { ...sentryMock, default: sentryMock };
+});
+
 // Load environment variables from .env file
 config();
 

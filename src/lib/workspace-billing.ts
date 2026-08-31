@@ -58,7 +58,7 @@ export const getWorkspacePlan = async (
   try {
     const subscription = await getWorkspaceSubscription(workspaceId);
 
-    if (!subscription || subscription.status !== 'active') {
+    if (subscription?.status !== 'active') {
       return 'free';
     }
 

@@ -60,7 +60,7 @@ export async function getUserPlan(userId: string): Promise<PlanName> {
     });
 
     // If no subscription or inactive, default to free
-    if (!subscription || subscription.status !== 'active') {
+    if (subscription?.status !== 'active') {
       return 'free';
     }
 
