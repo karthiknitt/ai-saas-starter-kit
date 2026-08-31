@@ -152,9 +152,21 @@ export default withSentryConfig(nextConfig, {
   // For all available options, see:
   // https://www.npmjs.com/package/@sentry/webpack-plugin#options
 
-  org: process.env.SENTRY_ORG || 'your-org',
+  // Sentry org/project — read from the environment. Do not fall back to
+  // placeholder values: a real auth token combined with a placeholder
+  // project makes release creation and sourcemap uploads fail the build.
+  org: process.env.SENTRY_ORG,
 
-  project: process.env.SENTRY_PROJECT || 'your-project',
+  project: process.env.SENTRY_PROJECT,
+
+  // Skip release creation and sourcemap uploads unless Sentry is fully
+  // configured (org, project and auth token all present).
+  sourcemaps: {
+    disable:
+      !process.env.SENTRY_ORG ||
+      !process.env.SENTRY_PROJECT ||
+      !process.env.SENTRY_AUTH_TOKEN,
+  },
 
   // Only print logs for uploading source maps in CI
   silent: !process.env.CI,

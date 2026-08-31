@@ -1,15 +1,30 @@
 import Razorpay from 'razorpay';
 
 /**
- * Initialize Razorpay SDK client.
+ * Lazily initialized Razorpay SDK client.
  *
- * Requires RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET environment variables.
- * Keys are available in the Razorpay Dashboard under Settings > API Keys.
+ * The SDK throws at construction time if key_id/key_secret are missing, so
+ * initialization is deferred until first use. This keeps `next build` page-data
+ * collection working in environments where RAZORPAY_* is not configured.
  */
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID as string,
-  key_secret: process.env.RAZORPAY_KEY_SECRET as string,
-});
+let razorpayInstance: Razorpay | null = null;
+
+function getRazorpay(): Razorpay {
+  if (!razorpayInstance) {
+    const keyId = process.env.RAZORPAY_KEY_ID;
+    const keySecret = process.env.RAZORPAY_KEY_SECRET;
+    if (!keyId || !keySecret) {
+      throw new Error(
+        'Razorpay is not configured. Please set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET environment variables.',
+      );
+    }
+    razorpayInstance = new Razorpay({
+      key_id: keyId,
+      key_secret: keySecret,
+    });
+  }
+  return razorpayInstance;
+}
 
 /**
  * Plan to Razorpay Plan ID mapping.
@@ -63,7 +78,7 @@ export async function createCheckoutSession(
   }
 
   try {
-    const subscription = await razorpay.subscriptions.create({
+    const subscription = await getRazorpay().subscriptions.create({
       plan_id: planId,
       total_count: TOTAL_BILLING_CYCLES,
       customer_notify: 1,
@@ -93,7 +108,7 @@ export async function createCheckoutSession(
  */
 export async function getSubscription(subscriptionId: string) {
   try {
-    return await razorpay.subscriptions.fetch(subscriptionId);
+    return await getRazorpay().subscriptions.fetch(subscriptionId);
   } catch (error) {
     console.error('Failed to get subscription:', error);
     throw new Error(
@@ -115,7 +130,7 @@ export async function cancelSubscription(
   immediate = false,
 ) {
   try {
-    return await razorpay.subscriptions.cancel(subscriptionId, !immediate);
+    return await getRazorpay().subscriptions.cancel(subscriptionId, !immediate);
   } catch (error) {
     console.error('Failed to cancel subscription:', error);
     throw new Error(
@@ -130,7 +145,7 @@ export async function cancelSubscription(
  */
 export async function listPlans() {
   try {
-    return await razorpay.plans.all();
+    return await getRazorpay().plans.all();
   } catch (error) {
     console.error('Failed to list plans:', error);
     throw new Error(
@@ -138,5 +153,3 @@ export async function listPlans() {
     );
   }
 }
-
-export { razorpay };
